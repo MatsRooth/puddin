@@ -1,0 +1,356 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "cwd": "/home/arh234/litotes"
+        },
+        {
+            "name": "pipeline",
+            "type": "python",
+            "request": "launch",
+            "program": "run_pipeline.py",
+            "console": "integratedTerminal",
+            "cwd": "/home/arh234/litotes",
+            "args": [
+                "-c",
+                "/home/arh234/litotes/Pile-CC_fixed.conll/",
+            ]
+        },
+        {
+            "name": "[main] grew search",
+            "type": "python",
+            "request": "launch",
+            "program": "script/grewSearchDir.py",
+            "console": "integratedTerminal",
+            "cwd": "/home/arh234/litotes",
+            "args": [
+                "/home/arh234/litotes/apwtest.conll/",
+                "/home/arh234/litotes/Pat/nonimmediateNeg/with_relay.pat",
+                "apwtest.with_relay"
+            ]
+        },
+        {
+            "name": "Pile grew search",
+            "type": "python",
+            "request": "launch",
+            "program": "script/grewSearchDir.py",
+            "console": "integratedTerminal",
+            "cwd": "/home/arh234/litotes",
+            "args": [
+                "/home/arh234/litotes/Pile-CC_fixed.conll/",
+                "/home/arh234/litotes/Pat/immediateNeg/without_relay.pat",
+                "pile.without_relay"
+            ]
+        },
+        {
+            "name": "playground tabulateHits",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/arh234/litotes/script/tabulateHits.py",
+            "console": "integratedTerminal",
+            "cwd": "/home/arh234/litotes/playground",
+            "args": [
+                "data/immediateNeg/apwtest.without_relay",
+                "debug"
+            ]
+        },
+        {
+            "name": "main tabulateHits",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/arh234/litotes/script/tabulateHits.py",
+            "console": "integratedTerminal",
+            "cwd": "/home/arh234/litotes",
+            "args": [
+                "/home/arh234/litotes/data/immediateNeg/Pile-CC_12_fixed.without_relay",
+                "temp"
+            ]
+        },
+        {
+            "name": "FillJson testing devel",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/arh234/litotes/script/FillJson.py",
+            "console": "integratedTerminal",
+            "cwd": "/home/arh234/litotes/",
+            "args": [
+                "quicktest.conll",
+                "data/immediateNeg/quicktest.without_relay"
+            ]
+        },
+        {
+            "name": "specified simple_view_hits",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/arh234/litotes/script/simple_view_hits.py",
+            "console": "integratedTerminal",
+            "cwd": "/home/arh234/litotes/",
+            "args": [
+                "hits_new/immediateNeg/apwtest_without_relay_hits.csv",
+                "script-debug",
+                // "-k", 
+                // "word", 
+                // "-k" , 
+                // "text", 
+                // "-k", 
+                // "window",
+                // "-k", 
+                // "relation"
+            ]
+        },
+        {
+            "name": "generate pat files",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/arh234/litotes/script/generatePatsByDir.py",
+            "cwd": "/home/arh234/litotes/playground",
+            "args": [
+                "NewPat"
+            ]
+        },
+        {
+            "name": "processTables",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/arh234/litotes/playground/script/processTables.py",
+            "console": "integratedTerminal",
+            "cwd": "/home/arh234/litotes",
+        },
+        {
+            "name": "getFrequecies",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/arh234/litotes/script/getFrequencies.py",
+            "console": "integratedTerminal",
+            "cwd": "/home/arh234/litotes",
+        },
+        {
+            "name": "fix textbreaks",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/arh234/litotes/script/fix_pile_textbreaks.py",
+            "console": "integratedTerminal",
+            "cwd": "/home/arh234/litotes",
+            "args": [
+                "pile-cc_fixersamp.conll"
+            ]
+        },
+        {
+            "name": "parse_pile NO ARGS",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/arh234/litotes/script/parse_pile.py",
+            "console": "integratedTerminal",
+            "cwd": "/home/arh234/litotes",
+        },
+        {
+            "name": "parse_pile search pile_data",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/arh234/litotes/script/parse_pile.py",
+            "console": "integratedTerminal",
+            "cwd": "/home/arh234/litotes",
+            "args": [
+                "-s",
+                "pile_data/"
+            ]
+        },
+        {
+            "name": "parse_pile TEST all load points",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/arh234/litotes/script/parse_pile.py",
+            "console": "integratedTerminal",
+            "cwd": "/home/arh234/litotes",
+            "args": [
+                "-R",
+                "-i",
+                "pile_data/tiny-sample.jsonl",
+                "-i",
+                "pile_tables/slices/PccX/tmp/pile_tiny-sample-1_Pile-CC_df.pkl.gz",
+                "-i",
+                "pile_tables/raw/pile_tiny-sample_Pile-CC_df.pkl.gz",
+                "-i",
+                "pile_tables/tmp/pile_tiny-sample_Pile-CC_df.pkl.gz",
+                "-i",
+                "pile_tables/pile_tiny-sample_Pile-CC_df.pkl.gz",
+                // "-i",
+                // "pile_data/test-main.jsonl",
+                // "-i",
+                // "pile_tables/slices/PccX/tmp/pile_test-main-1_Pile-CC_df.pkl.gz",
+                // "-i",
+                // "pile_tables/raw/pile_test-main_Pile-CC_df.pkl.gz",
+                // "-i",
+                // "pile_tables/tmp/pile_test-main_Pile-CC_df.pkl.gz",
+                // "-i",
+                // "pile_tables/pile_test-main_Pile-CC_df.pkl.gz",
+                // "-i",
+                // "pile_tables/slices/PccX/tmp/pile_val-3_Pile-CC_df.pkl.gz",
+            ]
+        },
+        {
+            "name": "parse_pile composite ordered",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/arh234/litotes/script/parse_pile.py",
+            "console": "integratedTerminal",
+            "cwd": "/home/arh234/litotes",
+            "args": [
+                "-i",
+                "pile_data/tiny-sample.jsonl",
+                "-i",
+                "pile_data/test-sample.jsonl",
+                // "-i",
+                // "pile_data/test-main.jsonl",
+                // "-i",
+                // "pile_data/val.jsonl"
+            ]
+        },
+        {
+            "name": "parse_pile test-main JSONL",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/arh234/litotes/script/parse_pile.py",
+            "console": "integratedTerminal",
+            "cwd": "/home/arh234/litotes",
+            "args": [
+                "-i",
+                "pile_data/test-sample.jsonl",
+                "-R"
+            ]
+        },
+        {
+            "name": "parse_pile tiny-sample JSONL",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/arh234/litotes/script/parse_pile.py",
+            "console": "integratedTerminal",
+            "cwd": "/home/arh234/litotes",
+            "args": [
+                "-i",
+                "pile_data/tiny-sample.jsonl",
+                "-R"
+            ]
+        },
+        {
+            "name": "parse_pile val JSONL",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/arh234/litotes/script/parse_pile.py",
+            "console": "integratedTerminal",
+            "cwd": "/home/arh234/litotes",
+            "args": [
+                "-i",
+                "pile_data/val.jsonl",
+                "-R"
+            ]
+        },
+        {
+            "name": "parse_pile val fulldf",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/arh234/litotes/script/parse_pile.py",
+            "console": "integratedTerminal",
+            "cwd": "/home/arh234/litotes",
+            "args": [
+                "-i",
+                "pile_tables/pile_val_Pile-CC_df.pkl.gz",
+                "-R"
+            ]
+        },
+        {
+            "name": "parse_pile tiny-sample slice",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/arh234/litotes/script/parse_pile.py",
+            "console": "integratedTerminal",
+            "cwd": "/home/arh234/litotes",
+            "args": [
+                "-R",
+                "-i",
+                "pile_tables/slices/PccX/tmp/pile_tiny-sample-1_Pile-CC_df.pkl.gz"
+            ]
+        },
+        {
+            "name": "test-main final df parse_pile",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/arh234/litotes/script/parse_pile.py",
+            "console": "integratedTerminal",
+            "cwd": "/home/arh234/litotes",
+            "args": [
+                "-i",
+                "pile_tables/pile_test-main_Pile-CC_df.pkl.gz"
+            ]
+        },
+        {
+            "name": "raw-df-pkl val parse_pile",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/arh234/litotes/script/parse_pile.py",
+            "console": "integratedTerminal",
+            "cwd": "/home/arh234/litotes",
+            "args": [
+                "-i",
+                "pile_tables/raw/pile_val_Pile-CC_df.pkl.gz"
+            ]
+        },
+        {
+            "name": "tmp-df-pkl val parse_pile",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/arh234/litotes/script/parse_pile.py",
+            "console": "integratedTerminal",
+            "cwd": "/home/arh234/litotes",
+            "args": [
+                "-i",
+                "pile_tables/tmp/pile_val_Pile-CC_df.pkl.gz"
+            ]
+        },
+        {
+            "name": "final-df-pkl val parse_pile",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/arh234/litotes/script/parse_pile.py",
+            "console": "integratedTerminal",
+            "cwd": "/home/arh234/litotes",
+            "args": [
+                "-i",
+                "pile_tables/pile_val_Pile-CC_df.pkl.gz",
+                "-R"
+            ]
+        },
+        {
+            "name": "pile-sample pkl df parse_pile",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/arh234/litotes/script/parse_pile.py",
+            "console": "integratedTerminal",
+            "cwd": "/home/arh234/litotes",
+            "args": [
+                "-i",
+                "/home/arh234/litotes/pile_tables/tmp/pile_pile-sample_Pile-CC_df.pkl.gz",
+            ]
+        },
+        {
+            "name": "00sample df from kay parse_pile",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/arh234/litotes/script/parse_pile.py",
+            "console": "integratedTerminal",
+            "cwd": "/home/arh234/litotes",
+            "args": [
+                "-i",
+                "pile_tables/pile_00sample_Pile-CC_df.pkl.gz",
+            ]
+        }
+    ],
+}
