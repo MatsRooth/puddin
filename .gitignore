@@ -1,3 +1,13 @@
+# manual entries to ignore: 
+# + large data directories
+# + generatable files that do not need to be synced
+# ("sample"/"example" ~ "demonstration~ files 
+#    should be put into a specific `demo/` dir)
+pile_data_full/
+pile_exclusions/
+pile_tables/
+pile*snpa
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
