@@ -4,9 +4,12 @@
 # ("sample"/"example" ~ "demonstration~ files 
 #    should be put into a specific `demo/` dir)
 pile_data_full/
+pile_data/
 pile_exclusions/
 pile_tables/
 pile*snpa
+untracked/
+.history/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
