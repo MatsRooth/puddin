@@ -249,7 +249,7 @@ def check_processing_status(args, data_selection):
                 print(' + All slices have been fully processed into conllu files.')
                 continue
 
-        matching_fulldfs = tuple(Path.cwd().rglob(
+        matching_fulldfs = tuple(Path.cwd().glob(
             f'pile_tables/**/{fulldf_filename}'))
 
         if not matching_fulldfs and is_js:

@@ -10,23 +10,23 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "cwd": "/home/arh234/litotes"
+            "cwd": "/home/arh234/puddin"
         },
         {
             "name": "parse_pile NO ARGS",
             "type": "python",
             "request": "launch",
-            "program": "/home/arh234/litotes/script/parse_pile.py",
+            "program": "/home/arh234/puddin/script/parse_pile.py",
             "console": "integratedTerminal",
-            "cwd": "/home/arh234/litotes",
+            "cwd": "/home/arh234/puddin",
         },
         {
             "name": "parse_pile search pile_data",
             "type": "python",
             "request": "launch",
-            "program": "/home/arh234/litotes/script/parse_pile.py",
+            "program": "/home/arh234/puddin/script/parse_pile.py",
             "console": "integratedTerminal",
-            "cwd": "/home/arh234/litotes",
+            "cwd": "/home/arh234/puddin",
             "args": [
                 "-s",
                 "pile_data/"
@@ -36,9 +36,9 @@
             "name": "parse_pile TEST all load points",
             "type": "python",
             "request": "launch",
-            "program": "/home/arh234/litotes/script/parse_pile.py",
+            "program": "/home/arh234/puddin/script/parse_pile.py",
             "console": "integratedTerminal",
-            "cwd": "/home/arh234/litotes",
+            "cwd": "/home/arh234/puddin",
             "args": [
                 "-R",
                 "-i",
@@ -69,9 +69,9 @@
             "name": "parse_pile composite ordered",
             "type": "python",
             "request": "launch",
-            "program": "/home/arh234/litotes/script/parse_pile.py",
+            "program": "/home/arh234/puddin/script/parse_pile.py",
             "console": "integratedTerminal",
-            "cwd": "/home/arh234/litotes",
+            "cwd": "/home/arh234/puddin",
             "args": [
                 "-i",
                 "pile_data/tiny-sample.jsonl",
@@ -87,9 +87,9 @@
             "name": "parse_pile tiny-sample JSONL",
             "type": "python",
             "request": "launch",
-            "program": "/home/arh234/litotes/script/parse_pile.py",
+            "program": "/home/arh234/puddin/script/parse_pile.py",
             "console": "integratedTerminal",
-            "cwd": "/home/arh234/litotes",
+            "cwd": "/home/arh234/puddin",
             "args": [
                 "-i",
                 "pile_data/tiny-sample.jsonl",
@@ -101,9 +101,9 @@
             "name": "parse_pile tiny-sample slice",
             "type": "python",
             "request": "launch",
-            "program": "/home/arh234/litotes/script/parse_pile.py",
+            "program": "/home/arh234/puddin/script/parse_pile.py",
             "console": "integratedTerminal",
-            "cwd": "/home/arh234/litotes",
+            "cwd": "/home/arh234/puddin",
             "args": [
                 "-R",
                 "-i",
