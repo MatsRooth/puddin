@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 import argparse
+import json
 import sys
 import time
 import zlib
-from itertools import groupby
-from collections import namedtuple
 from datetime import datetime, timedelta
-from json import loads as jsloads
 from pathlib import Path
 from pprint import pprint
 
@@ -1201,15 +1199,19 @@ def stanza_parse(df: pd.DataFrame, output_path: Path, filenum, total_num_slices:
 
             textstr = row_df.text.squeeze()
 
-            # the text can be parsed with jsloads, it's in json format,
-            # which we do not want (and which will break stanza)
+            # the text can be parsed with json.loads(), it's in json format,
+            # which which will break stanza (likely) and is unwanted material (definitely)
             try:
-                __ = jsloads(textstr)
+                #! needs to be stripped bc quoted text can be interpreted as a json object
+                __ = json.loads(textstr.strip('"\''))
             except ValueError:
+                pass
+            except json.decoder.JSONDecodeError:
                 pass
             else:
                 print(f'    in json format. Skipping.')
                 row_skipped.loc[ix] = True
+                continue
 
             # create doc (with parsing)
             try:
