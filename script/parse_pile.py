@@ -38,6 +38,14 @@ def main():
 
     global _sldf_row_limit
     _sldf_row_limit = args.output_size
+
+    #! the input string has to be quoted for it to remain a string
+    #!   instead of a list of files (unrecognized arguments)
+    glob_expr = args.glob_expr.strip('\'"')
+    if glob_expr.startswith('/') and not input_files:
+        sys.exit('Invalid --glob_expr (-g) input.\n  Strings starting with "/" will '
+                 'cause error (`NotImplementedError: Non-relative patterns are unsupported`).')
+
     init_df_paths = []
     init_js_paths = get_jsonl_paths(args)
 
@@ -47,10 +55,11 @@ def main():
                          if '.pkl' in p.suffixes]
 
     # won't have both jsonl and pkl.gz files in the same directory
-    elif not init_js_paths:
-        print('seeking all dataframe files in '
-              f'{search_dir} and subdirectories')
-        init_df_paths = [p.resolve() for p in search_dir.rglob('*.pkl*')]
+    elif glob_expr.endswith('pkl.gz') or 'pile_tables' in glob_expr:
+        print('seeking dataframe files matching', glob_expr)
+        init_df_paths = [p.resolve()
+                         for p in Path.cwd().glob(glob_expr)
+                         if p.is_file() and '.pkl' in p.suffixes]
 
     data_selection = init_js_paths + init_df_paths
     if not data_selection:
@@ -158,22 +167,21 @@ def pop_unwanted_cols(df: pd.DataFrame,
 
 def get_jsonl_paths(args):
     inputs = args.input_files
-    search_dir = args.search_dir
+    glob_expr = args.glob_expr
     print('+ raw jsonl files selected to process:')
     jsonl_list = None
 
     if inputs:
         jsonl_list = [i.resolve() for i in inputs if i.suffix == '.jsonl']
 
-    elif search_dir.is_dir():
-        print('seeking all `.jsonl` files in', search_dir)
-        jsonl_list = list(search_dir.rglob('*.jsonl'))
-
     else:
-        sys.exit('Error: No input files or valid search '
-                 'directory specified. See --help for more info.')
+        print('seeking jsonl files:', glob_expr)
+        jsonl_list = [p.resolve() for p in Path().glob(glob_expr)
+                      if p.is_file() and p.suffix == '.jsonl']
 
-    pprint([str(path) for path in jsonl_list])
+        if not jsonl_list and glob_expr.endswith('jsonl'):
+            sys.exit('Error: No input files or valid search '
+                     '(glob) expression specified. See --help for more info.')
 
     return jsonl_list
 
@@ -184,6 +192,9 @@ def check_processing_status(args, data_selection):
     print('seeking existing progress on selected files...'
           '\n---------------')
     for datapath in data_selection:
+        if any(part.startswith('.') for part in datapath.parts):
+            print(f'\n > Ignoring path in hidden dir, {datapath}')
+            continue
         fname = datapath.name
         print('\n', datapath)
         if not datapath.is_file():
@@ -223,53 +234,80 @@ def check_processing_status(args, data_selection):
 
             continue
 
-        # slice df files will not match this filename
-        finalfull_dfpath = get_dfpkl_outpath(data_group,
-                                             pile_set_name)
+        # * this is necesary for any entered dataframe pkl files not prefixed with `pile_`;
+        # *   e.g. pile_tables/supposed-fails_05_Pile-CC_df.pkl.gz
+        elif is_df:
+            finalfull_dfpath = get_dfpkl_outpath(data_file_stem)
+        else:
+            finalfull_dfpath = get_dfpkl_outpath(data_group,
+                                                 pile_set_name)
         toplevel_dfdir = finalfull_dfpath.parent
         fulldf_filename = finalfull_dfpath.name
         if fulldf_filename in (f.name for f in df_paths):
-            print(' x - Data already included in paths. Skipping.')
+            print(' x - Data already included '
+                  'in most advanced path selection. Skipping.')
             continue
-        # TODO : save slice info to "finished" slice dir, above `tmp/`
-        slices_info_glob = toplevel_dfdir.glob(
-            'slices/**/' + get_metadf_fname(data_group))
-        try:
-            newest_sliceinfo_path = most_recent(slices_info_glob)
-        except ValueError:
-            pass
-        else:
-            # TODO: use file path info now in slice-index file (tmp slices, finished slices, and corresponding conllu paths)
-            slice_info = pd.read_csv(newest_sliceinfo_path)
 
-            parent_dir = newest_sliceinfo_path.parent
-            slice_dir = parent_dir.parent if parent_dir.name == 'tmp' else parent_dir
-            slice_fname_pattern = f'pile_{data_group}-*.pkl*'
-            # TODO : finished slices are not saved to the data_grouped directory, but to top level of slices/. Fix!
-            complete = []
-            incomplete = []
-            final_slices = list(slice_dir.glob(slice_fname_pattern))
-            for f in final_slices:
-                if confirm_conllu(f):
-                    complete.append(f)
-                else:
-                    incomplete.append(f)
-            tmp_slices = [
-                path for path
-                in slice_dir.joinpath('tmp').glob(slice_fname_pattern)
-                if path.name not in (f.name for f in final_slices)
-            ]
-            incomplete += tmp_slices
-            # *if slices exist
-            if incomplete:
-                df_paths += incomplete
-                print(' -> df slices:')
-                for f in incomplete:
-                    print('  +', f.relative_to(Path.cwd()))
-                continue
-            if complete:
-                print(' + All slices have been fully processed into conllu files.')
-                continue
+        # seek pre-sliced dataframes for given data if "reslice" option not selected
+        # *note: leaving this before determining if there is a final df because slice files could
+        # *  theoretically exist independent of the full dataframe
+        # *  (i.e. if they have been moved from where they were originally created)
+        if not args.reSlice:
+            # TODO : save slice info to "finished" slice dir, above `tmp/`
+            slices_info_glob = toplevel_dfdir.glob(
+                'slices/**/' + get_metadf_fname(data_group))
+            try:
+                newest_sliceinfo_path = most_recent(slices_info_glob)
+            except ValueError:
+                pass
+            else:
+                # TODO: use file path info now in slice-index file (tmp slices, finished slices, and corresponding conllu paths)
+                slice_info = pd.read_csv(newest_sliceinfo_path)
+
+                parent_dir = newest_sliceinfo_path.parent
+                slice_dir = parent_dir.parent if parent_dir.name == 'tmp' else parent_dir
+                slice_fname_pattern = f'pile_{data_group}-*.pkl*'
+                # TODO : finished slices are not saved to the data_grouped directory, but to top level of slices/. Fix!
+                complete = []
+                incomplete = []
+                final_slices = list(slice_dir.glob(slice_fname_pattern))
+                for f in final_slices:
+                    if confirm_conllu(f):
+                        complete.append(f)
+                    else:
+                        incomplete.append(f)
+                tmp_slices = [
+                    path for path
+                    in slice_dir.joinpath('tmp').glob(slice_fname_pattern)
+                    if path.name not in (f.name for f in final_slices)
+                ]
+                incomplete += tmp_slices
+                # *if slices exist
+                if incomplete:
+                    df_paths += incomplete
+                    print(' -> df slices:')
+                    for f in incomplete:
+                        print('  +', f.relative_to(Path.cwd()))
+                    continue
+                if complete:
+                    print(' + All slices have been fully processed into conllu files.')
+                    continue
+
+        # * if reSlice *is* true, unlink all related files
+        # * (i.e. delete them/clear the directories)
+        #! slice dir naming was redone so that each single "data_group" (original jsonl file) has its own dir
+        else:
+
+            slice_dir_path = get_dfpkl_outpath(
+                finalfull_dfpath.stem, slice_id='_').parent
+            slice_dir_path = slice_dir_path.relative_to(
+                Path.cwd()) if Path.cwd().name in slice_dir_path.parts else slice_dir_path
+            if slice_dir_path.is_dir():
+                print(
+                    '   * reSlice requested\n   >> clearing all previous files from', slice_dir_path)
+                for path_obj in slice_dir_path.rglob('*'):
+                    if path_obj.is_file():
+                        path_obj.unlink()
 
         matching_fulldfs = tuple(Path.cwd().glob(
             f'pile_tables/**/{fulldf_filename}'))
@@ -417,7 +455,7 @@ def preprocess_pile_texts(raw_fpath: Path, selected_subset: str):
     # pile_data_path = Path('test.jsonl')
     data_source_label = raw_fpath.stem
     # path to save final version of df
-    finaldf_fpath = get_dfpkl_outpath(data_source_label,selected_subset)
+    finaldf_fpath = get_dfpkl_outpath(data_source_label, selected_subset)
     # get temporary version of path for unfinished df files
     tmpdf_fpath = get_dfpkl_outpath(finaldf_fpath.stem, is_tmp=True)
     # raw path set for just this method: dataframes at any stage of pre-processing
@@ -429,12 +467,12 @@ def preprocess_pile_texts(raw_fpath: Path, selected_subset: str):
     # define namedtuple to simplify dataframe creation from json object
     # //text_info = namedtuple(
     # //    'Text', ['raw', 'pile_set_name', 'pile_set_code', 'data_origin_fpath'])
-    #// selected_subset = subcorpora_list
-    #// if len(subcorpora_list) > 1:
-    #//     print('Warning: functionality of processing 2 subcorpora '
-    #//           'simultaneously is no longer supported. Only the first '
-    #//           f'entry will be processed: {selected_subset}.'
-    #//           f'Run the script again to process {subcorpora_list[1:]}')
+    # // selected_subset = subcorpora_list
+    # // if len(subcorpora_list) > 1:
+    # //     print('Warning: functionality of processing 2 subcorpora '
+    # //           'simultaneously is no longer supported. Only the first '
+    # //           f'entry will be processed: {selected_subset}.'
+    # //           f'Run the script again to process {subcorpora_list[1:]}')
     # //selection_code = global_subset_abbr_dict[selected_subset]
     # Load the (sample) jsonlines formatted (`.jsonl`) file using `jsonlines`.
     # Create a generator object which directly filters out texts from unwanted data sets.
@@ -666,7 +704,7 @@ def create_ids(df: pd.DataFrame, data_source_label: str = None, zfilled_slice_nu
 
 
 # process from pickle
-def process_pickledf(dfiles, search_dir):
+def process_pickledf(dfiles, init_data_paths):
 
     for dfpath in dfiles:
         loadstart = time.perf_counter()
@@ -697,17 +735,24 @@ def process_pickledf(dfiles, search_dir):
         df_has_data_origin = 'data_origin_fpath' in df.columns
         changed = False
         if (not df_has_data_origin
-            or not Path(df.data_origin_fpath.iloc[0]).is_file()):
+                or not Path(df.data_origin_fpath.iloc[0]).is_file()):
 
             origin_fpath = None
-
+            
+            # reconstruct filename for original jsonl data file
             if df_has_data_origin:
                 jsonl_fname = df.data_origin_fpath.iloc[0].name
             else:
                 jsonl_fname = dfpath.stem.split('_')[1]+'.jsonl'
 
-            possible_dirs = [Path.cwd(), search_dir, Path(
-                'pile_data'), Path('/data/pile')]
+            # attempt to locate file in plausible directories
+            init_data_dirs = list(set(p.resolve().parent
+                                      for p in init_data_paths))
+            possible_paths = (
+                init_data_dirs
+                + [Path.cwd(), Path('pile_data'), Path('/data/pile')]
+                + list(Path().glob('pile*')))
+            possible_dirs = [d for d in possible_paths if d.is_dir()]
             i = 0
             while not origin_fpath and i < len(possible_dirs):
                 data_dir = possible_dirs[i]
@@ -1196,10 +1241,15 @@ def process_slice(sldf: pd.DataFrame, metadf: pd.DataFrame):
 
     # add any skipped texts/rows
     skip_df = sldf.loc[~sldf.text_id.isin(successful_df.text_id), :]
-    skip_df = skip_df.assign(excl_type='fail',
-                             slice_id=skip_df.text_id,
-                                    text_id=skip_df.orig_text_id)
-    skip_df.pop('orig_text_id')
+    if 'orig_text_id' in skip_df.columns:
+        skip_df = skip_df.assign(excl_type='fail',
+                                 slice_id=skip_df.text_id,
+                                 text_id=skip_df.orig_text_id)
+        skip_df.pop('orig_text_id')
+    else:
+        skip_df = skip_df.assign(excl_type='fail',
+                                 slice_id=skip_df.text_id)
+
     excl_df = pd.concat([excl_df, skip_df], axis=0, ignore_index=True)
     print(f'{len(skip_df)} texts added to exclusions (with excl_type="fail"):')
     print(skip_df[['text_id', 'slice_id', 'excl_type']])
@@ -1422,8 +1472,8 @@ def parse_arg_inputs():
     parser = argparse.ArgumentParser(
         description='script to convert scrambled pile data from raw jsonlines format '
         'into dependency parsed conllu files. Note that if neither input files nor a '
-        'search directory is specified, the calling directory AND subdirectories '
-        'will be searched for dataframe files'
+        'search glob expression is specified, the calling directory AND subdirectories '
+        'will be searched for jsonlines files. '
         '*Required packages: stanza (stanford), unidecode, zlib, and pandas')
 
     parser.add_argument(
@@ -1434,10 +1484,15 @@ def parse_arg_inputs():
         'the scope of the calling directory or directory specified with -s flag.')
 
     parser.add_argument(
-        '-s', '--search_dir',
-        type=Path, default=Path.cwd(),
-        help='Path to search for `jsonl` files. Only relevant if no input files are specified. '
-        'Defaults to calling directory.')
+        '-g', '--glob_expr',
+        type=str, default='**/*jsonl',
+        help=("glob expression for file input selection. Is superseded by the `-i` flag"
+              "*Must be enclosed in '/\" in order to be input as string instead of multiple files!* "
+              "Should be relative to current working directory "
+              "and specify at least 1 directory that contains valid data files. "
+              "Defaults to '**/*jsonl' (files ending in jsonl in current "
+              "working directory or any of its subdirectories, recursively. '*/*jsonl' would "
+              "look in the working dir and its immediate subdirs."))
 
     parser.add_argument(
         '-c', '--corpus_selection',
