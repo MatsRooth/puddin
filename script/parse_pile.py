@@ -28,32 +28,16 @@ _pile_set_code_dict = {'Gutenberg (PG-19)': 'PG19',
                        'BookCorpus2': 'BkC2',
                        'Pile-CC': 'Pcc',
                        'OpenWebText2': 'OWT2'}
-# initiate language model for dependency parsing (load just once)
-'''
-*Note:
-   standfordNLP does not have multi-word token (mwt) expansion
-   for English, so `mwt` processor is not required for dependency parsing
-   (https://github.com/stanfordnlp/stanza/issues/297#issuecomment-627673245)
-'''
-try:
-    print('Loading dependency parsing pipeline...')
-    nlp = stanza.Pipeline(
-        lang='en',
-        processors='tokenize,pos,lemma,depparse')
-except stanza.pipeline.core.ResourcesFileNotFoundError:
-    print('Language model not found. Downloading...')
-    stanza.download('en')
-    print('Loading dependency parsing pipeline...\n')
-    nlp = stanza.Pipeline(
-        lang='en',
-        processors='tokenize,pos,lemma,depparse')
+_unwanted_cols = ('raw', 'index', 'level_0')
+nlp = None
 
 
 def main():
-    # TODO: debug the changes to file selection and structuring
     args = parse_arg_inputs()
     input_files = args.input_files
-    search_dir = args.search_dir
+
+    global _sldf_row_limit
+    _sldf_row_limit = args.output_size
     init_df_paths = []
     init_js_paths = get_jsonl_paths(args)
 
@@ -69,6 +53,11 @@ def main():
         init_df_paths = [p.resolve() for p in search_dir.rglob('*.pkl*')]
 
     data_selection = init_js_paths + init_df_paths
+    if not data_selection:
+        sys.exit('No data selected. Exiting.')
+
+    print('Initial data selection:')
+    pprint([str(path) for path in data_selection])
     js_paths = init_js_paths
     df_paths = init_df_paths
     if data_selection and not args.Reprocess:
@@ -77,26 +66,53 @@ def main():
     if not df_paths + js_paths:
         sys.exit('No valid files in need of processing. Exiting.')
 
-    if js_paths:
-        subcorpora_list = args.corpus_selection
-        print('\nsubcorpora selection: ')
-        pprint(subcorpora_list)
+    # initiate language model for dependency parsing (load just once)
+    '''
+    *Note:
+    standfordNLP does not have multi-word token (mwt) expansion
+    for English, so `mwt` processor is not required for dependency parsing
+    (https://github.com/stanfordnlp/stanza/issues/297#issuecomment-627673245)
+    '''
+    global nlp
+    try:
+        print('Loading dependency parsing pipeline...')
+        nlp = stanza.Pipeline(
+            lang='en',
+            processors='tokenize,pos,lemma,depparse')
+    except stanza.pipeline.core.ResourcesFileNotFoundError:
+        print('Language model not found. Downloading...')
+        stanza.download('en')
+        print('Loading dependency parsing pipeline...\n')
+        nlp = stanza.Pipeline(
+            lang='en',
+            processors='tokenize,pos,lemma,depparse')
 
+    if js_paths:
+        subcorpus_str = args.corpus_selection
+        print('\nsubcorpora selection:', subcorpus_str)
+
+    step_count = 1
     if df_paths:
         print('Dataframes to be processed:')
         pprint([str(path) for path in df_paths])
         slice_paths = [p for p in df_paths if 'slices' in p.parts]
         fulldf_files = list(set(df_paths) - set(slice_paths))
 
-        print('\n\n*** (1) Full Dataframes ***')
-        for df in process_pickledf(fulldf_files, search_dir):
-            if 'raw' in df.columns:
-                df.pop('raw')
+        if fulldf_files:
+
+            print(f'\n\n*** ({step_count}) Full Dataframes ***')
+            step_count += 1
+            for df in process_pickledf(fulldf_files, data_selection):
+                df = pop_unwanted_cols(df)
             slice_df(df)
 
         # TODO : move this up to parse before the full dataframes
-        print('\n\n*** (2) Previously Sliced Dataframes ***')
+        if slice_paths:
+            print(f'\n\n*** ({step_count}) Previously Sliced Dataframes ***')
+            step_count += 1
+
         for slice_path in slice_paths:
+
             print('Processing dataframe slice',
                   slice_path.relative_to(Path.cwd()))
 
@@ -120,16 +136,24 @@ def main():
                 slices_metadf.index.name = 'slice_number'
 
             sldf = pd.read_pickle(slice_path)
-            if 'raw' in sldf.columns:
-                sldf.pop('raw')
+            sldf = pop_unwanted_cols(sldf)
 
             process_slice(sldf, slices_metadf)
 
-    step = 3 if df_paths else 1
-    print(f'\n\n*** ({step}) The Pile\'s Original Data Files (.jsonl) ***')
     if js_paths:
-        for df in process_raw_jsonlines(js_paths, subcorpora_list):
+        print(
+            f'\n\n*** ({step_count}) The Pile\'s Original Data Files (.jsonl) ***')
+        for df in process_raw_jsonlines(js_paths, subcorpus_str):
+            df = pop_unwanted_cols(df)
             slice_df(df)
+
+
+def pop_unwanted_cols(df: pd.DataFrame,
+                      discard_col_names=_unwanted_cols):
+    for col_name in discard_col_names:
+        if col_name in df.columns:
+            df.pop(col_name)
+    return df
 
 
 def get_jsonl_paths(args):
@@ -310,7 +334,8 @@ def check_processing_status(args, data_selection):
         print(pd.Series(js_paths).value_counts())
         print('Removing data duplicates...')
         js_paths = list(set(js_paths))
-    print('---------------')
+    print('-----------------------------------------\n\n==> Data Selection:')
+    pprint([str(p) for p in js_paths + df_paths])
     return js_paths, df_paths
 
 
@@ -359,10 +384,14 @@ def get_conllu_outpath(source_fname: str, slice_numstr: str, subset_label: str):
 
     # create separate conll output dir for every original source file,
     # since it looks to be gigantic
+    #   Andrea Hummel on Mar 15, 2022 at 1:37 PM
+    #   Redid naming schema (yesterday) so that each source jsonl file will have its
+    #   own output directory (both as a `*.conll/` dir, but also in `slices/` dir)
     try:
         conlldir_num = int(source_fname)
     except ValueError:
-        conlldir_id = 'X'
+        conlldir_id = ''.join(x[:2].capitalize()
+                              for x in (source_fname.split('-')))
     else:
         conlldir_id = str(conlldir_num).zfill(2)
     out_dir = Path.cwd().joinpath(f'{subset}{conlldir_id}.conll')
@@ -374,22 +403,21 @@ def get_conllu_outpath(source_fname: str, slice_numstr: str, subset_label: str):
 
 
 ### raw processing functions ###
-def process_raw_jsonlines(rfiles, subcorpora_list):
+def process_raw_jsonlines(rfiles, subcorpus_name: str):
     for rawfile_path in rfiles:
         print(f'\n---\n\nPreprocessing {rawfile_path}...')
 
-        df = preprocess_pile_texts(rawfile_path, subcorpora_list)
+        df = preprocess_pile_texts(rawfile_path, subcorpus_name)
 
         yield df
 
 
-def preprocess_pile_texts(raw_fpath: Path, subcorpora_list: list):
+def preprocess_pile_texts(raw_fpath: Path, selected_subset: str):
 
     # pile_data_path = Path('test.jsonl')
     data_source_label = raw_fpath.stem
     # path to save final version of df
-    finaldf_fpath = get_dfpkl_outpath(data_source_label,
-                                      '-'.join(subcorpora_list))
+    finaldf_fpath = get_dfpkl_outpath(data_source_label,selected_subset)
     # get temporary version of path for unfinished df files
     tmpdf_fpath = get_dfpkl_outpath(finaldf_fpath.stem, is_tmp=True)
     # raw path set for just this method: dataframes at any stage of pre-processing
@@ -401,12 +429,12 @@ def preprocess_pile_texts(raw_fpath: Path, subcorpora_list: list):
     # define namedtuple to simplify dataframe creation from json object
     # //text_info = namedtuple(
     # //    'Text', ['raw', 'pile_set_name', 'pile_set_code', 'data_origin_fpath'])
-    selected_subset = subcorpora_list[0]
-    if len(subcorpora_list) > 1:
-        print('Warning: functionality of processing 2 subcorpora '
-              'simultaneously is no longer supported. Only the first '
-              f'entry will be processed: {selected_subset}.'
-              f'Run the script again to process {subcorpora_list[1:]}')
+    #// selected_subset = subcorpora_list
+    #// if len(subcorpora_list) > 1:
+    #//     print('Warning: functionality of processing 2 subcorpora '
+    #//           'simultaneously is no longer supported. Only the first '
+    #//           f'entry will be processed: {selected_subset}.'
+    #//           f'Run the script again to process {subcorpora_list[1:]}')
     # //selection_code = global_subset_abbr_dict[selected_subset]
     # Load the (sample) jsonlines formatted (`.jsonl`) file using `jsonlines`.
     # Create a generator object which directly filters out texts from unwanted data sets.
@@ -674,7 +702,7 @@ def process_pickledf(dfiles, search_dir):
             origin_fpath = None
 
             if df_has_data_origin:
-                jsonl_fname = df.data_origin_fpath.iloc[0]
+                jsonl_fname = df.data_origin_fpath.iloc[0].name
             else:
                 jsonl_fname = dfpath.stem.split('_')[1]+'.jsonl'
 
@@ -986,7 +1014,7 @@ def slice_df(full_df):
 
             dfslice = remaining_df.iloc[:_sldf_row_limit, :]
             remaining_df = remaining_df.iloc[_sldf_row_limit:, :]
-            slices.append(dfslice.reset_index())
+            slices.append(dfslice)
         # if 2400 split remaining: 2 slices of 1200
         # if 1202, split remaining: 2 slices of 610
         # if remaining df is 1200 rows or less:
@@ -996,12 +1024,12 @@ def slice_df(full_df):
             half_remaining = int(len(remaining_df)/2)
 
             dfslice_penult = remaining_df.iloc[:half_remaining, :]
-            slices.append(dfslice_penult.reset_index())
+            slices.append(dfslice_penult)
 
             remaining_df = remaining_df.iloc[half_remaining:, :]
 
         # this must be outdented to catch smaller dataframes
-        slices.append(remaining_df.reset_index())
+        slices.append(remaining_df)
         slices_total_str = str(len(slices))
         zfill_len = len(slices_total_str)
         # Andrea Hummel on Feb 3, 2022 at 4:45 PM
@@ -1017,10 +1045,16 @@ def slice_df(full_df):
             #! slice numbering starts at 1, not 0 (cannot use i)
             slice_zfilled, sldf = zipped
 
+            # reset index for each slice dataframe to range index
+            #! must have `drop = True` bc otherwise inserts existing index as a column
+            #! (and you can only do this 2x without renaming those columns before an error occurs)
+            # * (original index from full df can be retrieved from `orig_text_id`)
+            sldf.reset_index(drop=True, inplace=True)
+
             # update text ids
             sldf = create_ids(sldf, zfilled_slice_num=slice_zfilled)
 
-            #! must reassign modified dataframe to list of slices
+            #! must reassign modified dataframe to the list of slices to save update
             slices[i] = sldf
 
             # save slice dataframe as compressed pickle
@@ -1043,10 +1077,14 @@ def slice_df(full_df):
                 conllu_path.relative_to(Path.cwd())]
 
         # //final_df_path = get_dfpkl_outpath(data_source_label, subcorpus_name)
+        try:
+            final_df_path = df.dataframe_fpath.iloc[0].relative_to(Path.cwd())
+        except ValueError:
+            final_df_path = df.dataframe_fpath.iloc[0]
         slice_info = slice_info.assign(
             origin_filepath=data_orig_fpath,
             data_origin_group=data_grp_str,
-            final_df_path=df.dataframe_fpath.iloc[0].relative_to(Path.cwd()),
+            final_df_path=final_df_path,
             exclusions_path=get_dfpkl_outpath(
                 data_grp_str, subcorpus_name, is_excl=True).relative_to(Path.cwd()))
         slice_info.index.name = 'slice_number'
@@ -1064,6 +1102,8 @@ def slice_df(full_df):
 
 def process_slice(sldf: pd.DataFrame, metadf: pd.DataFrame):
     slice_t0 = datetime.now()
+    sldf = pop_unwanted_cols(sldf)
+
     slices_total_str = '?' if metadf.empty else len(metadf)
 
     id_prototype = sldf.text_id.iloc[0]
@@ -1137,7 +1177,8 @@ def process_slice(sldf: pd.DataFrame, metadf: pd.DataFrame):
     #     of the script.
     #     If for some reason the exclusions file cannot be found, run again.
     #        (but save with different name so as to not overwrite original.)
-    excl_save_path = get_dfpkl_outpath(this_sl_info.exclusions_path)
+    excl_save_path = get_dfpkl_outpath(
+        this_sl_info.exclusions_path.stem, is_excl=True)
     if excl_save_path.is_file():
         excl_df = pd.read_pickle(excl_save_path)
         print('Adding skipped texts to', excl_save_path.relative_to(Path.cwd()))
@@ -1148,9 +1189,7 @@ def process_slice(sldf: pd.DataFrame, metadf: pd.DataFrame):
         if backup_path.is_file():
             excl_df = pd.read_pickle(backup_path)
         else:
-            print('Warning: previous exclusions file could not be found. '
-                  'Reassessing data...')
-            df, excl_df = pull_exclusions(df, backup_path)
+            excl_df = pd.DataFrame()
 
         print('Exclusions file could not be found. Saving skipped texts to ',
               backup_path.relative_to(Path.cwd()))
@@ -1159,7 +1198,7 @@ def process_slice(sldf: pd.DataFrame, metadf: pd.DataFrame):
     skip_df = sldf.loc[~sldf.text_id.isin(successful_df.text_id), :]
     skip_df = skip_df.assign(excl_type='fail',
                              slice_id=skip_df.text_id,
-                             text_id=skip_df.orig_text_id).reset_index()
+                                    text_id=skip_df.orig_text_id)
     skip_df.pop('orig_text_id')
     excl_df = pd.concat([excl_df, skip_df], axis=0, ignore_index=True)
     print(f'{len(skip_df)} texts added to exclusions (with excl_type="fail"):')
@@ -1401,18 +1440,31 @@ def parse_arg_inputs():
         'Defaults to calling directory.')
 
     parser.add_argument(
-        '-n', '--pile_set_name',
-        default=['Pile-CC'],
-        type=str, action='append', dest='corpus_selection',
-        help=('option to select alternate pile set(s). Default selection: "Pile-CC".'
-              ' Flag can be reused: '
-              'All flagged paths will be appended to selection list'))
+        '-c', '--corpus_selection',
+        default='Pile-CC',
+        type=str,
+        help=('option to specify the pile set. Default pile set: "Pile-CC".'))
 
     parser.add_argument(
         '-R', '--Reprocess',
         default=False, action='store_true',
-        help=('option to skip step looking for existing progress and reprocess files, '
+        help=('option to skip step looking for existing progress entirely and reprocess files, '
               'even if more processed outputs have already been created. Intended for debugging.'))
+
+    parser.add_argument(
+        '-S', '--reSlice',
+        default=False, action='store_true',
+        help=('option to seek furthest stage of processing for *full* dataframes, '
+              'but ignore any previously created slices. '
+              'Note the --Reprocess option nullifies this one. '
+              '\n**Will wipe the selected data\'s subdirectory in `pile_tables/slices/`. '
+              '(same effect as just manually deleting the slices before running the script.)'))
+
+    parser.add_argument(
+        '-o', '--output_size',
+        default=10000, type=int,
+        help='option to specify the target output size (in number of texts) for the sliced dataframes and the eventual corresponding conllu files. Defaults to 10000 texts, which yields ~99 slices per original pile data file for Pile-CC subcorpus. Note that this will only apply to *new* (or redone) slicing.'
+    )
 
     return parser.parse_args()
 
