@@ -1,11 +1,3 @@
-'''
-To use this file to create 
-the `puddin` (ana)conda environment 
-(in your home directory), run: 
-  
-$ conda env create -f [file's_name/path]
-'''
-
 name: puddin
 channels:
   - stanfordnlp
