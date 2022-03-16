@@ -20,20 +20,25 @@ wikipat = re.compile(r'[{[]{2,}[^|}\]]+\|[^}\]]*\}{2,}')
 
 bracket_url = re.compile(r'\[url=[^\]]*]([^[]*)\[/url\]')
 likely_url = re.compile(
-    r'https?://\S*\s|www\.\S*\s|[\w\d]+\.[\w\d]+\.[\w\d]+\S*\s'
+    r'https?://\S*\s|www\.\S*\s|[\w\d]+\.[\w\d]+\.[\w\d]+\S*\s|http://www\.\w+\.\w{2:3}'
     # r'(\(?\[?(?:https?)://w{0,3}\S*[^\s./]{2,}\.[^\s./]{2,}[\./\@]\S*[/:\@]\S*)'
 )
 
 # exclusion regex patterns
 # letters interspersed with numbers in the same "word"
 mixed_letter_digit_regex = re.compile(
-    r'\b[a-z]+\d+[a-z]*\d*[^\s\.\[]*\b'
-    r'|\d+[a-z]+[a-z]*\d*[^\s\.\[]*\b'
-    r'|\b[\da-z]+[&#>?]+[\da-z]+[^\s\.\[]*\b', re.IGNORECASE)
+    r'\d*[a-z]+\d+[a-z]*\d*[a-z]*'
+    r'|\d{3:}[a-z]+[a-z]*\d*[a-z]*', re.IGNORECASE)
 
-# single "word" containing `_`
+# (exclusion filters)
+# single "word" containing `_` or other non acceptible mid-word punch
 underscore_regex = re.compile(r'[\w]*?_[\w]+?')
+midword_punc_regex = re.compile(
+    r'\b[a-z]+[^\w\s\-\'/\\&@]+?[a-zA-Z]+\b')
 
+# for cleaning --> .sub(r'\1\3 \2\4', str)
+missing_space_regex = re.compile(r'(?# lowercaseUppercase with no \s)([a-z]+)([A-Z])'
+                                 r'|(?# word-edge punc with no \s)([a-z][.!?,;:])([A-Za-z])')
 # a single instance of code declaration
 code_regex = re.compile(
     r'(=|[=!><][=!><])\s?(self|true|false|\w+\.?\w*)',

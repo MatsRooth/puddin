@@ -20,7 +20,7 @@ _doc2conll_text = stanza.utils.conll.CoNLL.doc2conll_text
 global_start_time = datetime.now()
 print(f'started: {global_start_time.ctime()}')
 _slinfo_fpref = 'slice-info_'
-_sldf_row_limit = 10000
+_sldf_row_limit = 9999
 pd.set_option('display.max_colwidth', 80)
 _unk_char_str = '<__?UNK__>'
 _pile_set_code_dict = {'Gutenberg (PG-19)': 'PG19',
@@ -738,7 +738,7 @@ def process_pickledf(dfiles, init_data_paths):
                 or not Path(df.data_origin_fpath.iloc[0]).is_file()):
 
             origin_fpath = None
-            
+
             # reconstruct filename for original jsonl data file
             if df_has_data_origin:
                 jsonl_fname = df.data_origin_fpath.iloc[0].name
@@ -826,14 +826,15 @@ def clean_df(orig_df, tmp_save_path):
     # moved this here from preprocessing method because translating encoding belongs in cleanup
     # doing it before `pull_exclusions()` because texts with errors will be excluded
     print('  translating encoding...')
-    unidecode_t0 = time.perf_counter()
+    unidecode_t0 = datetime.now()
     df = orig_df.assign(
         text=orig_df.text.apply(
             lambda t: unidecode(t, errors='replace',
                                 replace_str=_unk_char_str))
     )
-    unidecode_t1 = time.perf_counter()
-    print(f'  ~ {round(unidecode_t1 - unidecode_t0, 2)} sec elapsed')
+    unidecode_t1 = datetime.now()
+    elapsed_time = get_elapsed_time(unidecode_t0, unidecode_t1)
+    print(f'  ~ {elapsed_time} elapsed')
 
     # removing urls before pulling exclusions so that "variable" and "id" patterns
     #   will not throw out texts simply due to urls that would have been removed
@@ -844,15 +845,27 @@ def clean_df(orig_df, tmp_save_path):
     df = df.assign(text=df.text.apply(lambda t: likely_url.sub(r' ', t)))
     t1 = time.perf_counter()
     print(f'  ~ {round(t1 - t0, 2)}  sec elapsed')
+
+    t0 = time.perf_counter()
+    print('  adding missing spaces after word-edge punctuation...')
+    df = df.assign(text=df.text.apply(
+        lambda t: missing_space_regex.sub(r'\1\3 \2\4', t)))
+    t1 = time.perf_counter()
+    print(f'  ~ {round(t1 - t0, 2)}  sec elapsed')
+
     print('saving...')
     df.to_pickle(tmp_save_path)
     print(f'dataframe saved to {tmp_save_path.relative_to(Path.cwd())}')
 
     print('+ Excluding messy data...')
     excl_save_path = get_dfpkl_outpath(tmp_save_path.stem, is_excl=True)
-    df, __ = pull_exclusions(orig_df, excl_save_path)
-    print('saving dataframe...')
-    df.to_pickle(tmp_save_path)
+    df, __ = pull_exclusions(df, excl_save_path)
+
+    # removed this because, if the script crashes before the next save,
+    # it will still run through this method regardless;
+    # the exlusions have already been saved, and this takes a long time.
+    # // print('saving dataframe...')
+    # // df.to_pickle(tmp_save_path)
 
     df = df.assign(text=df.text.astype('string'))
 
@@ -865,7 +878,7 @@ def clean_df(orig_df, tmp_save_path):
     df = df.assign(
         text=df.text.apply(lambda t: end_of_line_abbr.sub(r'\1\2\5\6 \3\4', t)))
 
-    text_diff = ~df.text.isin(df.raw)
+    text_diff = ~df.text.isin(orig_df.text)
     if any(text_diff):
         changedf = df.loc[text_diff, :]
         print(f'{len(changedf)} of {len(df)} texts modified')
@@ -877,6 +890,12 @@ def clean_df(orig_df, tmp_save_path):
     df.pop('raw')
     df = df.assign(text=df.text.astype('string'))
     return df
+
+
+def get_elapsed_time(start, end):
+    elapsed_time = timedelta(seconds=round(
+        end.timestamp()) - round(start.timestamp()))
+    return elapsed_time
 
 
 def pull_exclusions(df: pd.DataFrame,
@@ -956,8 +975,7 @@ def pull_exclusions(df: pd.DataFrame,
         # (any added later due to failed parsing attempts will not
         #  have the `raw` column, and this info can always be
         # retrieved from dataframes in `raw/` if needed)
-        if 'raw' in excl_df.columns:
-            excl_df.pop('raw')
+        excl_df = pop_unwanted_cols(excl_df)
 
         # only save if (new) texts were marked as exclusions
         #   or if no pre-existing file (to prevent researching later)
@@ -988,6 +1006,7 @@ def exclude_regex(df, excl_df, found_excl):
         'code': code_regex,
         '_wrd': underscore_regex,
         'a0wrd': mixed_letter_digit_regex,
+        'punc': midword_punc_regex
     }
 
     for excl_type_str, excl_regex in pattern_type_dict.items():
@@ -1175,12 +1194,12 @@ def process_slice(sldf: pd.DataFrame, metadf: pd.DataFrame):
     slice_t1 = datetime.now()
     print(f'Finished writing parses to {this_sl_info.conllu_path}\n'
           f'  @ {slice_t1.ctime()}')
-    delta = trim_delta(slice_t0, slice_t1)
+    delta = get_elapsed_time(slice_t0, slice_t1)
     print(f'    {delta} -- Slice parsing time')
 
     # // runtime = timedelta(seconds=round(
     # // slice.timestamp() - global_start_time.timestamp()))
-    print(f'    {trim_delta(global_start_time, datetime.now())} '
+    print(f'    {get_elapsed_time(global_start_time, datetime.now())} '
           '-- Current script runtime')
 
     # save version of dataframe for all texts actually processed
@@ -1257,15 +1276,13 @@ def process_slice(sldf: pd.DataFrame, metadf: pd.DataFrame):
     # save exclusions df
     excl_df.to_pickle(excl_save_path)
 
-
-def trim_delta(start, end):
-    d = end - start
-    delta = d - timedelta(microseconds=d.microseconds)
-    return delta
-
-
 ### parsing functions ###
-def stanza_parse(df: pd.DataFrame, output_path: Path, filenum, total_num_slices: str):
+
+
+def stanza_parse(df: pd.DataFrame,
+                 output_path: Path,
+                 filenum,
+                 total_num_slices: str):
     # TODO : change POS to XPOS; remove extra features?
     # really just a way to initiate a boolean series of the right length
     # all rows should be False at this point
@@ -1517,8 +1534,8 @@ def parse_arg_inputs():
 
     parser.add_argument(
         '-o', '--output_size',
-        default=10000, type=int,
-        help='option to specify the target output size (in number of texts) for the sliced dataframes and the eventual corresponding conllu files. Defaults to 10000 texts, which yields ~99 slices per original pile data file for Pile-CC subcorpus. Note that this will only apply to *new* (or redone) slicing.'
+        default=9999, type=int,
+        help='option to specify the target output size (in number of texts) for the sliced dataframes and the eventual corresponding conllu files. Defaults to 9999 texts, which yields ~99 slices per original pile data file for Pile-CC subcorpus. Note that this will only apply to *new* (or redone) slicing.'
     )
 
     return parser.parse_args()
