@@ -1,0 +1,8 @@
+
+jsonlines
+pandas
+pyconll
+stanza
+tabulate
+Unidecode
+

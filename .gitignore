@@ -9,7 +9,7 @@ pile_exclusions/
 pile_tables/
 pile*snpa
 untracked/
-.history/
+.*/
 .vscode/settings.json
 *.conll/
 
