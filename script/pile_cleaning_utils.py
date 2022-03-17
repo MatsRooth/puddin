@@ -1,7 +1,16 @@
 #!/usr/bin/env python
 # coding=utf-8
+'''
+functions for cleaning (some of) the exclusions pulled from the pile.
+
+*Note* additional dependencies must be installed:
+  - wikitextparser
+  - bs4 (BeautifulSoup)
+'''
+
 import wikitextparser as wtp
 from pile_regex_imports import *
+
 
 def clean_wikitexts(df):
     print('  looking for wikitext/wikimedia formatting...')
