@@ -1187,8 +1187,14 @@ def process_slice(sldf: pd.DataFrame, metadf: pd.DataFrame):
     this_sl_info = this_sl_metadf.squeeze()
 
     # parse slice and write to conllu output file
+    conllu_path = Path(this_sl_info.conllu_path)
+    # relies on there only being on level of embedding
+    #   so that this creates something like ./Pcc00/[conllu file]
+    conllu_path = conllu_path.relative_to(conllu_path.parent.parent).resolve()
+    if not conllu_path.parent.is_dir():
+        conllu_path.mkdir(parents=True)
     successful_df = stanza_parse(
-        sldf, Path(this_sl_info.conllu_path), slice_number, slices_total_str)
+        sldf, conllu_path, slice_number, slices_total_str)
 
     successful_df.to_pickle(this_sl_info.final_slice_path)
     slice_t1 = datetime.now()
@@ -1334,7 +1340,7 @@ def stanza_parse(df: pd.DataFrame,
                 conlloutput.write(_doc2conll_text(doc))
 
             parse_t1 = datetime.now()
-            print('       ~', str(parse_t1 - parse_t0)[:10])
+            print('       time:', get_elapsed_time(parse_t0, parse_t1))
 
     # // t = datetime.now()
     # // print(f'Finished writing parses to {output_path}\n  @ {t.ctime()}')

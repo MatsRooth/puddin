@@ -38,7 +38,7 @@ midword_punc_regex = re.compile(
 
 # for cleaning --> .sub(r'\1\3 \2\4', str)
 missing_space_regex = re.compile(r'(?# lowercaseUppercase with no \s)([a-z]+)([A-Z])'
-                                 r'|(?# word-edge punc with no \s)([a-z][.!?,;:])([A-Za-z])')
+                                 r'|(?# word-edge punc with no \s)([a-z][.!?,;:]+)([A-Z])')
 # a single instance of code declaration
 code_regex = re.compile(
     r'(=|[=!><][=!><])\s?(self|true|false|\w+\.?\w*)',
