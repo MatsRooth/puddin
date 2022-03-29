@@ -1,2 +1,0 @@
-slice_number,total_texts,first_text_id,last_text_id,tmp_slice_path,final_slice_path,conllu_path,origin_filepath,data_origin_group,final_df_path,exclusions_path
-1,29,pcc_eng_sample-2_1.01_x02,pcc_eng_sample-2_1.29_x49,pile_tables/slices/PccSa2/tmp/pile_sample-2-1_Pile-CC_df.pkl.gz,pile_tables/slices/PccSa2/pile_sample-2-1_Pile-CC_df.pkl.gz,PccSa2.conll/pcc_eng_sample-2-01.conllu,/home/arh234/puddin/demo/pile_data/sample-2.jsonl,sample-2,pile_tables/pile_sample-2_Pile-CC_df.pkl.gz,pile_exclusions/pile_sample-2_Pile-CC_excl.pkl.gz
