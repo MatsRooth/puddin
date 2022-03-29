@@ -1266,7 +1266,7 @@ def process_slice(sldf: pd.DataFrame, metadf: pd.DataFrame):
         sldf, local_conllu_path, slice_int, slices_total_str)
 
     final_df_path = this_sl_series.final_slice_path
-    if _DESTINATION not in final_df_path.parents: 
+    if _DESTINATION not in final_df_path.parents:
         final_df_path = _DESTINATION.joinpath(final_df_path)
 
     successful_df.to_pickle(final_df_path)
@@ -1359,24 +1359,29 @@ def process_slice(sldf: pd.DataFrame, metadf: pd.DataFrame):
 
 
 def stanza_parse(df: pd.DataFrame,
-                 output_path: Path,
-                 filenum,
-                 total_num_slices: str):
+                 conllu_save_path: Path,
+                 filenum: int = 0,
+                 total_num_slices: str = 0):
+    
     # TODO : change POS to XPOS; remove extra features?
+    
     # really just a way to initiate a boolean series of the right length
     # all rows should be False at this point
     row_skipped = df.text.isna()
+
     num_texts_in_slice = len(df)
     print(f'Starting slice {filenum} of {total_num_slices}: '
           f'{num_texts_in_slice} texts in current slice')
+    
     # open output file for conll formatted data
-    print(f'  parsed data will be written to {output_path}')
-    with output_path.open(mode='w') as conlloutput:
-        # for each text in the pile subset...
-        for position_in_slice, ix in enumerate(df.index):
+    print(f'  parsed data will be written to {conllu_save_path}')
+    with conllu_save_path.open(mode='w') as conllout:
+        
+        # for each text in the pile subset slice...
+        for position_in_slice, row_index in enumerate(df.index):
             # `position_in_slice` should only be used for ordinal/counting
             parse_t0 = datetime.now()
-            row_df = df.loc[[ix], :]
+            row_df = df.loc[[row_index], :]
 
             text_id = row_df.text_id.squeeze()
             print(f'  {position_in_slice+1} of {num_texts_in_slice} '
@@ -1395,7 +1400,7 @@ def stanza_parse(df: pd.DataFrame,
                 pass
             else:
                 print(f'    in json format. Skipping.')
-                row_skipped.loc[ix] = True
+                row_skipped.loc[row_index] = True
                 continue
 
             # create doc (with parsing)
@@ -1404,13 +1409,13 @@ def stanza_parse(df: pd.DataFrame,
             except RuntimeError:
                 print('WARNING! Excluding unparsable text. (runtime error, '
                       'reason unknown). Skipping.')
-                row_skipped.loc[ix] = True
+                row_skipped.loc[row_index] = True
 
             else:
-                doc = process_sentences(row_df, doc)
+                doc = process_sentences(text_id, doc)
 
                 # write conll formatted string of doc to output file
-                conlloutput.write(_DOC2CONLL_TEXT(doc))
+                conllout.write(_DOC2CONLL_TEXT(doc))
 
             parse_t1 = datetime.now()
             print('       time:', get_elapsed_time(parse_t0, parse_t1))
@@ -1429,10 +1434,23 @@ def stanza_parse(df: pd.DataFrame,
     return successful_df
 
 
-def process_sentences(row_df, doc):
+def process_sentences(text_id: str, 
+                      doc: stanza.models.common.doc.Document):
+    """function to add metacomments to a stanza document, 
+    plus check the parses for obvious/easy to fix errors,
+    and then returns that dock 
 
+    Args:
+        text_id (str): 
+            identifier string for given document
+        doc (stanza.models.common.doc.Document): 
+            stanza document of parses for given text
+
+    Returns:
+        stanza.models.common.doc.Document: updated staza doc
+    """
     print('    - processing sentences...')
-    text_id = row_df.text_id.squeeze()
+    # // text_id = row_df.text_id.squeeze()
 
     # check for line breaks in sentence text string
     doc = confirm_parse(doc)
