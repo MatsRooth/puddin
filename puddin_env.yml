@@ -15,6 +15,7 @@ dependencies:
   - pandas
   - pyconll
   - python
+  - pytorch=1.4.0
   - stanza
   - tabulate
   - unidecode
