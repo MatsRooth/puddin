@@ -1167,7 +1167,7 @@ def slice_df(full_df):
 
             # update text ids
             sldf = create_ids(sldf, zfilled_slice_num=slice_zfilled)
-
+            sldf = sldf.assign(slice_numstr=slice_zfilled)
             #! must reassign modified dataframe to the list of slices to save update
             slices[i] = sldf
 
@@ -1219,21 +1219,22 @@ def slice_df(full_df):
 def process_slice(sldf: pd.DataFrame, metadf: pd.DataFrame):
     slice_t0 = datetime.now()
     sldf = pop_unwanted_cols(sldf)
-
     slices_total_str = '?' if metadf.empty else len(metadf)
 
-    first_id_in_slice = sldf.text_id.iloc[0]
-    data_group, first_textid_in_slice = first_id_in_slice.split('_')[2:4]
-    slice_int = int(first_textid_in_slice.split('.')[0])
-    subcorpus_code = sldf.pile_set_code.iloc[0]
+    # first_id_in_slice = sldf.text_id.iloc[0]
+    # data_group, first_textid_in_slice = first_id_in_slice.split('_')[2:4]
+    slice_int = int(sldf.slice_numstr[0])
+
+    metadf.index = pd.to_numeric(metadf.index, downcast='unsigned')
+    #! row index must be in [] to return dataframe instead of series
+    this_sl_metadf = metadf.loc[[slice_int], :]
+
+    subcorpus_code = sldf.pile_set_code[0]    
+    data_group= this_sl_metadf.data_origin_group.squeeze()
     slice_name = f'{subcorpus_code.capitalize()}{data_group.capitalize()}_{slice_int}'
     print('=============================\n'
           f'Slice "{slice_name}" started\n  @ {slice_t0.ctime()}\n')
 
-    metadf.index = pd.to_numeric(metadf.index, downcast='unsigned')
-
-    #! row index must be in [] to return dataframe instead of series
-    this_sl_metadf = metadf.loc[[slice_int], :]
     this_sl_metadf = this_sl_metadf.assign(slice_name=slice_name,
                                            slice_number=this_sl_metadf.index,
                                            started_at=slice_t0.ctime())
@@ -1242,34 +1243,30 @@ def process_slice(sldf: pd.DataFrame, metadf: pd.DataFrame):
 
     # parse slice and write to conllu output file
     conllu_path_record = Path(this_sl_series.conllu_path)
-
+        
     # likely, conllu path will already be relative to _DESTINATION
-    if _DESTINATION not in conllu_path_record.parents:
-        local_conllu_path = _DESTINATION.joinpath(conllu_path_record)
-
     # if in 'puddin' dir somewhere, and can find the parent dir, should work as is
-    else:
-        local_conllu_path = conllu_path_record
 
-    # if can't find the parent dir, regenerate the path
-    if not conllu_path_record.parent.is_dir():
+    local_conllu_path = (conllu_path_record 
+                         if _DESTINATION in conllu_path_record.parents 
+                         else _DESTINATION.joinpath(conllu_path_record))
+
+    # if path isn't of format: .../puddin/[data group][slice num].conll/[conllu file]
+    if local_conllu_path.parent.parent.name != 'puddin':
         local_conllu_path = get_conllu_outpath(
-            data_group, str(slice_int), subcorpus_code)
+            data_group, sldf.slice_numstr[0], subcorpus_code)
 
-    # # relies on there only being one level of embedding
-    # #   so that this creates something like ./Pcc00/[conllu file]
-    # conllu_path = local_conllu_path.relative_to(_DESTINATION.parent)
-
-    if not local_conllu_path.parent.is_dir():
+    elif not local_conllu_path.parent.is_dir():
         local_conllu_path.parent.mkdir(parents=True)
+        
     successful_df = stanza_parse(
         sldf, local_conllu_path, slice_int, slices_total_str)
+    
+    final_slice_path = this_sl_series.final_slice_path
+    if _DESTINATION not in final_slice_path.parents:
+        final_slice_path = _DESTINATION.joinpath(final_slice_path)
 
-    final_df_path = this_sl_series.final_slice_path
-    if _DESTINATION not in final_df_path.parents:
-        final_df_path = _DESTINATION.joinpath(final_df_path)
-
-    successful_df.to_pickle(final_df_path)
+    successful_df.to_pickle(final_slice_path)
     slice_t1 = datetime.now()
     print(f'Finished writing parses to {this_sl_series.conllu_path}\n'
           f'  @ {slice_t1.ctime()}')
@@ -1288,7 +1285,7 @@ def process_slice(sldf: pd.DataFrame, metadf: pd.DataFrame):
 
     this_sl_metadf = this_sl_metadf.set_index('slice_name')
 
-    master_metadf_path = Path.cwd().joinpath(
+    master_metadf_path = _DESTINATION.joinpath(
         f'{_DATAFRAMES_DIRNAME}/master_all-slices_index.csv')
     if master_metadf_path.is_file():
         master_slice_metadf = pd.read_csv(master_metadf_path)
@@ -1309,17 +1306,18 @@ def process_slice(sldf: pd.DataFrame, metadf: pd.DataFrame):
         print('No skipped texts added to exclusions')
         return
 
-    '''if any texts failed,
-      load previous exclusions file to add them
-    below note was originally in `slice_df()`  but still relevant here
-        Feb 11, 2022 at 9:13 PM
-          Currently, `excl_df` is not passed into this method. Instead of
-        getting it via a redundant call to `pull_exclusions()`
-        (that happens in `clean_df()` now) it is loaded from where it
-        was saved either in the previous call, or in a previous run
-        of the script.
-        If for some reason the exclusions file cannot be found, run again.
-           (but save with different name so as to not overwrite original.)'''
+
+    # if any texts failed,
+    #   load previous exclusions file to add them
+    # below note was originally in `slice_df()`  but still relevant here
+    #     Feb 11, 2022 at 9:13 PM
+    #       Currently, `excl_df` is not passed into this method. Instead of
+    #     getting it via a redundant call to `pull_exclusions()`
+    #     (that happens in `clean_df()` now) it is loaded from where it
+    #     was saved either in the previous call, or in a previous run
+    #     of the script.
+    #     If for some reason the exclusions file cannot be found, run again.
+    #        (but save with different name so as to not overwrite original.)
     excl_save_path = get_dfpkl_outpath(
         this_sl_series.exclusions_path.stem, is_excl=True)
     if excl_save_path.is_file():
