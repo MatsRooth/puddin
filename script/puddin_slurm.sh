@@ -2,31 +2,49 @@
 #SBATCH --mail-user=arh234@cornell.edu
 #SBATCH --mail-type=ALL
 #SBATCH -J PuddinPcc                # Job name
-#SBATCH -o %x%2a.out                # Name of stdout output log file (%j expands to jobID)
-#SBATCH -e %x%2a.err                # Name of stderr output log file (%j expands to jobID)
+#SBATCH -o %A_%x_slurm.out                # Name of stdout output log file (%j expands to jobID)
+#SBATCH -e %A_%x_slurm.err                # Name of stderr output log file (%j expands to jobID)
 #SBATCH --open-mode=append
 #SBATCH -N 1                            # Total number of nodes requested
 #SBATCH -n 1                            # Total number of cores requested
-#SBATCH --mem=60G                     # Total amount of (real) memory requested (per node)
-#SBATCH --time 8:00:00                  # Time limit (hh:mm:ss)
+#SBATCH --mem=35G                     # Total amount of (real) memory requested (per node)
+#SBATCH --time 23:59:59                  # Time limit (hh:mm:ss)
 #SBATCH --partition=gpu                 # Request partition for resource allocation
 #SBATCH --get-user-env
-#SBATCH --profile=task
+# # SBATCH --profile=task
 #SBATCH --gres=gpu:1                    # Specify a list of generic consumable resources (per node)
 #SBATCH --array 0-31
 
+date; pwd
 
 # activate conda environment
 eval "$(conda shell.bash hook)"
 conda activate puddin
+echo $(conda env list)
 
-date
+DATA_DIR=/share/compling/data
+PILE_DIR=${DATA_DIR}/pile/
+echo "data dir: ${DATA_DIR}"
+PUD_DIR=${DATA_DIR}/puddin
+if [ ! -d "$PUD_DIR" ]; then
+    mkdir $PUD_DIR
+fi
 
-echo "Job $SLURM_JOB_NAME, ID $SLURM_JOB_ID"
+LOGS_DIR=${PUD_DIR}/logs
+if [ ! -d "$LOGS_DIR" ]; then
+    mkdir $LOGS_DIR
+fi
+
+THIS_JOB_LOG_DIR=${LOGS_DIR}/${SLURM_ARRAY_JOB_ID}
+if [ ! -d "$THIS_JOB_LOG_DIR" ]; then
+    mkdir $THIS_JOB_LOG_DIR
+fi
+
+echo "Job $SLURM_JOB_NAME - $SLURM_JOB_ID"
 echo "  running on:"
 echo "   - partition: $SLURM_JOB_PARTITION"
-echo "   - node(s): $SLURM_JOB_NODELIST"
-echo "   - $SLURM_ARRAY_TASK_ID of $SLURM_ARRAY_TASK_MAX"
+echo "   - node: $SLURM_JOB_NODELIST"
+echo "   - 1 of $SLURM_ARRAY_TASK_COUNT"
 
 # echo "seeding from SLURM_ARRAY_TASK_ID"
 SEED=$((SLURM_ARRAY_TASK_ID))
@@ -43,36 +61,25 @@ else
     PARENT='train/'
 fi
 
-# echo 'length of seed is:' 
 SEEDL=${#SEED}
-# echo $SEEDL
 
 if [ $SEEDL -lt 2 ]; then
     SEED=0$SEED
     echo "  SEED zfilled: $SEED"
 fi
 
-DATA_DIR=/share/compling/data
-IN_DIR=${DATA_DIR}/pile/${PARENT}
+# set input file generated from seed (from array)
+IN_DIR=${PILE_DIR}/${PARENT}
 IN_FILE=${IN_DIR}${SEED}.jsonl
-# echo $IN_DIR
-echo "Input data sourced from ${IN_FILE}"
+
+echo "Processing ${IN_FILE}"
 echo "============================="
 echo $(ls -oGghQ $IN_FILE)
-echo "-----------------------------"
-# echo "input line 0:"
-# echo $(head -1 $IN_FILE)
-# echo "_____________________________"
 
-OUT_DIR=${DATA_DIR}/puddin
-echo "Destination directory: ${OUT_DIR}"
-cd $OUT_DIR
+echo "> Destination directory: ${DATA_DIR}"
 
 echo "***********************************************"
-echo "python /home/arh234/puddin/script/parse_pile.py -i ${IN_FILE}" -d ${OUT_DIR}"
+echo "python /home/arh234/puddin/script/parse_pile.py -i ${IN_FILE}" -d ${DATA_DIR}"
 echo ">>>>>>>>>>"
-time python /home/arh234/puddin/script/parse_pile.py -i ${IN_FILE} -d ${OUT_DIR}
-# time python /home/arh234/puddin/script/parse_pile.py -i ${IN_FILE}
-
-sacct -T --format=JobID,Jobname,state,start,end,elapsed,MaxRss,MaxVMSize,MaxPages,TotalCPU,NodeList -j ${SLURM_JOB_ID}_${SLURM_ARRAY_TASK_ID}
-umask 0077
+# run script and send both stdout and stderr to log file
+python /home/arh234/puddin/script/parse_pile.py -i ${IN_FILE} -d ${DATA_DIR} >>"${THIS_JOB_LOG_DIR}/${SLURM_JOB_NAME}-${SEED}.log" 2>&1
