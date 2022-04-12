@@ -79,7 +79,7 @@ echo $(ls -oGghQ $IN_FILE)
 echo "> Destination directory: ${DATA_DIR}"
 
 echo "***********************************************"
-echo "python /home/arh234/puddin/script/parse_pile.py -i ${IN_FILE}" -d ${DATA_DIR}"
+echo "python /home/arh234/puddin/script/parse_pile.py -i ${IN_FILE} -d ${DATA_DIR}"
 echo ">>>>>>>>>>"
 # run script and send both stdout and stderr to log file
 python /home/arh234/puddin/script/parse_pile.py -i ${IN_FILE} -d ${DATA_DIR} >>"${THIS_JOB_LOG_DIR}/${SLURM_JOB_NAME}-${SEED}.log" 2>&1
