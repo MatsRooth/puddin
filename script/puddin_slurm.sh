@@ -23,7 +23,7 @@ conda activate puddin
 echo $(conda env list)
 
 DATA_DIR=/share/compling/data
-PILE_DIR=${DATA_DIR}/pile/
+PILE_DIR=${DATA_DIR}/pile
 echo "data dir: ${DATA_DIR}"
 PUD_DIR=${DATA_DIR}/puddin
 if [ ! -d "$PUD_DIR" ]; then
