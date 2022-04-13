@@ -20,7 +20,7 @@ echo ""
 # activate conda environment
 eval "$(conda shell.bash hook)"
 conda activate puddin
-echo $(conda env list)
+echo "$(conda env list)"
 echo ""
 
 DATA_DIR=/share/compling/data
@@ -83,4 +83,5 @@ echo "***********************************************"
 echo "python /home/arh234/projects/puddin/script/parse_pile.py -i ${IN_FILE} -d ${DATA_DIR}"
 echo ">>>>>>>>>>"
 # run script and send both stdout and stderr to log file
-python /home/arh234/projects/puddin/script/parse_pile.py -i ${IN_FILE} -d ${DATA_DIR} >>"${THIS_JOB_LOG_DIR}/${SLURM_JOB_NAME}-${SEED}.log" 2>&1
+LOG_FILE=${THIS_JOB_LOG_DIR}/${SLURM_JOB_NAME}-${SEED}.log
+python /home/arh234/projects/puddin/script/parse_pile.py -i ${IN_FILE} -d ${DATA_DIR} > >(tee $LOG_FILE) 2>&1
