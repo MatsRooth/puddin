@@ -1229,8 +1229,8 @@ def process_slice(sldf: pd.DataFrame, metadf: pd.DataFrame):
     #! row index must be in [] to return dataframe instead of series
     this_sl_metadf = metadf.loc[[slice_int], :]
 
-    subcorpus_code = sldf.pile_set_code[0]    
-    data_group= this_sl_metadf.data_origin_group.squeeze()
+    subcorpus_code = sldf.pile_set_code[0]
+    data_group = this_sl_metadf.data_origin_group.squeeze()
     slice_name = f'{subcorpus_code.capitalize()}{data_group.capitalize()}_{slice_int}'
     print('=============================\n'
           f'Slice "{slice_name}" started\n  @ {slice_t0.ctime()}\n')
@@ -1243,12 +1243,12 @@ def process_slice(sldf: pd.DataFrame, metadf: pd.DataFrame):
 
     # parse slice and write to conllu output file
     conllu_path_record = Path(this_sl_series.conllu_path)
-        
+
     # likely, conllu path will already be relative to _DESTINATION
     # if in 'puddin' dir somewhere, and can find the parent dir, should work as is
 
-    local_conllu_path = (conllu_path_record 
-                         if _DESTINATION in conllu_path_record.parents 
+    local_conllu_path = (conllu_path_record
+                         if _DESTINATION in conllu_path_record.parents
                          else _DESTINATION.joinpath(conllu_path_record))
 
     # if path isn't of format: .../puddin/[data group][slice num].conll/[conllu file]
@@ -1258,11 +1258,11 @@ def process_slice(sldf: pd.DataFrame, metadf: pd.DataFrame):
 
     elif not local_conllu_path.parent.is_dir():
         local_conllu_path.parent.mkdir(parents=True)
-        
+
     successful_df = stanza_parse(
         sldf, local_conllu_path, slice_int, slices_total_str)
-    
-    final_slice_path = this_sl_series.final_slice_path
+
+    final_slice_path = Path(this_sl_series.final_slice_path)
     if _DESTINATION not in final_slice_path.parents:
         final_slice_path = _DESTINATION.joinpath(final_slice_path)
 
@@ -1305,7 +1305,6 @@ def process_slice(sldf: pd.DataFrame, metadf: pd.DataFrame):
     if len(successful_df) == len(sldf):
         print('No skipped texts added to exclusions')
         return
-
 
     # if any texts failed,
     #   load previous exclusions file to add them
@@ -1360,9 +1359,9 @@ def stanza_parse(df: pd.DataFrame,
                  conllu_save_path: Path,
                  filenum: int = 0,
                  total_num_slices: str = 0):
-    
+
     # TODO : change POS to XPOS; remove extra features?
-    
+
     # really just a way to initiate a boolean series of the right length
     # all rows should be False at this point
     row_skipped = df.text.isna()
@@ -1370,11 +1369,11 @@ def stanza_parse(df: pd.DataFrame,
     num_texts_in_slice = len(df)
     print(f'Starting slice {filenum} of {total_num_slices}: '
           f'{num_texts_in_slice} texts in current slice')
-    
+
     # open output file for conll formatted data
     print(f'  parsed data will be written to {conllu_save_path}')
     with conllu_save_path.open(mode='w') as conllout:
-        
+
         # for each text in the pile subset slice...
         for position_in_slice, row_index in enumerate(df.index):
             # `position_in_slice` should only be used for ordinal/counting
@@ -1392,9 +1391,9 @@ def stanza_parse(df: pd.DataFrame,
             try:
                 #! needs to be stripped bc quoted text can be interpreted as a json object
                 __ = json.loads(textstr.strip('"\''))
-            except ValueError:
-                pass
             except json.decoder.JSONDecodeError:
+                pass
+            except ValueError:
                 pass
             else:
                 print(f'    in json format. Skipping.')
@@ -1432,7 +1431,7 @@ def stanza_parse(df: pd.DataFrame,
     return successful_df
 
 
-def process_sentences(text_id: str, 
+def process_sentences(text_id: str,
                       doc: stanza.models.common.doc.Document):
     """function to add metacomments to a stanza document, 
     plus check the parses for obvious/easy to fix errors,
