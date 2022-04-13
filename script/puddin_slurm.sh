@@ -2,8 +2,8 @@
 #SBATCH --mail-user=arh234@cornell.edu
 #SBATCH --mail-type=ALL
 #SBATCH -J PuddinPcc                # Job name
-#SBATCH -o %A_%x_slurm.out                # Name of stdout output log file (%j expands to jobID)
-#SBATCH -e %A_%x_slurm.err                # Name of stderr output log file (%j expands to jobID)
+#SBATCH -o %A_%x%2aslurm.out                # Name of stdout output log file (%j expands to jobID)
+#SBATCH -e %A_%x%2aslurm.err                # Name of stderr output log file (%j expands to jobID)
 #SBATCH --open-mode=append
 #SBATCH -N 1                            # Total number of nodes requested
 #SBATCH -n 1                            # Total number of cores requested
@@ -16,11 +16,12 @@
 #SBATCH --array 0-31
 
 date; pwd
-
+echo ""
 # activate conda environment
 eval "$(conda shell.bash hook)"
 conda activate puddin
 echo $(conda env list)
+echo ""
 
 DATA_DIR=/share/compling/data
 PILE_DIR=${DATA_DIR}/pile
