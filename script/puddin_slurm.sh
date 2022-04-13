@@ -84,4 +84,4 @@ echo "python /home/arh234/projects/puddin/script/parse_pile.py -i ${IN_FILE} -d 
 echo ">>>>>>>>>>"
 # run script and send both stdout and stderr to log file
 LOG_FILE=${THIS_JOB_LOG_DIR}/${SLURM_JOB_NAME}-${SEED}.log
-python /home/arh234/projects/puddin/script/parse_pile.py -i ${IN_FILE} -d ${DATA_DIR} > >(tee $LOG_FILE) 2>&1
+python /home/arh234/projects/puddin/script/parse_pile.py -i ${IN_FILE} -d ${DATA_DIR} > >(tee -i -a $LOG_FILE) 2>&1
