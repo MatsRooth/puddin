@@ -3,15 +3,18 @@
 # + generatable files that do not need to be synced
 # ("sample"/"example" ~ "demonstration~ files 
 #    should be put into a specific `demo/` dir)
-pile_data_full/
-pile_data/
-pile_exclusions/
-pile_tables/
+# pile_data_full/
+# pile_data/
+# pile_exclusions/
+# pile_tables/
 pile*snpa
-untracked/
-.*/
+#untracked/
+.[uh]*/
+demo_debug/
+kingston*
 .vscode/settings.json
 *.conll/
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -142,3 +145,4 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+

@@ -10,105 +10,107 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "cwd": "/home/arh234/puddin"
+            "cwd": "/home/arh234/projects/puddin"
         },
         {
             "name": "parse_pile NO ARGS",
             "type": "python",
             "request": "launch",
-            "program": "/home/arh234/puddin/script/parse_pile.py",
+            "program": "/home/arh234/projects/puddin/script/parse_pile.py",
             "console": "integratedTerminal",
-            "cwd": "/home/arh234/puddin",
+            "cwd": "/home/arh234/projects/puddin",
         },
         {
             "name": "parse_pile search pile_data",
             "type": "python",
             "request": "launch",
-            "program": "/home/arh234/puddin/script/parse_pile.py",
+            "program": "/home/arh234/projects/puddin/script/parse_pile.py",
             "console": "integratedTerminal",
-            "cwd": "/home/arh234/puddin",
+            "cwd": "/home/arh234/projects/puddin",
             "args": [
-                "-s",
-                "pile_data/"
+                "-g",
+                "home/arh234/projects/puddin/data/*"
             ]
         },
+        // {
+        //     "name": "parse_pile TEST all load points",
+        //     "type": "python",
+        //     "request": "launch",
+        //     "program": "/home/arh234/projects/puddin/script/parse_pile.py",
+        //     "console": "integratedTerminal",
+        //     "cwd": "/home/arh234/projects/puddin",
+        //     "args": [
+        //         "-R",
+        //         "-i",
+        //         "data/pile/sample-1.jsonl",
+        //         "-i",
+        //         "pile_tables/slices/PccX/tmp/pile_tiny-sample-1_Pile-CC_df.pkl.gz",
+        //         "-i",
+        //         "pile_tables/raw/pile_tiny-sample_Pile-CC_df.pkl.gz",
+        //         "-i",
+        //         "pile_tables/tmp/pile_tiny-sample_Pile-CC_df.pkl.gz",
+        //         "-i",
+        //         "pile_tables/pile_tiny-sample_Pile-CC_df.pkl.gz",
+        //         "-i",
+        //         "pile_data/test-main.jsonl",
+        //         "-i",
+        //         "pile_tables/slices/PccX/tmp/pile_test-main-1_Pile-CC_df.pkl.gz",
+        //         "-i",
+        //         "pile_tables/raw/pile_test-main_Pile-CC_df.pkl.gz",
+        //         "-i",
+        //         "pile_tables/tmp/pile_test-main_Pile-CC_df.pkl.gz",
+        //         "-i",
+        //         "pile_tables/pile_test-main_Pile-CC_df.pkl.gz",
+        //         "-i",
+        //         "pile_tables/slices/PccX/tmp/pile_val-3_Pile-CC_df.pkl.gz",
+        //     ]
+        // },
+        // {
+        //     "name": "parse_pile composite ordered",
+        //     "type": "python",
+        //     "request": "launch",
+        //     "program": "/home/arh234/projects/puddin/script/parse_pile.py",
+        //     "console": "integratedTerminal",
+        //     "cwd": "/home/arh234/projects/puddin",
+        //     "args": [
+        //         "-i",
+        //         "data/pile/sample-1.jsonl",
+        //         "-i",
+        //         "data/pile/sample-2.jsonl",
+        //         // "-i",
+        //         // "pile_data/test-main.jsonl",
+        //         // "-i",
+        //         // "pile_data/val.jsonl"
+        //     ]
+        // },
         {
-            "name": "parse_pile TEST all load points",
+            "name": "parse_pile sample-1 -d demo_debug",
             "type": "python",
             "request": "launch",
-            "program": "/home/arh234/puddin/script/parse_pile.py",
+            "program": "/home/arh234/projects/puddin/script/parse_pile.py",
             "console": "integratedTerminal",
-            "cwd": "/home/arh234/puddin",
-            "args": [
-                "-R",
-                "-i",
-                "pile_data/tiny-sample.jsonl",
-                "-i",
-                "pile_tables/slices/PccX/tmp/pile_tiny-sample-1_Pile-CC_df.pkl.gz",
-                "-i",
-                "pile_tables/raw/pile_tiny-sample_Pile-CC_df.pkl.gz",
-                "-i",
-                "pile_tables/tmp/pile_tiny-sample_Pile-CC_df.pkl.gz",
-                "-i",
-                "pile_tables/pile_tiny-sample_Pile-CC_df.pkl.gz",
-                // "-i",
-                // "pile_data/test-main.jsonl",
-                // "-i",
-                // "pile_tables/slices/PccX/tmp/pile_test-main-1_Pile-CC_df.pkl.gz",
-                // "-i",
-                // "pile_tables/raw/pile_test-main_Pile-CC_df.pkl.gz",
-                // "-i",
-                // "pile_tables/tmp/pile_test-main_Pile-CC_df.pkl.gz",
-                // "-i",
-                // "pile_tables/pile_test-main_Pile-CC_df.pkl.gz",
-                // "-i",
-                // "pile_tables/slices/PccX/tmp/pile_val-3_Pile-CC_df.pkl.gz",
-            ]
-        },
-        {
-            "name": "parse_pile composite ordered",
-            "type": "python",
-            "request": "launch",
-            "program": "/home/arh234/puddin/script/parse_pile.py",
-            "console": "integratedTerminal",
-            "cwd": "/home/arh234/puddin",
+            "cwd": "/home/arh234/projects/puddin",
             "args": [
                 "-i",
-                "pile_data/tiny-sample.jsonl",
-                "-i",
-                "pile_data/test-sample.jsonl",
-                // "-i",
-                // "pile_data/test-main.jsonl",
-                // "-i",
-                // "pile_data/val.jsonl"
-            ]
-        },
-        {
-            "name": "parse_pile tiny-sample JSONL",
-            "type": "python",
-            "request": "launch",
-            "program": "/home/arh234/puddin/script/parse_pile.py",
-            "console": "integratedTerminal",
-            "cwd": "/home/arh234/puddin",
-            "args": [
-                "-i",
-                "pile_data/tiny-sample.jsonl",
-                "-R"
+                "data/pile/sample-1.jsonl",
+                "-R", 
+                "-d",
+                "/home/arh234/projects/puddin/demo_debug"
             ]
         },
 
-        {
-            "name": "parse_pile tiny-sample slice",
-            "type": "python",
-            "request": "launch",
-            "program": "/home/arh234/puddin/script/parse_pile.py",
-            "console": "integratedTerminal",
-            "cwd": "/home/arh234/puddin",
-            "args": [
-                "-R",
-                "-i",
-                "pile_tables/slices/PccX/tmp/pile_tiny-sample-1_Pile-CC_df.pkl.gz"
-            ]
-        }
+        // {
+        //     "name": "parse_pile tiny-sample slice",
+        //     "type": "python",
+        //     "request": "launch",
+        //     "program": "/home/arh234/projects/puddin/script/parse_pile.py",
+        //     "console": "integratedTerminal",
+        //     "cwd": "/home/arh234/projects/puddin",
+        //     "args": [
+        //         "-R",
+        //         "-i",
+        //         "pile_tables/slices/PccX/tmp/pile_tiny-sample-1_Pile-CC_df.pkl.gz"
+        //     ]
+        // }
     ],
 }

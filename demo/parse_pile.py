@@ -1,1 +1,0 @@
-/home/arh234/puddin/script/parse_pile.py
