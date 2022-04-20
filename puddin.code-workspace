@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../../data/puddin"
+		},
+		{
+			"path": "../../data/pile"
+		}
+	],
+	"settings": {}
+}

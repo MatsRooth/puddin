@@ -92,13 +92,42 @@
             "cwd": "/home/arh234/projects/puddin",
             "args": [
                 "-i",
-                "data/pile/sample-1.jsonl",
-                "-R", 
+                "/home/arh234/data/pile/sample-1.jsonl",
+                "-R",
                 "-d",
                 "/home/arh234/projects/puddin/demo_debug"
             ]
         },
-
+        {
+            "name": "parse_pile val_slices -d demo_debug",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/arh234/projects/puddin/script/parse_pile.py",
+            "console": "integratedTerminal",
+            "cwd": "/home/arh234/projects/puddin",
+            "args": [
+                "-g",
+                "'/home/arh234/data/puddin/pile_tables/slices/PccVa/tmp/*pkl.gz'",
+                "-R",
+                "-d",
+                "/home/arh234/projects/puddin/demo_debug"
+            ]
+        },
+        {
+            "name": "parse_pile 00_slices -d demo_debug",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/arh234/projects/puddin/script/parse_pile.py",
+            "console": "integratedTerminal",
+            "cwd": "/home/arh234/projects/puddin",
+            "args": [
+                "-g",
+                "'/home/arh234/data/puddin/pile_tables/slices/Pcc00/tmp/*pkl.gz'",
+                "-R",
+                "-d",
+                "/home/arh234/projects/puddin/demo_debug"
+            ]
+        },
         // {
         //     "name": "parse_pile tiny-sample slice",
         //     "type": "python",
