@@ -1,14 +1,14 @@
 #!/bin/bash
 #SBATCH --mail-user=arh234@cornell.edu
 #SBATCH --mail-type=ALL
-#SBATCH -J PuddinPcc                # Job name
+#SBATCH -J PuddinPcc_2022-04-19                # Job name
 #SBATCH -o %A_%x%2aslurm.out                # Name of stdout output log file (%j expands to jobID)
 #SBATCH -e %A_%x%2aslurm.err                # Name of stderr output log file (%j expands to jobID)
 #SBATCH --open-mode=append
 #SBATCH -N 1                            # Total number of nodes requested
 #SBATCH -n 1                            # Total number of cores requested
-#SBATCH --mem=35G                     # Total amount of (real) memory requested (per node)
-#SBATCH --time 23:59:59                  # Time limit (hh:mm:ss)
+#SBATCH --mem=45G                     # Total amount of (real) memory requested (per node)
+#SBATCH --time 71:59:59                  # Time limit (hh:mm:ss)
 #SBATCH --partition=gpu                 # Request partition for resource allocation
 #SBATCH --get-user-env
 # # SBATCH --profile=task
