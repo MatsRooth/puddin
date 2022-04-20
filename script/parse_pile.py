@@ -1223,7 +1223,8 @@ def process_slice(sldf: pd.DataFrame, metadf: pd.DataFrame):
 
     # first_id_in_slice = sldf.text_id.iloc[0]
     # data_group, first_textid_in_slice = first_id_in_slice.split('_')[2:4]
-    slice_int = int(sldf.slice_numstr[0])
+    this_sl_numstr = sldf.slice_numstr[0]
+    slice_int = int(this_sl_numstr)
 
     metadf.index = pd.to_numeric(metadf.index, downcast='unsigned')
     #! row index must be in [] to return dataframe instead of series
@@ -1231,7 +1232,12 @@ def process_slice(sldf: pd.DataFrame, metadf: pd.DataFrame):
 
     subcorpus_code = sldf.pile_set_code[0]
     data_group = this_sl_metadf.data_origin_group.squeeze()
-    slice_name = f'{subcorpus_code.capitalize()}{data_group.capitalize()}_{slice_int}'
+    try:
+        data_group_cap = data_group.capitalize()
+    # if loaded directly from sliced dataframes, may not be string
+    except AttributeError:
+        data_group_cap = str(data_group).zfill(2)
+    slice_name = f'{subcorpus_code.capitalize()}{data_group_cap}_{this_sl_numstr}'
     print('=============================\n'
           f'Slice "{slice_name}" started\n  @ {slice_t0.ctime()}\n')
 
@@ -1318,7 +1324,7 @@ def process_slice(sldf: pd.DataFrame, metadf: pd.DataFrame):
     #     If for some reason the exclusions file cannot be found, run again.
     #        (but save with different name so as to not overwrite original.)
     excl_save_path = get_dfpkl_outpath(
-        this_sl_series.exclusions_path.stem, is_excl=True)
+        Path(this_sl_series.exclusions_path).stem, is_excl=True)
     if excl_save_path.is_file():
         excl_df = pd.read_pickle(excl_save_path)
         print('Adding skipped texts to', get_print_path(excl_save_path))
@@ -1654,7 +1660,8 @@ def parse_arg_inputs():
     ge = args.glob_expr.strip('\'"')
     if not args.input_files and ge.startswith('/'):
         ge = ge[1:]
-        print('WARNING: invalid glob expression (Nonrelative paths not supported).\n > Leading "/" removed. Will search for:',
+        print('WARNING: invalid glob expression (Nonrelative paths not supported).\n'
+              ' > Leading "/" removed. Will search for:',
               ge)
     args.glob_expr = ge
 
