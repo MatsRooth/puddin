@@ -3,7 +3,6 @@ import argparse
 import json
 import sys
 import time
-import zlib
 from datetime import datetime, timedelta
 from pathlib import Path
 from pprint import pprint
@@ -77,9 +76,21 @@ def _main():
                              and _EXCLUSIONS_DIRNAME not in p.parts]
 
     data_selection = init_js_paths + init_df_paths
+
+    # remove any incomplete corresponding pkls
+    for datapath in data_selection:
+        stem = datapath.stem
+        if stem.endswith('pkl'):
+            validate_pkl(datapath)
+        else:
+            seek = f'_{stem}-'
+            if not list(_DESTINATION.glob(f'*/{seek}*.conllu')):
+                for path in _DESTINATION.joinpath('pile_tables').rglob(f'{seek}'):
+                    validate_pkl(path)
+
+    data_selection = [d for d in data_selection if d.is_file()]
     if not data_selection:
         sys.exit('No data selected. Exiting.')
-
     print('Initial data selection:')
     pprint([get_print_path(path) for path in data_selection])
     js_paths = init_js_paths
@@ -87,7 +98,7 @@ def _main():
     if data_selection and not args.Reprocess:
         js_paths, df_paths = check_processing_status(args, data_selection)
 
-    if not df_paths + js_paths:
+    if not js_paths + df_paths or not data_selection:
         sys.exit('No valid files in need of processing. Exiting.')
 
     # initiate language model for dependency parsing (load just once)
@@ -224,6 +235,14 @@ def get_jsonl_paths(args):
                      '(glob) expression specified. See --help for more info.')
 
     return jsonl_list
+
+
+def validate_pkl(path):
+    try:
+        __ = pd.read_pickle(path)
+    except EOFError:
+        print(f'</>! {path} is unopenable (write interrupted?). Removing...')
+        path.unlink()
 
 
 def check_processing_status(args, data_selection):
@@ -768,7 +787,8 @@ def process_pickledf(dfiles, init_data_paths):
 
         try:
             df = pd.read_pickle(dfpath)
-        except zlib.error:
+        # except zlib.error:
+        except EOFError:
             print('Error: File cannot be decompressed (zlib). Skipping.')
             continue
 
