@@ -1454,10 +1454,13 @@ def process_sentences(text_id: str,
     """
     print('    - processing sentences...')
     # // text_id = row_df.text_id.squeeze()
-
+    if len(doc.sentences) == 0:
+        print(f'!! No sentences in document {text_id}')
+        print(f'    text: {doc.text}')
     # check for line breaks in sentence text string
     doc = confirm_parse(doc)
     sent_zfill = len(str(len(doc.sentences)))
+    sent_id = ''
     # add comments to sentences (info pulled from dataframe)
     for enumi, sentence in enumerate(doc.sentences):
         enumi += 1
@@ -1476,8 +1479,8 @@ def process_sentences(text_id: str,
         text = remove_breaks(sentence.text)
         # this adds the full text string to the output file
         sentence.add_comment(f'# text = {text}')
-
-    print('     ', sent_id)
+    if sent_id:
+        print('     ', sent_id)
     return doc
 
 
