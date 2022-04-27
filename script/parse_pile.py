@@ -138,7 +138,7 @@ def _main():
             full_dfs_gen = process_pickledf(fulldf_files, data_selection)
             for df in full_dfs_gen:
                 df = pop_unwanted_cols(df)
-            slice_df(df)
+                slice_df(df)
 
         # TODO : move this up to parse before the full dataframes
         if slice_paths:
@@ -177,6 +177,11 @@ def _main():
     if js_paths:
         print(
             f'\n\n*** ({step_count}) The Pile\'s Original Data Files (.jsonl) ***')
+        if len(js_paths) > 1:
+            pprint(js_paths)
+        else:
+            print(js_paths[0])
+
         for df in process_raw_jsonlines(js_paths, subcorpus_str):
             df = pop_unwanted_cols(df)
             slice_df(df)
@@ -436,8 +441,8 @@ def check_processing_status(args, data_selection):
         print(pd.Series(js_paths).value_counts())
         print('Removing data duplicates...')
         js_paths = list(set(js_paths))
-    print('-----------------------------------------\n\n==> Data Selection:')
-    pprint([get_print_path(p) for p in js_paths + df_paths])
+    # print('-----------------------------------------\n\n==> Data Selection:')
+    # pprint([get_print_path(p) for p in js_paths + df_paths])
     return js_paths, df_paths
 
 
@@ -732,9 +737,9 @@ def get_dfpkl_outpath(stem: str,
 
 def create_ids(df: pd.DataFrame, data_source_label: str = None, zfilled_slice_num: str = None):
     '''Create text ids from raw file name, pile subset code, and dataframe index.'''
-
+    print('updating `text_id` column...')
     # //codedf = pd.DataFrame()
-    codes_t0 = time.perf_counter()
+    # codes_t0 = time.perf_counter()
     # //fullix = bool(data_source_label)
     # //sliceix = bool(zfilled_slice_num)
     # // subdf = df.loc[df.pile_set_code == code, :].reset_index()
@@ -742,10 +747,10 @@ def create_ids(df: pd.DataFrame, data_source_label: str = None, zfilled_slice_nu
     prefix = ''
 
     if not zfilled_slice_num:
-        print('  assigning text_id for each text (i.e. row)')
+        # print('  assigning text_id for each text (i.e. row)')
         prefix = f'{code}_{data_source_label}_'
     else:
-        print('  updating text_id column for slice', zfilled_slice_num)
+        # print('  updating text_id column for slice', zfilled_slice_num)
         df = df.assign(orig_text_id=df.text_id)
         file_label = df.orig_text_id.iloc[0].split(
             '_')[1]
@@ -770,8 +775,8 @@ def create_ids(df: pd.DataFrame, data_source_label: str = None, zfilled_slice_nu
         df = df.assign(text_id=df.id_stem)
 
     df.pop('id_stem')
-    codes_t1 = time.perf_counter()
-    print(f'   ~ {round(codes_t1 - codes_t0, 3)}  sec elapsed')
+    # codes_t1 = time.perf_counter()
+    # print(f'   ~ {round(codes_t1 - codes_t0, 3)}  sec elapsed')
 
     return df
 
