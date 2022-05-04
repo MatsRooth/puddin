@@ -66,7 +66,7 @@ linebreak_is_sent = re.compile(
     r'(?:(?#1--> )([^A-Z\n]{3,}[.?!;][\'"?! \t\f\v\r]*|\.{4,})\n[ \t\f\v\r]*(?#2--> )([(#["\']?[A-Z]|\W*?\d+\W*?\w))'
     r'|(?:(?#3--> )(\D[.;:][\'"?! \t\f\v\r]*)\n[ \t\f\v\r]*(?#4--> )([\(\#\["\']?[A-Z]|[\#\[\(]\d+[\)\]]))')
 
-solonew_or_dupwhite = re.compile(r'(?<!\n)(\n)(?!\n)|([ \t\f\v\r])\2+')
+solonew_or_dupwhite = re.compile(r'(?<![\n:])(\n)(?!\n)|([ \t\f\v\r])\2+')
 extra_newlines = re.compile(r'\n{3,}')
 
 # nonbreaking_colon = re.compile(r'\d+?:\n\d+?')

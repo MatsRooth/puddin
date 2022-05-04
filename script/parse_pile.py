@@ -40,7 +40,7 @@ _DESTINATION = None
 
 
 def _main():
-    args = parse_arg_inputs()
+    args = _parse_arg_inputs()
 
     global _SLDF_ROW_LIMIT
     _SLDF_ROW_LIMIT = args.output_size
@@ -1427,10 +1427,11 @@ def stanza_parse(df: pd.DataFrame,
             except ValueError:
                 pass
             else:
-                print(f'    in json format. Skipping.')
+                print('    in json format. Skipping.')
                 row_skipped.loc[row_index] = True
                 continue
 
+            textstr = remove_breaks(textstr)
             # create doc (with parsing)
             try:
                 doc = _NLP(textstr)
@@ -1466,7 +1467,7 @@ def process_sentences(text_id: str,
                       doc: stanza.models.common.doc.Document):
     """function to add metacomments to a stanza document, 
     plus check the parses for obvious/easy to fix errors,
-    and then returns that dock 
+    and then returns that document
 
     Args:
         text_id (str): 
@@ -1483,7 +1484,7 @@ def process_sentences(text_id: str,
         print(f'!! No sentences in document {text_id}')
         print(f'    text: {doc.text}')
     # check for line breaks in sentence text string
-    doc = confirm_parse(doc)
+    doc = _confirm_parse(doc)
     sent_zfill = len(str(len(doc.sentences)))
     sent_id = ''
     # add comments to sentences (info pulled from dataframe)
@@ -1500,25 +1501,27 @@ def process_sentences(text_id: str,
         if enumi == 1:
             print('     ', sent_id, '\n       ...')
 
-        # remove line breaks and duplicated white space characters with single space
-        text = remove_breaks(sentence.text)
+        # new lines likely already removed, but just in case...
+        #   remove line breaks and duplicated white space characters with single space
+        text = sentence.text.replace('\n', ' ')
         # this adds the full text string to the output file
         sentence.add_comment(f'# text = {text}')
+
     if sent_id:
         print('     ', sent_id)
     return doc
 
 
-def confirm_parse(doc):
-
-    for s in doc.sentences:
-        text = s.text.strip()
+def _confirm_parse(doc):
+    sentences = doc.sentences
+    for sentence in sentences:
         # if sentence has line breaks...
-        if len(text.split('\n')) > 1:
-            # print('\n===> Line breaks found: attempting remediation...')
-            ix = doc.sentences.index(s)
-            doc.sentences = try_redoc(ix, doc.sentences)
-            # print('------------')
+        if sentence.text.count('\n'):
+
+            ix = sentences.index(sentence)
+            sentences = try_redoc(ix, sentences)
+
+    doc.sentences = sentences
     return doc
 
 
@@ -1526,9 +1529,8 @@ def remove_breaks(textstr):
     """takes in a sentence string and returns the string with
         new lines and duplicated whitespace characters replaced by ' '. """
 
-    cleantext = solonew_or_dupwhite.sub(r' ', textstr.strip())
-    cleantext = extra_newlines.sub('\n\n', cleantext)
-    return cleantext
+    cleantext = solonew_or_dupwhite.sub(' ', textstr.strip())
+    return extra_newlines.sub('\n\n', cleantext)
 
 
 def try_redoc(ix, sent_list):
@@ -1549,7 +1551,7 @@ def try_redoc(ix, sent_list):
 
     text = sent_list[ix].text.strip()
 
-    ''' NOTE: previously, the regex was stronger and caught 
+    """ NOTE: previously, the regex was stronger and caught 
         any case of sentence end punc before \n
         OR any case of capitals/sentence "starts" after \n.
         However, this splits up proper nouns that happen 
@@ -1595,24 +1597,31 @@ def try_redoc(ix, sent_list):
         (0) EDIT:
         (1) Freedreno is up, performance is on par with existing...
         Sentences:
-        (0) NOTE: Apply a light coat of Premium Long Life Grease XG-1-C ...'''
+        (0) NOTE: Apply a light coat of Premium Long Life Grease XG-1-C ..."""
     if linebreak_is_sent.search(text):
         # print('multiple sentences found:')
         print(f'    original sentence {ix} split into:')
         plausible_sep_text = linebreak_is_sent.sub(r'\1\3\n\n\2\4', text)
         plausible_sep_text = remove_breaks(plausible_sep_text)
-        new_sentences = _NLP(plausible_sep_text).sentences
-        for s in new_sentences:
-            print(f'    + {s.text}')
-    else:
-        # // print('    Line breaks removed from sentence text:')
-        new_sentences = _NLP(remove_breaks(text)).sentences
-        # // print(f'      {new_sentences[0].text}')
+        try:
+            new_sentences = _NLP(plausible_sep_text).sentences
+        except RecursionError:
+            print('  ! Warning: RecursionError while attempting reparse of messy text.')
+        else:
+            for sentence in new_sentences:
+                print(f'    + {sentence.text}')
+            return sent_list[:ix] + new_sentences + sent_list[ix+1:]
 
-    return sent_list[:ix] + new_sentences + sent_list[ix+1:]
+    # if redoc doesn't work, just return the original list of sentences
+    # (which already had remove_breaks() called on the source text)
+    return sent_list
+    # redundant now that `remove_breaks` is run before first attempted parse
+    # // #! this is not an `else` because it needs to catch the except cases as well
+    # // breaks_removed = _NLP(remove_breaks(text)).sentences
+    # // return sent_list[:ix] + breaks_removed + sent_list[ix+1:]
 
 
-def parse_arg_inputs():
+def _parse_arg_inputs():
 
     parser = argparse.ArgumentParser(
         description='script to convert scrambled pile data from raw jsonlines format '
