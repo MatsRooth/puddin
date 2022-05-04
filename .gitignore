@@ -9,11 +9,12 @@
 # pile_tables/
 pile*snpa
 #untracked/
-.[uh]*/
+.[iuh]*/
 demo_debug/
 kingston*
 .vscode/settings.json
 *.conll/
+
 
 
 # Byte-compiled / optimized / DLL files
