@@ -29,11 +29,11 @@ _EXCLUSIONS_DIRNAME = 'pile_exclusions'
 _SLDF_ROW_LIMIT = 9999
 pd.set_option('display.max_colwidth', 80)
 _UNK_CHAR_STR = '<__?UNK__>'
-_PILE_SET_CODE_DICT = {'Gutenberg (PG-19)': 'PG19',
-                       'Books3': 'Bks3',
-                       'BookCorpus2': 'BkC2',
+_PILE_SET_CODE_DICT = {'Gutenberg (PG-19)': 'Pgn',
+                       'Books3': 'Bks',
+                       'BookCorpus2': 'Bkc',
                        'Pile-CC': 'Pcc',
-                       'OpenWebText2': 'OWT2'}
+                       'OpenWebText2': 'Owt'}
 _UNWANTED_COLS = ('raw', 'index', 'level_0')
 _NLP = None
 _DESTINATION = None
