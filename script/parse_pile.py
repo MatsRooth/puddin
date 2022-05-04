@@ -1501,9 +1501,8 @@ def process_sentences(text_id: str,
         if enumi == 1:
             print('     ', sent_id, '\n       ...')
 
-        # new lines likely already removed, but just in case...
-        #   remove line breaks and duplicated white space characters with single space
-        text = sentence.text.replace('\n', ' ')
+        # remove line breaks and duplicated white space characters with single space
+        text = remove_breaks(sentence.text)
         # this adds the full text string to the output file
         sentence.add_comment(f'# text = {text}')
 
@@ -1516,7 +1515,7 @@ def _confirm_parse(doc):
     sentences = doc.sentences
     for sentence in sentences:
         # if sentence has line breaks...
-        if sentence.text.count('\n'):
+        if sentence.text.strip().count('\n'):
 
             ix = sentences.index(sentence)
             sentences = try_redoc(ix, sentences)
@@ -1529,7 +1528,7 @@ def remove_breaks(textstr):
     """takes in a sentence string and returns the string with
         new lines and duplicated whitespace characters replaced by ' '. """
 
-    cleantext = solonew_or_dupwhite.sub(' ', textstr.strip())
+    cleantext = solonew_or_dupwhite.sub(r' ', textstr.strip())
     return extra_newlines.sub('\n\n', cleantext)
 
 
