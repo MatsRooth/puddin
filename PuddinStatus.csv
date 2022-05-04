@@ -15,19 +15,19 @@ val,COMPLETE,☑,☑,☑,☑,☑,☑,☑,☑
 test,COMPLETE,☑,☑,☑,☑,☑,☑,☑,☑
 00,incomplete,OOM,OOM,OOM,OOM,OOM,OOM,OOM,ready
 01,incomplete,EOF excl,--,OOM,FAILED 1327-stanza bug,ready,,,
-02,incomplete,OOM,OOM,OOM,OOM,OOM,RUNNING 1424,
+02,incomplete,OOM,OOM,OOM,OOM,OOM,OOM,--,ready
 04,incomplete,OOM,OOM,OOM,OOM,OOM,OOM,OOM,ready
-06,incomplete,OOM,OOM,OOM,OOM,OOM,RUNNING 1424,
+06,incomplete,OOM,OOM,OOM,OOM,OOM,RUNNING 1424,,
 07,incomplete,OOM,OOM,OOM,OOM,OOM,OOM,RUNNING 2680
 08,incomplete,OOM,OOM,OOM,OOM,OOM,OOM,OOM,ready
 12,incomplete,OOM,OOM,OOM,OOM,OOM,OOM,OOM,ready
 16,incomplete,OOM,OOM,OOM,OOM,OOM,OOM,--,ready
 18,incomplete,OOM,OOM,OOM,OOM,OOM,OOM,RUNNING 2680
-19,incomplete,OOM,OOM,OOM,OOM,--,OOM,RUNNING 2680
+19,incomplete,OOM,OOM,OOM,OOM,--,OOM,--,ready
 21,incomplete,EOF-OOM,--,OOM,OOM,ready,,,
-22,incomplete,EOF-OOM,--,OOM,**CANCELLED 1327**,,,,
-23,incomplete,OOM,OOM,OOM,OOM,--,OOM,RUNNING 2680
+22,incomplete,EOF-OOM,--,OOM,**CANCELLED 1327**,,,,pending review
+23,incomplete,OOM,OOM,OOM,OOM,--,OOM,--,ready
 24,incomplete,OOM,OOM,OOM,OOM,OOM,OOM,RUNNING 2680
-26,incomplete,OOM,OOM,--,OOM,--,RUNNING 1424,
-27,incomplete,EOF-OOM,--,OOM,RUNNING 1327,,,
+26,incomplete,OOM,OOM,--,OOM,--,RUNNING 1424,,
+27,incomplete,EOF-OOM,--,OOM,RUNNING 1327,,,,
 28,incomplete,OOM,OOM,OOM,OOM,OOM,OOM,OOM,ready
