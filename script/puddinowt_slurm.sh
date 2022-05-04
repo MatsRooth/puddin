@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --mail-user=arh234@cornell.edu
 #SBATCH --mail-type=ALL
-#SBATCH -J Owt2                     # Job name
+#SBATCH -J Owt                     # Job name
 #SBATCH -o %A_%x-%2a.out              # Name of stdout output log file (%j expands to jobID)
 #SBATCH -e %A_%x-%2a.err              # Name of stderr output log file (%j expands to jobID)
 #SBATCH --open-mode=append
