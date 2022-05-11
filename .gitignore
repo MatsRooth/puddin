@@ -4,9 +4,13 @@
 # ("sample"/"example" ~ "demonstration~ files 
 #    should be put into a specific `demo/` dir)
 # pile_data_full/
-# pile_data/
-# pile_exclusions/
-# pile_tables/
+pile
+pile_exclusions/
+slices/
+raw/
+tmp/
+g2local*
+pile_tables/*pkl.gz
 pile*snpa
 #untracked/
 .[iuh]*/
@@ -14,7 +18,9 @@ demo_debug/
 kingston*
 .vscode/settings.json
 *.conll/
-
+*.[0-9]*
+*.sw*
+slurmming*
 
 
 # Byte-compiled / optimized / DLL files
