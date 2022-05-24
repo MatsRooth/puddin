@@ -1,33 +1,34 @@
-Dataset,Overall Status,20G,30G,35G,40G,45G,50G,55G,60G
-03,COMPLETE,☑,☑,☑,☑,☑,☑,☑,☑
-05,COMPLETE,☑,☑,☑,☑,☑,☑,☑,☑
-09,COMPLETE,☑,☑,☑,☑,☑,☑,☑,☑
-10,incomplete,OOM,--,--,✅1327,☑,☑,☑,☑
-11,COMPLETE,☑,☑,☑,☑,☑,☑,☑,☑
-13,COMPLETE,☑,☑,☑,☑,☑,☑,☑,☑
-14,COMPLETE,✅,☑,☑,☑,☑,☑,☑,☑
-15,COMPLETE,☑,☑,☑,☑,☑,☑,☑,☑
-17,COMPLETE,✅,☑,☑,☑,☑,☑,☑,☑
-20,COMPLETE,☑,☑,☑,☑,☑,☑,☑,☑
-25,COMPLETE,☑,☑,☑,☑,☑,☑,☑,☑
-29,COMPLETE,OOM,OOM,EOF excl-✅9331,☑,☑,☑,☑,☑
-val,COMPLETE,☑,☑,☑,☑,☑,☑,☑,☑
-test,COMPLETE,☑,☑,☑,☑,☑,☑,☑,☑
-00,incomplete,OOM,OOM,OOM,OOM,OOM,OOM,OOM,RUNNING 4148
-01,incomplete,EOF excl,--,OOM,FAILED 1327-stanza bug,RUNNING 4126,,,
-02,incomplete,OOM,OOM,OOM,OOM,OOM,OOM,--,RUNNING 4148
-04,incomplete,OOM,OOM,OOM,OOM,OOM,OOM,OOM,RUNNING 4148
-06,incomplete,OOM,OOM,OOM,OOM,OOM,RUNNING 1424,,
-07,incomplete,OOM,OOM,OOM,OOM,OOM,OOM,RUNNING 2680,
-08,incomplete,OOM,OOM,OOM,OOM,OOM,OOM,OOM,RUNNING 4148
-12,incomplete,OOM,OOM,OOM,OOM,OOM,OOM,OOM,RUNNING 4148
-16,incomplete,OOM,OOM,OOM,OOM,OOM,OOM,--,RUNNING 4148
-18,incomplete,OOM,OOM,OOM,OOM,OOM,OOM,RUNNING 2680,
-19,incomplete,OOM,OOM,OOM,OOM,--,OOM,--,RUNNING 4148
-21,incomplete,EOF-OOM,--,OOM,OOM,RUNNING 4126,,,
-22,incomplete,EOF-OOM,--,OOM,**CANCELLED 1327**,,,,pending review
-23,incomplete,OOM,OOM,OOM,OOM,--,OOM,--,RUNNING 4148
-24,incomplete,OOM,OOM,OOM,OOM,OOM,OOM,RUNNING 2680,
-26,incomplete,OOM,OOM,--,OOM,--,RUNNING 1424,,
-27,incomplete,EOF-OOM,--,OOM,RUNNING 1327,,,,
-28,incomplete,OOM,OOM,OOM,OOM,OOM,OOM,OOM,RUNNING 4148
+Dataset,Overall Status,20G,30G,35G,40G,45G,50G,55G,60G,|30G:548302,|40G:580138
+1,COMPLETE,EOF excl,--,OOM,FAILED 1327-stanza bug,4126 cancelled,--,--,--,✅8302,☑
+3,COMPLETE,☑,☑,☑,☑,☑,☑,☑,☑,☑,☑
+5,COMPLETE,☑,☑,☑,☑,☑,☑,☑,☑,☑,☑
+6,COMPLETE,OOM,OOM,OOM,OOM,OOM,1424 cancelled,--,--,✅8302,☑
+7,COMPLETE,OOM,OOM,OOM,OOM,OOM,OOM,2680 cancelled,--,✅8302,☑
+8,COMPLETE,OOM,OOM,OOM,OOM,OOM,OOM,OOM,✅4148,☑,☑
+9,COMPLETE,☑,☑,☑,☑,☑,☑,☑,☑,☑,☑
+10,COMPLETE,OOM,--,--,✅1327,☑,☑,☑,☑,☑,☑
+11,COMPLETE,☑,☑,☑,☑,☑,☑,☑,☑,☑,☑
+13,COMPLETE,☑,☑,☑,☑,☑,☑,☑,☑,☑,☑
+14,COMPLETE,✅7522,☑,☑,☑,☑,☑,☑,☑,☑,☑
+15,COMPLETE,☑,☑,☑,☑,☑,☑,☑,☑,☑,☑
+17,COMPLETE,✅7522,☑,☑,☑,☑,☑,☑,☑,☑,☑
+20,COMPLETE,☑,☑,☑,☑,☑,☑,☑,☑,☑,☑
+21,COMPLETE,EOF-OOM,--,OOM,OOM,✅4126,☑,☑,☑,☑,☑
+24,COMPLETE,OOM,OOM,OOM,OOM,OOM,OOM,OOM-2680,--,✅8302,☑
+25,COMPLETE,☑,☑,☑,☑,☑,☑,☑,☑,☑,☑
+26,COMPLETE,OOM,OOM,--,OOM,--,✅1424,☑,☑,☑,☑
+27,COMPLETE,EOF-OOM,--,OOM,__1327,--,--,--,--,✅8302,☑
+28,COMPLETE,OOM,OOM,OOM,OOM,OOM,OOM,OOM,4148 cancelled,✅8302,☑
+29,COMPLETE,OOM,OOM,EOF excl-✅9331,☑,☑,☑,☑,☑,☑,☑
+30/val,COMPLETE,☑,☑,☑,☑,☑,☑,☑,☑,☑,☑
+31/test,COMPLETE,☑,☑,☑,☑,☑,☑,☑,☑,☑,☑
+--,--,--,--,--,--,--,--,--,--,--,--
+0,incomplete,OOM,OOM,OOM,OOM,OOM,OOM,OOM,OOM-4148,OOM-8302,OOM-0138
+2,incomplete,OOM,OOM,OOM,OOM,OOM,OOM,--,OOM-4148,OOM-8302,OOM-0138
+4,incomplete,OOM,OOM,OOM,OOM,OOM,OOM,OOM,OOM-4148,OOM-8302,OOM-0138
+12,incomplete,OOM,OOM,OOM,OOM,OOM,OOM,OOM,4148 cancelled,OOM-8302,OOM-0138
+16,incomplete,OOM,OOM,OOM,OOM,OOM,OOM,--,OOM-4148,OOM-8302,OOM-0138
+18,incomplete,OOM,OOM,OOM,OOM,OOM,OOM,2680 cancelled,--,OOM-8302,OOM-0138
+19,incomplete,OOM,OOM,OOM,OOM,--,OOM,--,OOM-4148,OOM-8302,OOM-0138
+22,incomplete,EOF-OOM,--,OOM,**CANCELLED 1327**,,,,errors pending review,,
+23,incomplete,OOM,OOM,OOM,OOM,--,OOM,--,OOM-4148,OOM-8302,OOM-0138
