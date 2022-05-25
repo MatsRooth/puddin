@@ -1,20 +1,21 @@
 #!/bin/bash
 #SBATCH --mail-user=arh234@cornell.edu
 #SBATCH --mail-type=ALL
-#SBATCH -J Pcc                       # Job name
-#SBATCH -o %A_%x%2a.out              # Name of stdout output log file (%j expands to jobID)
-#SBATCH -e %A_%x%2a.err              # Name of stderr output log file (%j expands to jobID)
+#SBATCH -J Pcc                                        # Job name
+#SBATCH -o %A_%x%2a.out                               # Name of stdout output log file (%j expands to jobID)
+#SBATCH -e %A_%x%2a.err                               # Name of stderr output log file (%j expands to jobID)
 #SBATCH --open-mode=append
-#SBATCH -N 1                         # Total number of nodes requested
-#SBATCH -n 1                         # Total number of cores requested
-#SBATCH --mem=50G                    # Total amount of (real) memory requested (per node)
-#SBATCH --time 71:59:59              # Time limit (hh:mm:ss)
-#SBATCH --partition=gpu              # Request partition for resource allocation
+#SBATCH -N 1                                          # Total number of nodes requested
+#SBATCH -n 1                                          # Total number of cores requested
+#SBATCH --mem=50G                                     # Total amount of (real) memory requested (per node)
+#SBATCH --time 71:59:59                               # Time limit (hh:mm:ss)
+#SBATCH --partition=gpu                               # Request partition for resource allocation
 #SBATCH --get-user-env
-#SBATCH --gres=gpu:1                 # Specify a list of generic consumable resources (per node)
+#SBATCH --gres=gpu:1                                  # Specify a list of generic consumable resources (per node)
 #SBATCH --array 0-31
-#SBATCH --requeue                    # job will be put back in the queue if cancelled due to pre-emption or maintenance
-#SBATCH --nice                       # without value defaults to --nice=100
+#SBATCH --requeue                                     # job will be put back in the queue if cancelled due to pre-emption or maintenance
+#SBATCH --nice=200                                    # without value defaults to --nice=100
+#SBATCH --chdir=/share/compling/data/puddin/logs      # change working directory to this before execution
 
 echo "Job Array ${SLURM_JOB_NAME} #${SLURM_JOB_ID}"
 date
@@ -76,7 +77,7 @@ LOG_FILE=${TODAY_LOGS_DIR}/${SLURM_JOB_NAME}${SEED::2}_${SLURM_ARRAY_JOB_ID:(-4)
 echo "Combined python log will be written to ${LOG_FILE}"
 
 echo "***********************************************"
-echo "python /home/arh234/projects/puddin/script/parse_pile.py -i ${IN_FILE} -d ${DATA_DIR} > >(tee -i -a ${LOG_FILE}) 2>&1"
+echo "python /share/compling/projects/puddin/script/parse_pile.py -i ${IN_FILE} -d ${DATA_DIR} > >(tee -i -a ${LOG_FILE}) 2>&1"
 echo ">>>>>>>>>>"
 
-python /home/arh234/projects/puddin/script/parse_pile.py -i ${IN_FILE} -d ${DATA_DIR} > >(tee -i -a ${LOG_FILE}) 2>&1
+python /share/compling/projects/puddin/script/parse_pile.py -i ${IN_FILE} -d ${DATA_DIR} > >(tee -i -a ${LOG_FILE}) 2>&1
