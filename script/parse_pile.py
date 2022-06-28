@@ -193,7 +193,7 @@ def confirm_destination_dir(dest_dir):
     write_access = False
     if not _DESTINATION.is_dir():
         try:
-            _DESTINATION.mkdir()
+            _DESTINATION.mkdir(parents=True)
         except OSError:
             pass
         else:
@@ -495,7 +495,7 @@ def get_conllu_outpath(source_fname: str, slice_numstr: str, subset_label: str):
     # ensure the *code* (e.g. Pcc) is used, not the *name*
     subset = _PILE_SET_CODE_DICT.get(
         subset_label, subset_label.capitalize())
-    out_fname = f'{subset.lower()}_eng_{source_fname}-{slice_numstr.zfill(2)}.conllu'
+    out_fname = f'{subset.lower()}_eng_{source_fname}-{slice_numstr}.conllu'
 
     # create separate conll output dir for every original source file,
     # since it looks to be gigantic
@@ -1148,8 +1148,8 @@ def slice_df(full_df):
         remaining_df = df.sort_values('text_id')
         slices = []
         # e.g. if limit were 1000:
-        # slice off 1000 rows at a time until total is 2300 or less
-        while len(remaining_df) > int(2.3*_SLDF_ROW_LIMIT):
+        # slice off 1000 rows at a time until total is 2050 or less
+        while len(remaining_df) > int(2.2*_SLDF_ROW_LIMIT):
 
             dfslice = remaining_df.iloc[:_SLDF_ROW_LIMIT, :]
             remaining_df = remaining_df.iloc[_SLDF_ROW_LIMIT:, :]
@@ -1158,7 +1158,7 @@ def slice_df(full_df):
         # if 1202, split remaining: 2 slices of 610
         # if remaining df is 1200 rows or less:
         #   keep as is (no more slicing)
-        if len(remaining_df) > int(1.15*_SLDF_ROW_LIMIT):
+        if len(remaining_df) > int(1.1*_SLDF_ROW_LIMIT):
 
             half_remaining = int(len(remaining_df)/2)
 
@@ -1167,10 +1167,9 @@ def slice_df(full_df):
 
             remaining_df = remaining_df.iloc[half_remaining:, :]
 
-        # this must be outdented to catch smaller dataframes
+        # * this must be outdented to catch smaller dataframes
         slices.append(remaining_df)
-        slices_total_str = str(len(slices))
-        zfill_len = len(slices_total_str)
+        zfill_len = len(str(len(slices)))
         # Andrea Hummel on Feb 3, 2022 at 4:45 PM
         # * Note that this first save of the dataframe slices is *after* `pull_exclusions()`
         #   is called, so to get the full set of texts covered in the full dataframe, need
@@ -1262,14 +1261,14 @@ def process_slice(sldf: pd.DataFrame, metadf: pd.DataFrame):
     # if loaded directly from sliced dataframes, may not be string
     except AttributeError:
         data_group_cap = str(data_group).zfill(2)
-    slice_name = f'{subcorpus_code.capitalize()}{data_group_cap}_{this_sl_numstr}'
+    slice_name = f'{subcorpus_code.capitalize()}{data_group_cap[:2]}_{this_sl_numstr}'
     print('=============================\n'
           f'Slice "{slice_name}" started\n  @ {slice_t0.ctime()}\n')
 
     this_sl_metadf = this_sl_metadf.assign(slice_name=slice_name,
                                            slice_number=this_sl_metadf.index,
                                            started_at=slice_t0.ctime())
-    # // slice_info_row = slice_info_row.set_index('slice_id')
+
     this_sl_series = this_sl_metadf.squeeze()
 
     # parse slice and write to conllu output file
@@ -1316,22 +1315,22 @@ def process_slice(sldf: pd.DataFrame, metadf: pd.DataFrame):
 
     this_sl_metadf = this_sl_metadf.set_index('slice_name')
 
-    master_metadf_path = _DESTINATION.joinpath(
-        f'{_DATAFRAMES_DIRNAME}/master_all-slices_index.csv')
-    if master_metadf_path.is_file():
-        master_slice_metadf = pd.read_csv(master_metadf_path)
+    all_completed_metadf_path = _DESTINATION.joinpath(
+        'all-completed-slices_meta-index.csv')
+    if all_completed_metadf_path.is_file():
+        completed_slice_metadf = pd.read_csv(all_completed_metadf_path)
 
     else:
-        master_slice_metadf = pd.DataFrame()
+        completed_slice_metadf = pd.DataFrame()
 
-    if 'slice_name' in master_slice_metadf.columns:
-        master_slice_metadf = master_slice_metadf.set_index('slice_name')
+    if 'slice_name' in completed_slice_metadf.columns:
+        completed_slice_metadf = completed_slice_metadf.set_index('slice_name')
 
-    master_slice_metadf = pd.concat(
-        [master_slice_metadf, this_sl_metadf])
-    master_slice_metadf.to_csv(master_metadf_path)
-    print('Info for fully processed slice added to master completed slice meta index:',
-          get_print_path(master_metadf_path))
+    completed_slice_metadf = pd.concat(
+        [completed_slice_metadf, this_sl_metadf])
+    completed_slice_metadf.to_csv(all_completed_metadf_path)
+    print('Info for fully processed slice added to all completed slices index:',
+          get_print_path(all_completed_metadf_path))
 
     if len(successful_df) == len(sldf):
         print('No skipped texts added to exclusions')
