@@ -21,6 +21,7 @@ kingston*
 *.[0-9]*
 *.sw*
 slurmming*
+*G_info.csv
 
 
 # Byte-compiled / optimized / DLL files
