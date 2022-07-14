@@ -10,5 +10,14 @@
 			"path": "../../data/pile"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"python.linting.enabled": true,
+		"python.linting.ignorePatterns": [
+			"**/site-packages/**/*.py",
+			".vscode/*.py",
+			".untracked/*",
+			"*demo*",
+			"*debug*"
+		]
+	}
 }

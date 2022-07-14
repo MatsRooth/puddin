@@ -29,7 +29,21 @@
             "cwd": "/home/arh234/projects/puddin",
             "args": [
                 "-g",
-                "home/arh234/projects/puddin/data/*"
+                "home/arh234/projects/pile/data/*"
+            ]
+        },
+        {
+            "name": "parse_pile EOF debug",
+            "type": "python",
+            "request": "launch",
+            "program": "/home/arh234/projects/puddin/script/parse_pile.py",
+            "console": "integratedTerminal",
+            "cwd": "/home/arh234/projects/puddin",
+            "args": [
+                "-i",
+                "/home/arh234/data/puddin/pile_tables/raw/pile_22_Pile-CC_df.pkl.gz",
+                "-d",
+                "/home/arh234/data/"
             ]
         },
         // {
