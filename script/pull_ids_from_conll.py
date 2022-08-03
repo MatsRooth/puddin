@@ -65,7 +65,7 @@ def conllu_id_iter(conll_dir: Path, id_unit: str, reconstruct_raw=False):
         sys.exit('No valid id unit specified. No ids pulled.')
 
     for conllu_file in conll_dir.glob('*.conllu'):
-        print(f'+ {conllu_file.name}...')
+        print(f'    + {conllu_file.name}...')
         egrep_output = sp_run(['egrep', grep_str, conllu_file],
                               capture_output=True,
                               universal_newlines=True,
@@ -82,10 +82,12 @@ def conllu_id_iter(conll_dir: Path, id_unit: str, reconstruct_raw=False):
 
 def reconstruct_raw_iter(parsed_doc_ids):
     '''generator function to yield ?? tuples of both parsed and reconstructed "raw" text/document id'''
-    id_translate = namedtuple('TextID', ['parsed', 'raw'])
+    id_translate = namedtuple('TextID', ['conll_id', 'raw_id'])
     for doc_id in parsed_doc_ids:
-        # yield SELECT_RAW_REGEX.match(doc_id)
-        yield id_translate(doc_id, SELECT_RAW_REGEX.sub(r'\1', doc_id))
+        if doc_id:
+            yield id_translate(doc_id, SELECT_RAW_REGEX.sub(r'\1', doc_id))
+        else:
+            yield id_translate(doc_id, '')
 
 
 if __name__ == '__main__':
