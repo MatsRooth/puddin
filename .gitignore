@@ -245,7 +245,7 @@ g2local*
 # pile_tables/**/*pkl.gz
 data/puddin/pile*
 .[iuh]*/
-debug*
+*debug*
 kingston*
 *.conll/
 *.[0-9]*
