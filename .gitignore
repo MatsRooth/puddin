@@ -243,7 +243,7 @@ tags
 # pile_exclusions/
 g2local*
 # pile_tables/**/*pkl.gz
-pile*
+data/puddin/pile*
 .[iuh]*/
 debug*
 kingston*
