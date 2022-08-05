@@ -52,7 +52,7 @@ def _parse_args():
 
 
 def conllu_id_iter(conll_dir: Path, id_unit: str, reconstruct_raw=False):
-
+    # ^ use this to get descriptive statistics for sentences and docs
     id_pattern = re.compile(r'(?<= = )(.*)\n')
     grep_str = None
     if id_unit.startswith('doc'):
@@ -64,6 +64,7 @@ def conllu_id_iter(conll_dir: Path, id_unit: str, reconstruct_raw=False):
     if not grep_str:
         sys.exit('No valid id unit specified. No ids pulled.')
 
+    # TODO : make this parallel as well?
     for conllu_file in conll_dir.glob('*.conllu'):
         print(f'    + {conllu_file.name}...')
         egrep_output = sp_run(['egrep', grep_str, conllu_file],

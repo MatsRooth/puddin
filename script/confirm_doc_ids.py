@@ -1,5 +1,5 @@
 # coding=utf-8
-#!/home/arh234/.conda/envs/dev-sanpi/bin/python
+# !/home/arh234/.conda/envs/dev-sanpi/bin/python
 '''
     Confirm Text/Document ID Coverage
 
@@ -25,35 +25,71 @@
     should be searched and/or the dataframes in `slices/[data group]/tmp/`
     should be compared with "final" slices in `slices/[data group]/`.
 '''
-# import argparse
-from datetime import datetime
-import sys
-from pathlib import Path
+import argparse
 import logging
+import multiprocessing
+import os
+import sys
+# TODO: replace datetime calls with logging.time functions since that's already imported anyway
+from datetime import datetime
+from pathlib import Path
+
 import pandas as pd
 
 from pull_ids_from_conll import conllu_id_iter, reconstruct_raw_iter
 
-_DATA_DIR = Path('/share/compling/data/puddin')
-_INFO_DIR = _DATA_DIR.joinpath('info')
-# TODO: temp -- REMOVE
-_DATA_GRPS = [
-    # 'test',
-    'val',
-    # '29'
-]
 _VALID_EXCL_DIR_NAME = 'validated'
 _MISSING_EXCL_CODE = 'missing*'
-# _DF1_NAME = f'pile_{_DATA_GRPS[0]}_Pile-CC_df.pkl.gz'
 
+# assign monikers for logging actions
 _inform = logging.info
 _debug = logging.debug
 _warn = logging.warning
 _err = logging.error
 _crash = logging.critical
 
-logging.basicConfig(level=logging.INFO,
-                    format='\n[%(levelname)s]:\n%(message)s')
+
+def _parse_args():
+
+    parser = argparse.ArgumentParser(
+        description=('program to validate puddin build'),
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
+
+    parser.add_argument(
+        '-d', '--data_dir',
+        type=Path, default='/share/compling/data/puddin',
+        help=('top level directory of puddin build. Should contain subdirectories for:'
+              'raw, final, and sliced dataframes (default: pile_tables/), dataframes for '
+              'all excluded texts for each data group (default: pile_exclusions/), '
+              'parsed conllu files sorted by data source group (i.e. for each input '
+              '.jsonlines file; default: Pcc[GRP].conll/), and an info/ dir '
+              'containing the cleaned processing meta data.')
+    )
+
+    parser.add_argument(
+        '-g', '--data_group',
+        type=str, action='append', dest='data_grps',
+        default=[],
+        help=('option to restrict program to only run on given data groups. '
+              'String should match stem of original data files. '
+              'Can be used as many times as desired.')
+    )
+
+    parser.add_argument(
+        '-l', '--log_level',
+        choices=['debug', 'info', 'warning', 'error'],
+        type=str, default='info',
+        help=('option to specify the verbosity of logging output')
+    )
+    log_level_defs = {'debug': logging.DEBUG,
+                      'info': logging.INFO,
+                      'warning': logging.WARNING,
+                      'error': logging.ERROR}
+
+    args = parser.parse_args()
+
+    return args.data_dir, args.data_grps, log_level_defs[args.log_level]
 
 
 def _main():
@@ -84,17 +120,18 @@ def _load_meta_info():
         sys.exit(1)
     meta = pd.read_pickle(meta_info_path)
 
-    # TODO: temp filter for _debugging -- REMOVE
-    meta = (meta.loc[(meta.data_origin_group.isin(_DATA_GRPS)), :])
+    if _DATA_GRPS:
+        meta = (meta.loc[(meta.data_origin_group.isin(_DATA_GRPS)), :])
 
-    if meta.empty:
-        _crash(f'No processing data found for sources: {_DATA_GRPS}.')
-        sys.exit(1)
+        if meta.empty:
+            _crash(f'No processing data found for sources: {_DATA_GRPS}.')
+            sys.exit(1)
+    # TODO : this flagged way more than expected. See if the same thing happens on cluster
     was_overwritten = meta.slice_name.duplicated(keep='last')
     if any(was_overwritten):
         owdf = (meta.loc[:, meta.columns.isin(["slice_name", "finished_at",
                                               "conllu_mtime", "conllu_path"])]
-                .assign(overwritten=was_overwritten).sort_values('slice_name'))
+                .assign(overwritten=was_overwritten).sort_values('conllu_path'))
         slices_with_dups = owdf.slice_name[owdf.overwritten].unique()
         list_str = '  ~ ' + ' and '.join(', '.join(slices_with_dups)
                                          .rsplit(' ', 1))
@@ -109,32 +146,126 @@ def _load_meta_info():
 def _assess_files(meta):
     all_groups_list = []
     bad_excl_list = []
-
     excl_dir = _DATA_DIR.joinpath(meta.exclusions_path.iloc[-1]).parent
     # ) not including `parents=True` bc it really should be a problem if
     # )   the indicated exclusions directory (the parent) cannot be found
     excl_dir.joinpath(_VALID_EXCL_DIR_NAME).mkdir(exist_ok=True)
-
     tables_dir = _DATA_DIR.joinpath(meta.final_df_path.iloc[-1]).parent
 
-    # TODO: PARALLIZE THIS LOOP! using multiprocessing
-    for grp, info in meta.groupby('data_origin_group'):
-        if info.empty:
-            continue
-        _inform(f'\n> > > starting assessment of `{grp}` data \n'
-                f'        {datetime.now().strftime("%R -- %Y-%m-%d")}')
-        rawdf_path = _check_meta_info(grp, info, tables_dir)
-        if not rawdf_path:
-            continue
+    grp_args_iter = ((grp, df, tables_dir, _DATA_DIR)
+                     for grp, df in meta.groupby('data_origin_group') if not df.empty)
 
-        grp_info, inv_excl_df = _assess_data_group(grp, info, rawdf_path)
-        # ) add dataframe for current group (gdf) to list of group dataframes
-        all_groups_list.append(grp_info)
-        bad_excl_list.append(inv_excl_df)
+    input_count = len(meta.data_origin_group.unique())
+    # ) set pool `processes` argument to number of _available_ cpus
+    # ) OR number of files to be searched, whichever is smaller
+    cpus = min(len(os.sched_getaffinity(0)), input_count)
+    _inform(f'\n> processing {input_count} inputs with {cpus} CPUs...')
+    _start = datetime.now()
 
+    multiprocessing.set_forkserver_preload(
+        ['_DATA_DIR', 'pull_ids_from_conll'])
+
+    with multiprocessing.Pool(processes=cpus) as pool:
+
+        # NOTE: if process function takes more than 1 argument:
+        #       use a. snippet "expand_argument_inputs" and `imap(_unordered)`
+        #       or  b. `starmap` -> does not require printing step after, but slower
+        results = pool.imap_unordered(
+            _star_assess_in_parallel,
+            grp_args_iter
+        )
+
+        # zfill_len = len(str(file_count))
+        # in_sz_w = 7
+        # out_sz_w = 8
+        # in_name_w = len(list(corpus_dir.glob('*conllu'))[0].stem)+1
+        # print(('  task  |  time  \tin size\tout size\t'
+        #         f'{"in data".ljust(in_name_w)}\t'
+        #         ' out data\n'
+        #         f' ------ | ------ \t'
+        #         f'{"-"*in_sz_w}\t'
+        #         f'{"-"*out_sz_w}\t'
+        #         f'{"-"*in_name_w}\t'
+        #         f'{"-"*40}').expandtabs(3))
+
+        #! this is required to actually get the processes to run
+        run_count = 0
+        for result in results:
+            # ) if assessment returned None; i.e. could not open raw dataframe file (or other failure?)
+            # ) do not increase `run_count` for "non(e)-result"
+            if result is None:
+                continue
+
+            run_count += 1
+            # ) add dataframe for current group (gdf) to list of group dataframes
+            all_groups_list.append(result[0])
+            bad_excl_list.append(result[1])
+            _inform(f'Time elapsed task {run_count}: {result[2]}')
+
+            # dur, in_name, in_size, out_name, out_size = result
+            # print((f'{str(i).zfill(zfill_len).center(8)}|{dur.rjust(7)} \t'
+            # f'{in_size.center(in_sz_w)}\t'
+            # f'{out_size.center(out_sz_w)}\t'
+            # f'{in_name.ljust(in_name_w)}\t'
+            # f'{out_name}').expandtabs(3))
+
+        total_inputs_processed = run_count
+        # ? Is there a better way to do this? ^^ Like, some "run" or "start" or "join" method?
+
+    _end = datetime.now()
+    total_time = _end - _start
+    _inform(f'{total_inputs_processed} data groups validated in '
+            f'{round(total_time.total_seconds(), 2)} seconds')
     _save_bad_excl_info(bad_excl_list, excl_dir)
 
     return all_groups_list
+
+
+def _star_assess_in_parallel(args):
+    return _assess_in_parallel(*args)
+
+
+def _assess_in_parallel(grp, info, tables_dir, data_dir):
+    global _DATA_DIR
+    _DATA_DIR = data_dir
+    _grp_start = datetime.now()
+    _inform(f'\n> > > starting assessment of data group {grp} \n'
+            f'        {_grp_start.strftime("%R -- %Y-%m-%d")}')
+    rawdf_path = _check_meta_info(grp, info, tables_dir)
+    if not rawdf_path:
+        return None
+
+    grp_info, inv_excl_df = _assess_data_group(grp, info, rawdf_path)
+    _grp_finish = datetime.now()
+    time_str = dur_round((_grp_finish - _grp_start).total_seconds())
+    return grp_info, inv_excl_df, time_str
+
+
+def dur_round(time_dur: float):
+    """take float of seconds and converts to minutes if 60+, then rounds to 1 decimal if 2+ digits
+
+    Args:
+        dur (float): seconds value
+
+    Returns:
+        str: value converted and rounded with unit label of 's','m', or 'h'
+    """
+    unit = 's'
+
+    if time_dur >= 60:
+        time_dur = time_dur/60
+        unit = 'm'
+
+        if time_dur >= 60:
+            time_dur = time_dur/60
+            unit = 'h'
+
+    if time_dur < 10:
+        dur_str = f'{round(time_dur, 2):.2f}{unit}'
+    else:
+        dur_str = f'{round(time_dur, 1):.1f}{unit}'
+
+    return dur_str
 
 
 def _check_meta_info(grp, info, tables_dir):
@@ -189,7 +320,7 @@ def _assess_data_group(grp, info, rawdf_path):
         x_types.loc[data_grp_info.missing] = _MISSING_EXCL_CODE
         data_grp_info = data_grp_info.assign(
             excl_type=x_types.astype('category'))
-    else: 
+    else:
         _inform('No original texts missing from processing output ^_^')
 
     # * identify texts which were added to the exclusions set, yet successfully parsed
@@ -307,12 +438,34 @@ def _add_missing_to_excl(xdf, mdf):
                             'final_df_path': 'dataframe_fpath'}))
     _debug(mdf.head())
     # raw_missing = rawdf.loc[rawdf.raw_id.isin(missing_ids), :]
+
+    # TODO: see why this comes out like this:
+    """
+        > Savings Plan and Future Cost Estimation for University of Phoenix Northwest Arkansas Campus
+        WARNING:root:# pcc_test_17670:
+        >
+        > Savings Plan and Future Cost Estimation
+        >
+        > Estimated Annual Cost in 2038
+        >
+        > $42,640
+        >
+        > Monthly savings required
+        >
+        > ...site and the school names are the property of their respective trademark owners.
+        >
+        > Contact Us
+        >
+        > If you represent a school and believe that data presented on this website is incorrect, please contact us.
+          """
     _warn('<!> MISSING <!> -- will be added to exclusions with type = '
           f'{_MISSING_EXCL_CODE}:\n\n{mdf.reset_index().loc[:,["raw_id"]]}\n\n'
-          '\n\n'.join((f'# {i}:\n{mdf.text[i][:200]}...{mdf.text[i][-200:]}'
-                       .replace("\n", "\n\t> ").expandtabs(3)
-                       for i in mdf.index)
-                      )
+          '\n\n'.join(
+              ((f'# {i}:\n{mdf.text[i][:200]}...{mdf.text[i][-200:]}'
+                ).replace("\n", "\n\t> ").expandtabs(3)
+               for i in mdf.index
+               )
+          )
           )
 
     xdf = pd.concat([xdf, mdf]).loc[:, excl_cols]
@@ -325,7 +478,7 @@ def _identify_invalid_excl(data_grp_info, xdf):
     if any(xdf.invalid):
         _inform('Erroneously marked exclusions:'
                 f'\n{xdf.index[xdf.invalid].to_list()}')
-    else: 
+    else:
         _inform('All exclusions are valid ^_^')
 
     return xdf
@@ -367,8 +520,21 @@ def _save_missing_info(all_df):
 
 if __name__ == '__main__':
 
-    start = datetime.now()
+    START = datetime.now()
+
+    _DATA_DIR, _DATA_GRPS, _log_level = _parse_args()
+    _INFO_DIR = _DATA_DIR.joinpath('info')
+    logging.basicConfig(level=_log_level,
+                        format='[%(levelname)s] %(asctime)s\n  > %(message)s',
+                        # todo: find a way to get the log of everything together
+                        # filename=str(_INFO_DIR.joinpath(f'validation{START.strftime("%Y-%m-%d_%H:%M")}.log'))
+                        )
+    multiprocessing.set_start_method('forkserver')
+    multiprocessing.log_to_stderr()
+    # // _LOGGER.setlevel(logging.WARNING)  # 20=info, 30=warning, 10=debug
+
     _main()
-    end = datetime.now()
+
+    END = datetime.now()
     _inform(
-        f'Total assessment time: {round((end - start).total_seconds(),2)} seconds')
+        f'Total assessment time: {dur_round((END - START).total_seconds())} seconds')
