@@ -1,5 +1,6 @@
 import argparse
 from collections import namedtuple
+from datetime import datetime
 import re
 import sys
 from pathlib import Path
@@ -51,9 +52,10 @@ def _parse_args():
     return parser.parse_args()
 
 
-def conllu_id_iter(conll_dir: Path, id_unit: str, reconstruct_raw=False):
+def conllu_id_iter(conll_dir: Path, id_unit: str,
+                #    reconstruct_raw=False, 
+                   iterate=True):
     # ^ use this to get descriptive statistics for sentences and docs
-    id_pattern = re.compile(r'(?<= = )(.*)\n')
     grep_str = None
     if id_unit.startswith('doc'):
         grep_str = '# newdoc id ='
@@ -61,24 +63,44 @@ def conllu_id_iter(conll_dir: Path, id_unit: str, reconstruct_raw=False):
     elif id_unit.startswith('sent'):
         grep_str = '# sent_id ='
 
+    elif id_unit.startswith('pat'):
+        grep_str = '# pattern_match ='
+
     if not grep_str:
         sys.exit('No valid id unit specified. No ids pulled.')
 
     # TODO : make this parallel as well?
     for conllu_file in conll_dir.glob('*.conllu'):
-        print(f'    + {conllu_file.name}...')
-        egrep_output = sp_run(['egrep', grep_str, conllu_file],
-                              capture_output=True,
-                              universal_newlines=True,
-                              check=True).stdout
+        id_iter = None
+        # unit_count = int(sp_run(['egrep', '-c', grep_str, conllu_file],
+        #                         capture_output=True,
+        #                         universal_newlines=True,
+        #                         check=True).stdout.strip())
 
-        id_match_iter = id_pattern.finditer(egrep_output)
-        if reconstruct_raw:
-            for text in reconstruct_raw_iter(id_match_iter):
-                yield text.raw
-        else:
-            for id_match in id_match_iter:
-                yield id_match.group().strip()
+        if iterate:
+            id_iter = _generate_id_match(grep_str, conllu_file)
+
+        yield conllu_file.stem, id_iter
+
+
+def _generate_id_match(grep_str, conllu_file):
+    
+    id_pattern = re.compile(r'(?<= = )(.*)\n')
+    
+    egrep_output = sp_run(['egrep', grep_str, conllu_file],
+                          capture_output=True,
+                          universal_newlines=True,
+                          check=True).stdout
+
+    id_match_iter = id_pattern.finditer(egrep_output)
+
+    # if reconstruct_raw:
+    #     for text in reconstruct_raw_iter(id_match_iter):
+    #         yield text.raw
+
+    # else:
+    for id_match in id_match_iter:
+        yield id_match.group().strip()
 
 
 def reconstruct_raw_iter(parsed_doc_ids):

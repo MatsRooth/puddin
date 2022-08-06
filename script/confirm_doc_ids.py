@@ -30,8 +30,6 @@ import logging
 import multiprocessing
 import os
 import sys
-# TODO: replace datetime calls with logging.time functions since that's already imported anyway
-from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
@@ -47,7 +45,7 @@ _debug = logging.debug
 _warn = logging.warning
 _err = logging.error
 _crash = logging.critical
-_log_indent = 4
+_LOG_INDENT = 4
 
 
 def _parse_args():
@@ -129,7 +127,6 @@ def _load_meta_info():
             _crash(f'No processing data found for sources: {_DATA_GRPS}.')
             sys.exit(1)
 
-    # TODO : this flagged way more than expected. See if the same thing happens on cluster
     was_overwritten = meta.slice_name.duplicated(keep='last')
     if any(was_overwritten):
         owdf = (meta.loc[:, meta.columns.isin(["slice_name", "finished_at",
@@ -140,7 +137,7 @@ def _load_meta_info():
                                          .rsplit(' ', 1))
         _err(f'Multiple records found for {len(slices_with_dups)} '
              f'slices:\n{list_str}\n{"."*len(list_str)}\n{owdf}')
-    # apparently some `slice_name` values are not zfilled? throws off sorting this way
+    # apparently some `slice_name` values are not zfilled? so can't sort by slice_name
     _inform(meta)
     return meta_info_path, meta
 
@@ -162,8 +159,8 @@ def _assess_files(meta):
     # ) OR number of files to be searched, whichever is smaller
     cpus = min(len(os.sched_getaffinity(0)), input_count)
     _inform(_format_message(
-        f'\n> processing {input_count} inputs with {cpus} CPUs...'))
-    _start = datetime.now()
+        f'processing {input_count} inputs with {cpus} CPUs...'))
+    _start = logging.time.perf_counter()
 
     multiprocessing.set_forkserver_preload(
         ['_DATA_DIR', 'pull_ids_from_conll'])
@@ -199,12 +196,12 @@ def _assess_files(meta):
             # ) do not increase `run_count` for "non(e)-result"
             if result is None:
                 continue
-
+            group_info, excl_info, group, dur = result
             run_count += 1
             # ) add dataframe for current group (gdf) to list of group dataframes
-            all_groups_list.append(result[0])
-            bad_excl_list.append(result[1])
-            _inform(f'Time elapsed task {run_count}: {result[2]}')
+            all_groups_list.append(group_info)
+            bad_excl_list.append(excl_info)
+            _inform(f'{group} time:\t{dur}')
 
             # dur, in_name, in_size, out_name, out_size = result
             # print((f'{str(i).zfill(zfill_len).center(8)}|{dur.rjust(7)} \t'
@@ -216,10 +213,10 @@ def _assess_files(meta):
         total_inputs_processed = run_count
         # ? Is there a better way to do this? ^^ Like, some "run" or "start" or "join" method?
 
-    _end = datetime.now()
+    _end = logging.time.perf_counter()
     total_time = _end - _start
     _inform(f'{total_inputs_processed} data groups validated in '
-            f'{round(total_time.total_seconds(), 2)} seconds')
+            f'{dur_round(total_time)}')
     _save_bad_excl_info(bad_excl_list, excl_dir)
 
     return all_groups_list
@@ -232,17 +229,17 @@ def _star_assess_in_parallel(args):
 def _assess_in_parallel(grp, info, tables_dir, data_dir):
     global _DATA_DIR
     _DATA_DIR = data_dir
-    _grp_start = datetime.now()
+    _grp_start = logging.time.perf_counter()
     _inform(f'\n> > > starting assessment of data group {grp} \n'
-            f'        {_grp_start.strftime("%R -- %Y-%m-%d")}')
+            f'        {logging.time.strftime("%Y-%m-%d -- %I:%M%p")}')
     rawdf_path = _check_meta_info(grp, info, tables_dir)
     if not rawdf_path:
         return None
 
     grp_info, inv_excl_df = _assess_data_group(grp, info, rawdf_path)
-    _grp_finish = datetime.now()
-    time_str = dur_round((_grp_finish - _grp_start).total_seconds())
-    return grp_info, inv_excl_df, time_str
+    _grp_finish = logging.time.perf_counter()
+    time_str = dur_round(_grp_finish - _grp_start)
+    return grp_info, inv_excl_df, grp, time_str
 
 
 def dur_round(time_dur: float):
@@ -335,7 +332,7 @@ def _assess_data_group(grp, info, rawdf_path):
     _save_validated_excl(excl_path, excl_dataframe)
 
     _inform(f"## `{grp}` data assessment complete\n"
-            f"{datetime.now().strftime('%R -- %Y-%m-%d')}\nstatus overview:"
+            f"{logging.time.strftime('%Y-%m-%d -- %I:%M%p')}\nstatus overview:"
             f"\n{'.'*18}\n"
             f"{data_grp_info.value_counts(['excl_type', 'recorded_fail', 'success'])}"
             f"\n{'.'*18}\n"
@@ -378,17 +375,28 @@ def _check_conll_path(info):
 
 
 def _get_parse_status(raw_df, conll_dir):
-    parsed_doc_ids = conllu_id_iter(conll_dir, 'doc')
     # ) get "raw" version for each id in the conllu output file
-    parsed_texts = pd.DataFrame(
-        reconstruct_raw_iter(parsed_doc_ids)).astype('string')
-    _inform(parsed_texts.count())
-    _debug(parsed_texts.sample(5))
+    parsed_info_generator = conllu_id_iter(conll_dir, 'doc')
+    # this will be a generator of tuples consisting of:
+    #   (filename: str, total_docs_in_file:int, iter_of_all_doc_ids:generator)
+    parsed_texts_df = pd.DataFrame()
+    for fstem, conllu_doc_ids in parsed_info_generator:
+        
+        these_parsed_texts = pd.DataFrame(
+            reconstruct_raw_iter(conllu_doc_ids)).assign(conllu_stem=fstem).astype('string')
+        doc_count = these_parsed_texts.conll_id.count()
+        print(f'{logging.time.strftime("%Y-%m-%d -- %I:%M%p")}    {doc_count} docs in {fstem}.conllu')
+
+        these_parsed_texts = these_parsed_texts.assign(docs_in_conllu=doc_count)
+    
+        parsed_texts_df = pd.concat([parsed_texts_df, these_parsed_texts])
+
+    _debug(parsed_texts_df.sample(5))
 
     raw_df = (
         (raw_df.assign(row_ix=raw_df.index.astype('string'))
                .set_index('raw_id'))
-        .join(parsed_texts.set_index('raw_id')))
+        .join(parsed_texts_df.set_index('raw_id')))
 
     return raw_df
 
@@ -530,12 +538,12 @@ def _save_missing_info(all_df):
 
 def _format_message(message):
 
-    return message.replace('\n', f'\n{" "*_log_indent}')
+    return message.replace('\n', f'\n{" "*_LOG_INDENT}')
 
 
 if __name__ == '__main__':
 
-    START = datetime.now()
+    START = logging.time.perf_counter()
 
     _DATA_DIR, _DATA_GRPS, _log_level = _parse_args()
     _INFO_DIR = _DATA_DIR.joinpath('info')
@@ -551,6 +559,6 @@ if __name__ == '__main__':
 
     _main()
 
-    END = datetime.now()
+    END = logging.time.perf_counter()
     _inform(
-        f'Total assessment time: {dur_round((END - START).total_seconds())} seconds')
+        f'Total assessment time: {dur_round(END - START)} seconds')
