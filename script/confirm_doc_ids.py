@@ -572,7 +572,7 @@ if __name__ == '__main__':
                         #   f'validation{START.strftime("%Y-%m-%d_%H:%M")}.log'))
                         )
     multiprocessing.set_start_method('forkserver')
-    # multiprocessing.log_to_stderr()
+    multiprocessing.log_to_stderr()
     # // _LOGGER.setlevel(logging.WARNING)  # 20=info, 30=warning, 10=debug
 
     _main()
