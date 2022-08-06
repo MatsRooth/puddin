@@ -47,6 +47,7 @@ _debug = logging.debug
 _warn = logging.warning
 _err = logging.error
 _crash = logging.critical
+_log_indent = 4
 
 
 def _parse_args():
@@ -108,13 +109,14 @@ def _main():
 
     _save_missing_info(all_df)
 
-    _inform(f'Assessment Complete:\n{all_df.describe()}')
+    _inform(_format_message(f'Assessment Complete:\n{all_df.describe()}'))
     all_df.to_pickle(_INFO_DIR.joinpath('all-pcc-texts_status.pkl.gz'))
 
 
 def _load_meta_info():
     meta_info_path = _INFO_DIR.joinpath('completed-puddin_meta-index.pkl')
-    _inform(f'Loading processing meta info from {meta_info_path}...')
+    _inform(_format_message(
+        f'Loading processing meta info from {meta_info_path}...'))
     if not meta_info_path.is_file():
         _crash(f'{meta_info_path} does not exist. Data cannot be assessed.')
         sys.exit(1)
@@ -126,6 +128,7 @@ def _load_meta_info():
         if meta.empty:
             _crash(f'No processing data found for sources: {_DATA_GRPS}.')
             sys.exit(1)
+
     # TODO : this flagged way more than expected. See if the same thing happens on cluster
     was_overwritten = meta.slice_name.duplicated(keep='last')
     if any(was_overwritten):
@@ -137,9 +140,8 @@ def _load_meta_info():
                                          .rsplit(' ', 1))
         _err(f'Multiple records found for {len(slices_with_dups)} '
              f'slices:\n{list_str}\n{"."*len(list_str)}\n{owdf}')
-    #! apparently some `slice_name` values are not zfilled? throws off sorting this way
-    _debug(meta.sample(min(5, len(meta))))
-    _debug(meta.describe().round(1))
+    # apparently some `slice_name` values are not zfilled? throws off sorting this way
+    _inform(meta)
     return meta_info_path, meta
 
 
@@ -159,7 +161,8 @@ def _assess_files(meta):
     # ) set pool `processes` argument to number of _available_ cpus
     # ) OR number of files to be searched, whichever is smaller
     cpus = min(len(os.sched_getaffinity(0)), input_count)
-    _inform(f'\n> processing {input_count} inputs with {cpus} CPUs...')
+    _inform(_format_message(
+        f'\n> processing {input_count} inputs with {cpus} CPUs...'))
     _start = datetime.now()
 
     multiprocessing.set_forkserver_preload(
@@ -191,7 +194,8 @@ def _assess_files(meta):
         #! this is required to actually get the processes to run
         run_count = 0
         for result in results:
-            # ) if assessment returned None; i.e. could not open raw dataframe file (or other failure?)
+            # ) if assessment returned None;
+            # )     i.e. could not open raw dataframe file (or other failure?)
             # ) do not increase `run_count` for "non(e)-result"
             if result is None:
                 continue
@@ -342,7 +346,8 @@ def _assess_data_group(grp, info, rawdf_path):
 
 
 def _prep_raw_dataframe(info, rawdf_path):
-    _inform(f'Loading initial/raw dataframe:\n > {rawdf_path}\n   ...')
+    _inform(_format_message(
+        f'Loading initial/raw dataframe:\n > {rawdf_path}\n   ...'))
     rdf = pd.read_pickle(rawdf_path).rename(
         columns={'raw': 'raw_text',
                  'text_id': 'raw_id',
@@ -363,7 +368,8 @@ def _prep_raw_dataframe(info, rawdf_path):
 
 def _check_conll_path(info):
     conll_dir = _DATA_DIR.joinpath(Path(info.conllu_path.iloc[0]).parent)
-    _inform('directory of conllu files to be searched:\n > ' + str(conll_dir))
+    _inform(_format_message(
+        'directory of conllu files to be searched:\n > ' + str(conll_dir)))
     if not conll_dir.is_dir():
         _err(f'{conll_dir} directory does not exist.')
     if not list(conll_dir.glob('*conllu')):
@@ -388,7 +394,7 @@ def _get_parse_status(raw_df, conll_dir):
 
 
 def _load_exclusions(excl_path):
-    _inform(f'Loading exclusions dataframe:\n > {excl_path}')
+    _inform(_format_message(f'Loading exclusions dataframe:\n > {excl_path}'))
     xdf = pd.read_pickle(excl_path)
     xdf = xdf.assign(recorded_fail=xdf.excl_type.str.contains('fail'))
     # any rows without a `text_id` value were added after slicing
@@ -410,9 +416,9 @@ def _consolidate_info(gdf, xdf):
     gdf = gdf.assign(
         success=~gdf.conll_id.isna(),
         recorded_fail=gdf.recorded_fail.fillna(False),
-        slice=gdf.conll_id.str.split(".").str.get(0),
-        excl_type=gdf.excl_type.astype('category'),
-        data_group=gdf.data_group.astype('category'))
+        slice=gdf.conll_id.str.split(".").str.get(0).astype('string'),
+        excl_type=gdf.excl_type.astype('string').astype('category'),
+        data_group=gdf.data_group.astype('string').astype('category'))
     # ) identify texts which were not successfully parsed, but are not in the exclusions
     # )   i.e. "false negatives" for `exclude`
     gdf = (gdf.assign(missing=gdf.excl_type.isna() & ~gdf.success)
@@ -436,37 +442,38 @@ def _add_missing_to_excl(xdf, mdf):
            .rename(columns={'raw_text': 'text',
                             'jsonl_path': 'data_origin_fpath',
                             'final_df_path': 'dataframe_fpath'}))
-    _debug(mdf.head())
+    _inform(mdf)
     # raw_missing = rawdf.loc[rawdf.raw_id.isin(missing_ids), :]
 
     # TODO: see why this comes out like this:
-    """
-        > Savings Plan and Future Cost Estimation for University of Phoenix Northwest Arkansas Campus
-        WARNING:root:# pcc_test_17670:
-        >
-        > Savings Plan and Future Cost Estimation
-        >
-        > Estimated Annual Cost in 2038
-        >
-        > $42,640
-        >
-        > Monthly savings required
-        >
-        > ...site and the school names are the property of their respective trademark owners.
-        >
-        > Contact Us
-        >
-        > If you represent a school and believe that data presented on this website is incorrect, please contact us.
-          """
-    _warn('<!> MISSING <!> -- will be added to exclusions with type = '
-          f'{_MISSING_EXCL_CODE}:\n\n{mdf.reset_index().loc[:,["raw_id"]]}\n\n'
-          '\n\n'.join(
-              ((f'# {i}:\n{mdf.text[i][:200]}...{mdf.text[i][-200:]}'
-                ).replace("\n", "\n\t> ").expandtabs(3)
-               for i in mdf.index
-               )
-          )
-          )
+    # ^ possibly because it is being forwarded through multiprocessing?
+    #     WARNING:root:# pcc_test_17670:
+    #     > Savings Plan and Future Cost Estimation for
+    #       University of Phoenix Northwest Arkansas Campus
+    #     >
+    #     > Savings Plan and Future Cost Estimation
+    #     >
+    #     > Estimated Annual Cost in 2038
+    #     >
+    #     > $42,640
+    #     >
+    #     > Monthly savings required
+    #     >
+    #     > ...site and the school names are the property of their respective trademark owners.
+    #     >
+    #     > Contact Us
+    #     >
+    #     > If you represent a school and believe that data presented on
+    #       this website is incorrect, please contact us.
+    _inform('<!> MISSING <!> -- will be added to exclusions with type = '
+            f'{_MISSING_EXCL_CODE}:\n\n{mdf.reset_index().loc[:,["raw_id"]]}\n\n'
+            '\n\n'.join(
+                ((f'# {i}:\n{mdf.text[i][:200]}...{mdf.text[i][-200:]}'
+                  ).replace("\n", "\n\t> ").expandtabs(3)
+                 for i in mdf.index
+                 )
+            )
+            )
 
     xdf = pd.concat([xdf, mdf]).loc[:, excl_cols]
     return xdf
@@ -497,7 +504,8 @@ def _save_validated_excl(excl_path, xdf):
 def _save_bad_excl_info(bad_excl_list, excl_path):
     if any(not df.empty for df in bad_excl_list):
         bad_excl = pd.concat(bad_excl_list)
-        _warn(f'Erroneous Exclusions Found!\n{bad_excl.index}')
+        _warn(_format_message(
+            f'Erroneous Exclusions Found!\n{bad_excl.index}'))
         bad_excl.to_json(_INFO_DIR.joinpath('excl_mistakes.json'),
                          orient='index', indent=4)
     else:
@@ -508,14 +516,21 @@ def _save_bad_excl_info(bad_excl_list, excl_path):
 def _save_missing_info(all_df):
     if any(all_df.missing):
         all_missing_path = _INFO_DIR.joinpath('missing_texts.csv')
-        _inform(
-            f'Missing text info for all data groups saved as {all_missing_path.relative_to(_DATA_DIR)}/.json')
+        log_message = _format_message(('Some original texts were unaccounted for!\n'
+                                      'Missing text info for all data groups saved as '
+                                       f'{all_missing_path.relative_to(_DATA_DIR)}/.json'))
+        _warn(log_message)
         missing_df = all_df.loc[all_df.missing, :]
         missing_df.to_csv(all_missing_path)
         missing_df.reset_index().set_index(['data_group', 'raw_id'], append=True).to_json(
             all_missing_path.with_suffix('.json'), orient='index', indent=4)
     else:
         _inform('All original texts accounted for ^_^')
+
+
+def _format_message(message):
+
+    return message.replace('\n', f'\n{" "*_log_indent}')
 
 
 if __name__ == '__main__':
@@ -527,7 +542,8 @@ if __name__ == '__main__':
     logging.basicConfig(level=_log_level,
                         format='[%(levelname)s] %(asctime)s\n  > %(message)s',
                         # todo: find a way to get the log of everything together
-                        # filename=str(_INFO_DIR.joinpath(f'validation{START.strftime("%Y-%m-%d_%H:%M")}.log'))
+                        # filename=str(_INFO_DIR.joinpath(
+                        #   f'validation{START.strftime("%Y-%m-%d_%H:%M")}.log'))
                         )
     multiprocessing.set_start_method('forkserver')
     multiprocessing.log_to_stderr()
