@@ -246,6 +246,7 @@ g2local*
 data/puddin/pile*
 .[iuh]*/
 *debug*
+*logs*
 kingston*
 *.conll/
 *.[0-9]*

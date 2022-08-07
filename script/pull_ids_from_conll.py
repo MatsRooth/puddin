@@ -1,6 +1,5 @@
 import argparse
 from collections import namedtuple
-from datetime import datetime
 import re
 import sys
 from pathlib import Path
@@ -53,7 +52,7 @@ def _parse_args():
 
 
 def conllu_id_iter(conll_dir: Path, id_unit: str,
-                #    reconstruct_raw=False, 
+                   #    reconstruct_raw=False,
                    iterate=True):
     # ^ use this to get descriptive statistics for sentences and docs
     grep_str = None
@@ -84,9 +83,9 @@ def conllu_id_iter(conll_dir: Path, id_unit: str,
 
 
 def _generate_id_match(grep_str, conllu_file):
-    
+
     id_pattern = re.compile(r'(?<= = )(.*)\n')
-    
+
     egrep_output = sp_run(['egrep', grep_str, conllu_file],
                           capture_output=True,
                           universal_newlines=True,

@@ -33,6 +33,7 @@ import sys
 from pathlib import Path
 
 import pandas as pd
+from multiprocessing_logging import install_mp_handler
 
 from pull_ids_from_conll import conllu_id_iter, reconstruct_raw_iter
 
@@ -45,7 +46,7 @@ _debug = logging.debug
 _warn = logging.warning
 _err = logging.error
 _crash = logging.critical
-_LOG_INDENT = 4
+_LOG_INDENT = 3
 
 
 def _parse_args():
@@ -78,7 +79,7 @@ def _parse_args():
     parser.add_argument(
         '-l', '--log_level',
         choices=['debug', 'info', 'warning', 'error'],
-        type=str, default='info',
+        type=str, default='warning',
         help=('option to specify the verbosity of logging output')
     )
     log_level_defs = {'debug': logging.DEBUG,
@@ -164,7 +165,9 @@ def _assess_files(meta):
     _start = logging.time.perf_counter()
 
     multiprocessing.set_forkserver_preload(
-        ['_DATA_DIR', 'pull_ids_from_conll'])
+        ['pull_ids_from_conll', 'logging', 'pd', 'sys', 'os', '_DATA_DIR',
+         '_inform', '_warn', '_err'
+         ])
 
     with multiprocessing.Pool(processes=cpus) as pool:
 
@@ -177,12 +180,7 @@ def _assess_files(meta):
         )
 
         zfill_len = len(str(input_count))
-        in_name_w = 10 #= data group
-        print(('  task  |  time  \t'
-                f'{"data group".ljust(in_name_w)}\n'
-                f' ------ | ------ \t'
-                f'{"-"*in_name_w}').expandtabs(3))
-
+        in_name_w = 10  # = data group
         #! this is required to actually get the processes to run
         run_count = 0
         for result in results:
@@ -197,9 +195,14 @@ def _assess_files(meta):
             all_groups_list.append(group_info)
             bad_excl_list.append(excl_info)
             # _inform(f'`{group}` assessment time:\t{dur}')
-
+            if run_count == 1:
+                print(logging.time.strftime("%Y-%m-%d _ %I:%M%p"))
+                print(('  task  |  time  \t'
+                       f'{"data group".ljust(in_name_w)}\n'
+                       f' ------ | ------ \t'
+                       f'{"-"*in_name_w}').expandtabs(3))
             print((f'{str(run_count).zfill(zfill_len).center(8)}|{dur.rjust(7)} \t'
-            f'{group.ljust(in_name_w)}').expandtabs(3))
+                   f'{group.ljust(in_name_w)}').expandtabs(3))
 
         total_inputs_processed = run_count
         # ? Is there a better way to do this? ^^ Like, some "run" or "start" or "join" method?
@@ -221,10 +224,10 @@ def _assess_in_parallel(grp, info, tables_dir, data_dir):
     global _DATA_DIR
     _DATA_DIR = data_dir
     _grp_start = logging.time.perf_counter()
-    _inform(f'\n> > > starting assessment of data group {grp} \n'
-            f'        {logging.time.strftime("%Y-%m-%d -- %I:%M%p")}')
-    # print(f'\n> > > starting assessment of data group {grp} \n'
-    #       f'        {logging.time.strftime("%Y-%m-%d -- %I:%M%p")}')
+
+    print('\n' + _format_message(
+        f'> > > starting assessment of data group {grp} \n'
+        f'        {logging.time.strftime("%Y-%m-%d -- %I:%M%p")}'))
     rawdf_path = _check_meta_info(grp, info, tables_dir)
     if not rawdf_path:
         return None
@@ -266,21 +269,21 @@ def _check_meta_info(grp, info, tables_dir):
     '''sanity check paths in meta processing info _for each data group_'''
     # if more than 1 path shown for finalized unsliced dataframe for given data source
     if len(info.final_df_path.unique()) != 1:
-        _warn(
+        print(
             'WARNING! More than 1 path found for unsliced dataframe for %s data source', grp)
     if len(info.origin_filepath.unique()) != 1:
-        _warn('WARNING! different paths showing for source file')
+        print('WARNING! different paths showing for source file')
 
     findf_path = _DATA_DIR.joinpath(info.final_df_path.iloc[0])
     rawdf_path = Path(findf_path.parent, "raw", findf_path.name)
     if not rawdf_path.is_file():
-        _err('Raw/initial dataframe not found. '
-             f'Invalid path: {rawdf_path}')
+        print('ERROR! Raw/initial dataframe not found. '
+              f'Invalid path: {rawdf_path}')
         return None
 
     if findf_path.parent != tables_dir:
-        _warn(f'{grp} dataframe paths not in {tables_dir}. \n'
-              f'   Is this file supposed to be included?: {findf_path}')
+        print(_format_message(f'{grp} dataframe paths not in {tables_dir}. \n'
+              f'   Is this file supposed to be included?: {findf_path}'))
 
     return rawdf_path
 
@@ -315,8 +318,7 @@ def _assess_data_group(grp, info, rawdf_path):
         data_grp_info = data_grp_info.assign(
             excl_type=x_types.astype('category'))
     else:
-        _inform(f'No original texts missing from {grp} output ^_^')
-        # print(f'No original texts missing from {grp} output ^_^')
+        print(f'No original texts missing from {grp} output ^_^')
 
     # * identify texts which were added to the exclusions set, yet successfully parsed
     # *   i.e. "false positives" for `exclude`
@@ -324,25 +326,23 @@ def _assess_data_group(grp, info, rawdf_path):
 
     # * save exclusions to `validated/` even if unchanged, to show which have been validated
     _save_validated_excl(excl_path, excl_dataframe)
-    _inform(_format_message(f"## `{grp}` data assessment complete\n"
-                            # print(f"\n## `{grp}` data assessment complete\n"
-                            f"{logging.time.strftime('%Y-%m-%d -- %I:%M%p')}\nstatus overview:"
-                            f"\n{'.'*18}\n"
-                            f"{data_grp_info.value_counts(['excl_type', 'recorded_fail', 'success'])}"
-                            f"\n{'.'*18}\n"
-                            f"{data_grp_info.value_counts(['slice', 'recorded_fail', 'success'])}")
-            )
+    print(_format_message(f"## `{grp}` data assessment complete\n"
+                          f"{logging.time.strftime('%Y-%m-%d -- %I:%M%p')}\nstatus overview:"
+                          f"\n{'.'*18}\n"
+                          f"{data_grp_info.value_counts(['excl_type', 'recorded_fail', 'success'])}"
+                          f"\n{'.'*18}\n"
+                          f"{data_grp_info.value_counts(['slice', 'recorded_fail', 'success'])}")
+          )
 
     inv_excl_df = excl_dataframe.loc[excl_dataframe.invalid, :]
     return data_grp_info, inv_excl_df
 
 
 def _prep_raw_dataframe(info, rawdf_path):
-    _inform(_format_message(
+
+    print(_format_message(
         f'Loading initial/raw dataframe:\n > {rawdf_path}\n   ...'))
 
-    # print(
-    # f'\nLoading initial/raw dataframe:\n > {rawdf_path}\n   ...')
     rdf = pd.read_pickle(rawdf_path).rename(
         columns={'raw': 'raw_text',
                  'text_id': 'raw_id',
@@ -351,11 +351,11 @@ def _prep_raw_dataframe(info, rawdf_path):
 
     if (rdf.jsonl_path.unique()[0].parts[-2:]
             != info.origin_filepath.unique()[0].parts[-2:]):
-        _warn('WARNING! meta parsing info and raw dataframe '
+        print('WARNING! meta parsing info and raw dataframe '
               'have different paths for source data')
     if (rdf.final_df_path.unique()[0].parts[-2:]
             != info.final_df_path.unique()[0].parts[-2:]):
-        _warn('WARNING! meta parsing info and raw dataframe show '
+        print('WARNING! meta parsing info and raw dataframe show '
               'different paths for final dataframe')
 
     return rdf
@@ -363,14 +363,14 @@ def _prep_raw_dataframe(info, rawdf_path):
 
 def _check_conll_path(info):
     conll_dir = _DATA_DIR.joinpath(Path(info.conllu_path.iloc[0]).parent)
-    _inform(_format_message(
+
+    print(_format_message(
         'directory of conllu files to be searched:\n > ' + str(conll_dir)))
-    # print(
-    # f'Searching {conll_dir} ...')
+
     if not conll_dir.is_dir():
-        _err(f'{conll_dir} directory does not exist.')
+        print(f'ERROR! {conll_dir} directory does not exist.')
     if not list(conll_dir.glob('*conllu')):
-        _err(f'No ".conllu" files found in {conll_dir}.')
+        print(f'ERROR! No ".conllu" files found in {conll_dir}.')
     return conll_dir
 
 
@@ -385,9 +385,9 @@ def _get_parse_status(raw_df, conll_dir):
         these_parsed_texts = pd.DataFrame(
             reconstruct_raw_iter(conllu_doc_ids)).assign(conllu_stem=fstem).astype('string')
         doc_count = these_parsed_texts.conll_id.count()
-        _inform(
-            # print(
-            f'{logging.time.strftime("%Y-%m-%d -- %I:%M%p")}    {doc_count} docs in {fstem}.conllu')
+
+        print((f'{logging.time.strftime("%Y-%m-%d -- %I:%M%p")}'
+              f'\t{fstem}.conllu\ttotal docs: {doc_count}').expandtabs(4))
 
         these_parsed_texts = these_parsed_texts.assign(
             docs_in_conllu=doc_count)
@@ -405,8 +405,7 @@ def _get_parse_status(raw_df, conll_dir):
 
 
 def _load_exclusions(excl_path):
-    _inform(_format_message(f'Loading exclusions dataframe:\n > {excl_path}'))
-    # print(f'\nLoading exclusions dataframe:\n > {excl_path}')
+    print(_format_message(f'Loading exclusions dataframe:\n > {excl_path}'))
     xdf = pd.read_pickle(excl_path)
     xdf = xdf.assign(recorded_fail=xdf.excl_type.str.contains('fail'))
     # any rows without a `text_id` value were added after slicing
@@ -444,9 +443,10 @@ def _add_missing_to_excl(xdf, mdf):
     # if something has been marked as "missing"
     #   but has a conll_id value, something has gone wrong
     if not all(mdf.conll_id.isna()):
-        _err('Marked as "missing" but conll_id associated\n' +
-             '  (= Text was found in final output!):\n*- ' +
-             '\n* '.join(mdf.index[~mdf.conll_id.isna()].to_list()))
+        print(_format_message(
+            ('ERROR! Marked as "missing" but conll_id associated\n'
+             + '  (= Text was found in final output!):\n*- '
+             + '\n* '.join(mdf.index[~mdf.conll_id.isna()].to_list()))))
 
         # mdf.columns: ['row_ix', 'raw_text', 'pile_set_name',
         #                'pile_set_code', 'jsonl_path', 'final_df_path', 'conll_id']
@@ -454,8 +454,8 @@ def _add_missing_to_excl(xdf, mdf):
            .rename(columns={'raw_text': 'text',
                             'jsonl_path': 'data_origin_fpath',
                             'final_df_path': 'dataframe_fpath'}))
-    _inform(_format_message(f'Unaccounted for in conllu output:\n{mdf}'))
-    # print(mdf)
+
+    print(_format_message(f'Unaccounted for in conllu output:\n{mdf}'))
     # raw_missing = rawdf.loc[rawdf.raw_id.isin(missing_ids), :]
 
     # TODO: see why this comes out like this:
@@ -479,17 +479,16 @@ def _add_missing_to_excl(xdf, mdf):
     #     > If you represent a school and believe that data presented on
     #       this website is incorrect, please contact us.
 
-    _inform(_format_message('<!> MISSING <!> -- will be added to exclusions with type = '
-                            # print('<!> MISSING <!> -- will be added to exclusions with type = '
-                            f'{_MISSING_EXCL_CODE}:\n\n{mdf.reset_index().loc[:,["raw_id"]]}\n\n'
-                            '\n\n'.join(
-                                ((f'# {i}:\n{mdf.text[i][:200]}...{mdf.text[i][-200:]}'
-                                  ).replace("\n", "\n\t> ").expandtabs(3)
-                                    for i in mdf.index
-                                 )
-                            )
-                            ))
-    #   ), end='\n________________\n')
+    print(
+        _format_message(
+            '<!> MISSING <!> -- will be added to exclusions with type = '
+            + f'{_MISSING_EXCL_CODE}:\n\n{mdf.reset_index().loc[:,["raw_id"]]}\n\n'
+            + '\n\n'.join(
+                ((f'# {i}:\n{mdf.text[i][:200]}...{mdf.text[i][-200:]}'
+                  ).replace("\n", "\n\t> ").expandtabs(3)
+                 for i in mdf.index))
+        ),
+        end='\n________________\n')
 
     xdf = pd.concat([xdf, mdf]).loc[:, excl_cols]
     return xdf
@@ -498,16 +497,14 @@ def _add_missing_to_excl(xdf, mdf):
 def _identify_invalid_excl(data_grp_info, xdf, grp):
     xdf = xdf.assign(invalid=xdf.index.isin(
         data_grp_info.index[data_grp_info.success]))
+
     if any(xdf.invalid):
-        _inform(_format_message(
-            # print(
+        print(_format_message(
             f'Erroneously marked {grp} exclusions:'
-            f'\n{xdf.index[xdf.invalid].to_list()}')
-        )
+            f'\n{xdf.index[xdf.invalid].to_list()}'))
+
     else:
-        _inform(
-            # print(
-            f'All {grp} exclusions in are valid ^_^')
+        print(f'All {grp} exclusions in are valid ^_^')
 
     return xdf
 
@@ -517,10 +514,8 @@ def _save_validated_excl(excl_path, xdf):
     validated_excl_path = Path(excl_path.parent,
                                _VALID_EXCL_DIR_NAME,  # subfolder for validated files
                                excl_path.name)
-    _inform(
-        # print(
-        'Saving updated exclusions dataframe '
-        f'to {validated_excl_path.relative_to(_DATA_DIR)}')
+    print('Saving updated exclusions dataframe '
+          f'to {validated_excl_path.relative_to(_DATA_DIR)}')
     xdf.to_pickle(validated_excl_path)
 
 
@@ -563,17 +558,22 @@ if __name__ == '__main__':
 
     _DATA_DIR, _DATA_GRPS, _log_level = _parse_args()
     _INFO_DIR = _DATA_DIR.joinpath('info')
-    logging.basicConfig(level=_log_level,
-                        # format='[%(levelname)s] %(asctime)s\n  > %(message)s',
-                        format=' _______________________\n| %(levelname)s/%(processName)s: %(asctime)s\n|    %(pathname)s:%(funcName)s:%(lineno)d\n| . . . . . . .\n   %(message)s',
-                        datefmt="%Y-%m-%d %I:%M%p",
-                        # todo: find a way to get the log of everything together
-                        # filename=str(_INFO_DIR.joinpath(
-                        #   f'validation{START.strftime("%Y-%m-%d_%H:%M")}.log'))
-                        )
+
     multiprocessing.set_start_method('forkserver')
-    multiprocessing.log_to_stderr()
-    # // _LOGGER.setlevel(logging.WARNING)  # 20=info, 30=warning, 10=debug
+
+    logging.basicConfig(
+        level=_log_level,
+        # format='[%(levelname)s] %(asctime)s\n  > %(message)s',
+        format=' _______________________\n| %(levelname)s: %(asctime)s\n|    %(pathname)s:%(funcName)s:%(lineno)d\n| . . . . . . .\n   %(message)s',
+        datefmt="%Y-%m-%d %I:%M%p",
+        stream=sys.stdout,
+        # todo: find a way to get the log of everything together
+        # filename=str(Path('/share/compling/projects/puddin', 'logs',
+        #                   f'validation{logging.time.strftime("%Y-%m-%d_%H:%M")}.log'))
+    )
+    install_mp_handler()
+    _MP_LOGGER = multiprocessing.log_to_stderr()
+    _MP_LOGGER.setLevel(logging.WARNING)
 
     _main()
 
