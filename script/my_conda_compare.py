@@ -18,11 +18,17 @@ I changed the print statements and had to add
 a conversion from bytes to string for Python 3.
 
 I just ran this in Python 3.7.3 and seemd to work well.
+
+UPDATE: Andrea Hummel @ Aug 7, 2022
+I applied my own tweaks simply because I could.
+Functionality has largely not been modified.
 """
 
-import subprocess
-import pandas as pd
 import argparse
+import subprocess
+
+import pandas as pd
+
 _PRINT_SEPLINE_CHAR = '.'
 
 
@@ -43,7 +49,6 @@ def _main():
     _print_report(env2_df, in_two)
 
     _print_header("In both, with different versions:")
-    # _print_diff_version(env1_pkg_info, env2_pkg_info, diff_version)
     _print_diff_version_df(env1_df, env2_df, diff_version)
 
     _print_header("(In both, same version:)")
@@ -71,7 +76,6 @@ def get_env_pkg_info(env_name: str):
                 Item format: `package_name: (version, build, channel)`
     """
     cmd = "conda list -n " + env_name
-    # print(cmd)
     pkg_list = subprocess.check_output(cmd, shell=True)
     pkg_list = pkg_list.decode('utf-8')
     # process the package list
@@ -124,13 +128,10 @@ def compare_envs(env1_pkg_dict: dict, env2_pkg_dict: dict):
 
 
 def _print_report(pkgs_df: pd.DataFrame, pkgs_to_print):
-    # name_col_width = max(len(pname) for pname in pkgs_to_print) + 1
+
     info_to_print = pkgs_df.loc[pkgs_to_print, :].sort_index()
     print(info_to_print.to_string())
-    # for pkg in pkgs_to_print:
 
-    #     print(pkg.ljust(name_col_width) +
-    #           "{:12}{:25}{:20}".format(*env[pkg]))
 
 
 def _print_diff_version_df(env1_df: pd.DataFrame, env2_df: pd.DataFrame, pkgs: list):
@@ -151,17 +152,6 @@ def _print_diff_version_df(env1_df: pd.DataFrame, env2_df: pd.DataFrame, pkgs: l
         print_lines.append(line+'\n' if line.startswith(' ') else line)
 
     print('\n'.join(print_lines))
-
-
-# def _print_diff_version(env1_info, env2_info, pkgs):
-
-#     name_width = max(len(ENV_1), len(ENV_2))
-#     for pkg in pkgs:
-#         print(pkg, ":")
-#         print(ENV_1.ljust(name_width),
-#               "    {:12}{:22}{:20}".format(*env1_info[pkg]))
-#         print(ENV_2.ljust(name_width),
-#               "    {:12}{:22}{:20}".format(*env2_info[pkg]))
 
 
 def _parse_args():
