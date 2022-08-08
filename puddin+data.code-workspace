@@ -18,6 +18,31 @@
 			".untracked/*",
 			"*demo*",
 			"*debug*"
+		],
+		"pylint.interpreter": [
+			"/home/arh234/anaconda3/envs/puddin-fix/bin/python"
+		]
+	},
+	"launch": {
+		"version": "0.2.0",
+		"configurations": [
+			{
+				"name": "puddin confirm_doc_ids",
+				"type": "python",
+				"request": "launch",
+				"program": "/home/arh234/projects/puddin/script/confirm_doc_ids.py",
+				"console": "integratedTerminal",
+				"python": "/home/arh234/anaconda3/envs/puddin-fix/bin/python",
+				// "justMyCode": false,
+				"args": [
+					"-d",
+					"/home/arh234/projects/puddin/demo/puddin",
+					"-g",
+					"test", 
+					"-l", 
+					"debug"
+				]
+			},
 		]
 	}
 }
