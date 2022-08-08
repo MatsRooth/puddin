@@ -21,41 +21,61 @@ I just ran this in Python 3.7.3 and seemd to work well.
 """
 
 import subprocess
+import pandas as pd
 import argparse
 _PRINT_SEPLINE_CHAR = '.'
 
 
 def _main():
-    env1_list = get_env_list(env1)
-    env2_list = get_env_list(env2)
+    env1_pkg_info = get_env_pkg_info(ENV_1)
+    env2_pkg_info = get_env_pkg_info(ENV_2)
 
     in_one, in_two, diff_version, same_version = compare_envs(
-        env1_list, env2_list)
+        env1_pkg_info, env2_pkg_info)
 
-    _print_header("In both, same version:")
-    print_report(env1_list, same_version)
+    env1_df = _convert_to_df(env1_pkg_info)
+    env2_df = _convert_to_df(env2_pkg_info)
+
+    _print_header(f"Only in `{ENV_1}`:")
+    _print_report(env1_df, in_one)
+
+    _print_header(f"Only in `{ENV_2}`:")
+    _print_report(env2_df, in_two)
 
     _print_header("In both, with different versions:")
-    print_diff_version(env1, env1_list, env2, env2_list, diff_version)
+    # _print_diff_version(env1_pkg_info, env2_pkg_info, diff_version)
+    _print_diff_version_df(env1_df, env2_df, diff_version)
 
-    _print_header(f"Only in `{env1}`:")
-    print_report(env1_list, in_one)
+    _print_header("(In both, same version:)")
+    _print_report(env1_df, same_version)
 
-    _print_header(f"Only in `{env2}`:")
-    print_report(env2_list, in_two)
+
+def _convert_to_df(pkg_info: dict):
+
+    return pd.DataFrame(
+        pkg_info, index=['version', 'build', 'channel']).transpose()
 
 
 def _print_header(header):
     print("\n", header, "\n", _PRINT_SEPLINE_CHAR*len(header), sep='')
 
 
-def get_env_list(env_name):
+def get_env_pkg_info(env_name: str):
+    """get version, build, and channel info for all packages contained in given conda env
+
+    Args:
+        env_name (str): name of conda environment
+
+    Returns:
+        dict: dictionary of tuples detailing package info.
+                Item format: `package_name: (version, build, channel)`
+    """
     cmd = "conda list -n " + env_name
     # print(cmd)
     pkg_list = subprocess.check_output(cmd, shell=True)
     pkg_list = pkg_list.decode('utf-8')
     # process the package list
-    pkgs = {}
+    pkg_info_dict = {}
     for line in pkg_list.split('\n'):
         line = line.strip()
         if not line or line[0] == '#':
@@ -66,23 +86,36 @@ def get_env_list(env_name):
             channel = "pip"
         else:
             channel = "defaults" if len(parts) < 4 else parts[3]
-        pkgs[pkg] = (version, build, channel)
+        pkg_info_dict[pkg] = (version, build, channel)
 
-    return pkgs
+    return pkg_info_dict
 
 
-def compare_envs(env1, env2):
-    pkgs1 = set(env1)
-    pkgs2 = set(env2)
+def compare_envs(env1_pkg_dict: dict, env2_pkg_dict: dict):
+    """compare packages across given conda environments:
+    takes in 2 dictionaries and returns 4 comparison lists
 
-    in_both = pkgs1 & pkgs2
-    in_one = (pkgs1 ^ pkgs2) & pkgs1
-    in_two = (pkgs1 ^ pkgs2) & pkgs2
+    Args:
+        env1_pkg_dict (dict): ENV_1 package info
+        env2_pkg_dict (dict): ENV_2 package info
+
+    Returns:
+        list: packages in ENV_1 only,
+        list: packages in ENV_2 only,
+        list: packages in both with different versions,
+        list: packages in both with same version
+    """
+    pkg_set_1 = set(env1_pkg_dict)
+    pkg_set_2 = set(env2_pkg_dict)
+
+    in_both = pkg_set_1 & pkg_set_2
+    in_one = list((pkg_set_1 ^ pkg_set_2) & pkg_set_1)
+    in_two = list((pkg_set_1 ^ pkg_set_2) & pkg_set_2)
 
     diff_version = []
     same_version = []
     for pkg in in_both:
-        if env1[pkg] != env2[pkg]:
+        if env1_pkg_dict[pkg] != env2_pkg_dict[pkg]:
             diff_version.append(pkg)
         else:
             same_version.append(pkg)
@@ -90,23 +123,51 @@ def compare_envs(env1, env2):
     return in_one, in_two, diff_version, same_version
 
 
-def print_report(env, pkgs):
-    for pkg in pkgs:
-        print("{:25}{:10}{:20}{:20}".format(pkg, *env[pkg]))
+def _print_report(pkgs_df: pd.DataFrame, pkgs_to_print):
+    # name_col_width = max(len(pname) for pname in pkgs_to_print) + 1
+    info_to_print = pkgs_df.loc[pkgs_to_print, :].sort_index()
+    print(info_to_print.to_string())
+    # for pkg in pkgs_to_print:
+
+    #     print(pkg.ljust(name_col_width) +
+    #           "{:12}{:25}{:20}".format(*env[pkg]))
 
 
-def print_diff_version(namenv1_list, env1, namenv2_list, env2, pkgs):
-    # print "     {:15}{:10}{:20}{:20}".format(
-    for pkg in pkgs:
-        print(pkg, ":")
-        print("    {:15}{:10}{:20}{:20}".format(namenv1_list, *env1[pkg]))
-        print("    {:15}{:10}{:20}{:20}".format(namenv2_list, *env2[pkg]))
+def _print_diff_version_df(env1_df: pd.DataFrame, env2_df: pd.DataFrame, pkgs: list):
+    env1_df = env1_df.loc[pkgs, :].assign(env=ENV_1).reset_index()
+    env1_df.columns = ['package', 'version', 'build', 'channel', 'env']
+    env1_df = env1_df.set_index(['package', 'env'])
+
+    env2_df = env2_df.loc[pkgs, :].assign(env=ENV_2).reset_index()
+    env2_df.columns = ['package', 'version', 'build', 'channel', 'env']
+    env2_df = env2_df.set_index(['package', 'env'])
+
+    df_str = pd.concat([env1_df, env2_df]).sort_index().to_string()
+    df_lines = df_str.splitlines()
+    print(df_lines.pop(0))
+    print(df_lines.pop(0))
+    print_lines = []
+    for line in df_lines:
+        print_lines.append(line+'\n' if line.startswith(' ') else line)
+
+    print('\n'.join(print_lines))
+
+
+# def _print_diff_version(env1_info, env2_info, pkgs):
+
+#     name_width = max(len(ENV_1), len(ENV_2))
+#     for pkg in pkgs:
+#         print(pkg, ":")
+#         print(ENV_1.ljust(name_width),
+#               "    {:12}{:22}{:20}".format(*env1_info[pkg]))
+#         print(ENV_2.ljust(name_width),
+#               "    {:12}{:22}{:20}".format(*env2_info[pkg]))
 
 
 def _parse_args():
-
     parser = argparse.ArgumentParser(
-        description=(''),
+        description=('Compare 2 conda environments. '
+                     'Prints info on package contents and versions compared between 2 envs.'),
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
 
@@ -119,19 +180,14 @@ def _parse_args():
     parser.add_argument(
         '-c', '--compare_env',
         type=str, default='base',
-        help=('name of second conda environment. Also required, but defaults to "base" environment.'))
+        help=('name of second conda environment. '
+              'Also required, but defaults to "base" environment.'))
 
     args = parser.parse_args()
     return args.env, args.compare_env
 
 
 if __name__ == "__main__":
-    # try:
-    #     env1 = sys.argv[1]
-    #     env2 = sys.argv[2]
-    # except IndexError:
-    #     print ("you need to pass the name of two environments at the commmand line")
 
-    # > updated argparse implementation
-    env1, env2 = _parse_args()
+    ENV_1, ENV_2 = _parse_args()
     _main()
