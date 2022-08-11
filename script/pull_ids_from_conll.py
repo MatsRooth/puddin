@@ -68,7 +68,8 @@ def conllu_id_iter(conll_dir: Path, id_unit: str,
     if not grep_str:
         sys.exit('No valid id unit specified. No ids pulled.')
 
-    # TODO : make this parallel as well?
+    # temp -- for debugging
+    # for conllu_file in conll_dir.glob('*-0[0-2]*.conllu'):
     for conllu_file in conll_dir.glob('*.conllu'):
         id_iter = None
         # unit_count = int(sp_run(['egrep', '-c', grep_str, conllu_file],
