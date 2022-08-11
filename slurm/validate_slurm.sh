@@ -1,6 +1,6 @@
 #!/bin/bash
 ##SBATCH --mail-user=arh234@cornell.edu
-##SBATCH --mail-type=ALL
+#SBATCH --mail-type=ALL
 #SBATCH -J ValidatePuddin        # Job name
 #SBATCH -o %x_%j.sh.out              # Name of stdout output log file (%j expands to jobID)
 #SBATCH -e %x_%j.sh.err              # Name of stderr output log file (%j expands to jobID)

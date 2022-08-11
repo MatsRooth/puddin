@@ -75,12 +75,12 @@ def assess_data_group(grp: str, info: pd.DataFrame, rawdf_path: Path, data_dir: 
     _setup_logging(current_process().name)
     _inform(_format(f"VALIDATION LOG: {grp}\nPID: {current_process().pid}"))
     # temporary -- for debugging
-    if grp == '01':
-        samp_rawdf_path = data_dir.joinpath(
-            "pile_tables/raw/sample50k_info-pile_01_Pile-CC_df.pkl.gz"
-        )
-        if samp_rawdf_path.is_file():
-            rawdf_path = samp_rawdf_path
+    # if grp == '01':
+    #     samp_rawdf_path = data_dir.joinpath(
+    #         "pile_tables/raw/sample50k_info-pile_01_Pile-CC_df.pkl.gz"
+    #     )
+    #     if samp_rawdf_path.is_file():
+    #         rawdf_path = samp_rawdf_path
     rdf = _prep_raw_dataframe(info, rawdf_path)
 
     conll_dir = _check_conll_path(info, data_dir)
@@ -286,7 +286,7 @@ def _get_parse_status(rdf, conll_dir):
 
 def _load_exclusions(excl_path):
     # val_excl_path = _get_val_excl_path(excl_path)
-    loaded = False
+    # loaded = False
     # original_columns = ['text_id', 'slice_id', 'excl_type', 'text',
     #                     'pile_set_name', 'pile_set_code',
     #                     'data_origin_fpath', 'dataframe_fpath']
