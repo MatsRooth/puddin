@@ -131,26 +131,28 @@ def _main():
     print(
         "\n ==========================================\n|",
         time.strftime("%Y-%m-%d  %I:%M%p\n|"),
-        _format(f"Assessment Complete:\n{all_df.loc[:,~all_df.columns.str.endswith('text')].sample(5)}"),
+        _format(
+            f"Assessment Complete! \n20 of {len(all_df)} output rows:\n"
+            f"{all_df.loc[:,~all_df.columns.str.endswith(('text','slice', 'conllu', 'code'))].sample(20).sort_index()}"),
     )
-    df_lines = (
-        all_df.value_counts(["success", "data_group"])
-        .sort_index()
-        .to_string()
-        .splitlines()
-    )
-    print_lines = ["\n" + df_lines.pop(0) + "\n"]
-    for line in df_lines:
-        print_lines.append(line + "\n" if line.startswith(" ") else line)
+    success_lines = _format_counts(all_df, ["data_group", "success"])
 
     print(
         " __________________________\n| Successful Parse Totals:"
-        + _format("\n * * * * * *" + "\n".join(print_lines))
+        + _format("\n * * * * * *" + "\n".join(success_lines))
     )
+    excl_type_lines = _format_counts(all_df, ["data_group", "excl_type"])
+
+    print(
+        " __________________________\n| Exclusion Type Totals:"
+        + _format("\n * * * * * *" + "\n".join(excl_type_lines))
+    )
+
     combined_results_path = _INFO_DIR.joinpath("all-pcc-texts_status.pkl.gz")
     if combined_results_path.is_file() and combined_results_path.stat().st_size > 0:
         prior_mtime_str = time.strftime(
-            "%Y-%m-%d_%I%M%p", time.localtime(combined_results_path.stat().st_mtime)
+            "%Y-%m-%d_%I%M%p", time.localtime(
+                combined_results_path.stat().st_mtime)
         )
         new_name = combined_results_path.with_name(
             f"prior_pcc-validation-status_{prior_mtime_str}.pkl.gz"
@@ -167,13 +169,30 @@ def _main():
     print("Finished.", time.strftime("%Y-%m-%d  %I:%M%p"), sep="\n")
 
 
+def _format_counts(df, columns):
+    print_lines = []
+    count_lines = (
+        df.value_counts(columns)
+        .sort_index()
+        .to_string()
+        .splitlines()
+    )
+    print_lines = []
+    for line in count_lines:
+        if not line.startswith(" "):
+            line = '\n' + line
+        print_lines.append(line)
+    return print_lines
+
+
 def _load_meta_info():
     meta_info_path = _INFO_DIR.joinpath("completed-puddin_meta-index.pkl")
     print(
         f'{time.strftime("%Y-%m-%d  %I:%M%p")}: Loading processing meta info from {meta_info_path} ...'
     )
     if not meta_info_path.is_file():
-        print(f"<!> ERROR! {meta_info_path} does not exist. Data cannot be assessed.")
+        print(
+            f"<!> ERROR! {meta_info_path} does not exist. Data cannot be assessed.")
         sys.exit(1)
     meta = pd.read_pickle(meta_info_path)
 
@@ -181,7 +200,8 @@ def _load_meta_info():
         meta = meta.loc[(meta.data_origin_group.isin(_DATA_GRPS)), :]
 
         if meta.empty:
-            print(f"<!> ERROR! No processing data found for sources: {_DATA_GRPS}.")
+            print(
+                f"<!> ERROR! No processing data found for sources: {_DATA_GRPS}.")
             sys.exit(1)
 
     was_overwritten = meta.slice_name.duplicated(keep="last")
@@ -197,7 +217,8 @@ def _load_meta_info():
             .sort_values("conllu_path")
         )
         slices_with_dups = owdf.slice_name[owdf.overwritten].unique()
-        list_str = "  ~ " + " and ".join(", ".join(slices_with_dups).rsplit(" ", 1))
+        list_str = "  ~ " + \
+            " and ".join(", ".join(slices_with_dups).rsplit(" ", 1))
         print(
             f"ERROR! Multiple records found for {len(slices_with_dups)} "
             f'slices:\n{list_str}\n{"."*len(list_str)}\n{owdf}'
@@ -271,7 +292,8 @@ def _assess_files(meta):
 
             if run_count == 1:
                 print(
-                    "\n _______________________\n|", time.strftime("%Y-%m-%d  %I:%M%p")
+                    "\n _______________________\n|", time.strftime(
+                        "%Y-%m-%d  %I:%M%p")
                 )
                 col_head_line = "\t" + "-" * width
                 print(
@@ -280,10 +302,12 @@ def _assess_files(meta):
                         f" ------ | ------ {col_head_line*3}"
                     ).expandtabs(3)
                 )
-                
+
             was_success = group_info.success
-            successful = str(group_info.value_counts(["success"])[True]) if any(was_success) else 0
-            exclusions = str(group_info.value_counts(["success"])[False]) if any(~was_success) else 0
+            successful = str(group_info.value_counts(["success"])[
+                             True]) if any(was_success) else 0
+            exclusions = str(group_info.value_counts(["success"])[
+                             False]) if any(~was_success) else 0
             print(
                 (
                     f"{str(run_count).zfill(zfill_len).center(8)}|"
@@ -345,7 +369,8 @@ def _check_meta_info(grp, info, tables_dir, data_dir):
     findf_path = data_dir.joinpath(info.final_df_path.iloc[0])
     rawdf_path = Path(findf_path.parent, "raw", findf_path.name)
     if not rawdf_path.is_file():
-        print("ERROR! Raw/initial dataframe not found. " f"Invalid path: {rawdf_path}")
+        print(
+            "ERROR! Raw/initial dataframe not found. " f"Invalid path: {rawdf_path}")
         return None
 
     if findf_path.parent != tables_dir:
@@ -393,7 +418,8 @@ def _save_missing_info(all_df):
             ["data_group", "raw_id"], append=True
         ).to_json(all_missing_path.with_suffix(".json"), orient="index", indent=4)
     else:
-        print(" _______________________\n| " + "All original texts accounted for ^_^")
+        print(" _______________________\n| " +
+              "All original texts accounted for ^_^")
 
 
 if __name__ == "__main__":
