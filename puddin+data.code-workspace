@@ -20,8 +20,9 @@
 			"*debug*"
 		],
 		"pylint.interpreter": [
-			"/home/arh234/anaconda3/envs/puddin-fix/bin/python"
-		]
+			"/home/arh234/anaconda3/bin/python"
+		],
+		"todo-tree.tree.scanMode": "open files"
 	},
 	"launch": {
 		"version": "0.2.0",
@@ -38,8 +39,8 @@
 					"-d",
 					"/home/arh234/projects/puddin/demo/puddin",
 					"-g",
-					"test", 
-					"-l", 
+					"test",
+					"-l",
 					"debug"
 				]
 			},

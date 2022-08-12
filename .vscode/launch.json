@@ -10,7 +10,20 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "cwd": "/home/arh234/projects/puddin"
+            "justMyCode": true
+        },
+        {
+            "name": "my conda compare puddin puddin-fix",
+            "type": "python",
+            "request": "launch",
+            "program": "script/my_conda_compare.py",
+            "console": "integratedTerminal",
+            "cwd": "/home/arh234/projects/puddin",
+            "args": [
+                "puddin",
+                "-c",
+                "puddin-fix"
+            ]
         },
         {
             "name": "parse_pile NO ARGS",
