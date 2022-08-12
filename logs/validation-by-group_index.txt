@@ -1,0 +1,163 @@
+Files in /share/compling/data/puddin/info/validation_by_group
+ @ Thu Aug 11 19:09:44 2022
+* * * * * * * * * * * * * *
+validation_by_group/status-overview/00-pcc_status.pkl.gz
+modified: Thu Aug 11 03:50:39 2022
+size: 12.6 MB
+renamed: validation_by_group/status-overview/Pcc00_status-info.pkl.gz
+-----------------------------
+validation_by_group/status-overview/01-pcc_status.pkl.gz
+modified: Thu Aug 11 04:11:44 2022
+size: 12.2 MB
+renamed: validation_by_group/status-overview/Pcc01_status-info.pkl.gz
+-----------------------------
+validation_by_group/status-overview/02-pcc_status.pkl.gz
+modified: Thu Aug 11 03:28:21 2022
+size: 12.6 MB
+renamed: validation_by_group/status-overview/Pcc02_status-info.pkl.gz
+-----------------------------
+validation_by_group/status-overview/03-pcc_status.pkl.gz
+modified: Thu Aug 11 04:17:21 2022
+size: 12.6 MB
+renamed: validation_by_group/status-overview/Pcc03_status-info.pkl.gz
+-----------------------------
+validation_by_group/status-overview/04-pcc_status.pkl.gz
+modified: Thu Aug 11 03:53:05 2022
+size: 12.6 MB
+renamed: validation_by_group/status-overview/Pcc04_status-info.pkl.gz
+-----------------------------
+validation_by_group/status-overview/05-pcc_status.pkl.gz
+modified: Thu Aug 11 03:40:00 2022
+size: 12.6 MB
+renamed: validation_by_group/status-overview/Pcc05_status-info.pkl.gz
+-----------------------------
+validation_by_group/status-overview/06-pcc_status.pkl.gz
+modified: Thu Aug 11 03:37:13 2022
+size: 12.6 MB
+renamed: validation_by_group/status-overview/Pcc06_status-info.pkl.gz
+-----------------------------
+validation_by_group/status-overview/07-pcc_status.pkl.gz
+modified: Thu Aug 11 03:38:22 2022
+size: 12.6 MB
+renamed: validation_by_group/status-overview/Pcc07_status-info.pkl.gz
+-----------------------------
+validation_by_group/status-overview/08-pcc_status.pkl.gz
+modified: Thu Aug 11 03:35:52 2022
+size: 12.6 MB
+renamed: validation_by_group/status-overview/Pcc08_status-info.pkl.gz
+-----------------------------
+validation_by_group/status-overview/09-pcc_status.pkl.gz
+modified: Thu Aug 11 03:29:54 2022
+size: 12.6 MB
+renamed: validation_by_group/status-overview/Pcc09_status-info.pkl.gz
+-----------------------------
+validation_by_group/status-overview/10-pcc_status.pkl.gz
+modified: Thu Aug 11 06:18:40 2022
+size: 12.6 MB
+renamed: validation_by_group/status-overview/Pcc10_status-info.pkl.gz
+-----------------------------
+validation_by_group/status-overview/11-pcc_status.pkl.gz
+modified: Thu Aug 11 04:46:54 2022
+size: 12.6 MB
+renamed: validation_by_group/status-overview/Pcc11_status-info.pkl.gz
+-----------------------------
+validation_by_group/status-overview/12-pcc_status.pkl.gz
+modified: Thu Aug 11 05:07:39 2022
+size: 12.6 MB
+renamed: validation_by_group/status-overview/Pcc12_status-info.pkl.gz
+-----------------------------
+validation_by_group/status-overview/13-pcc_status.pkl.gz
+modified: Thu Aug 11 06:10:07 2022
+size: 12.6 MB
+renamed: validation_by_group/status-overview/Pcc13_status-info.pkl.gz
+-----------------------------
+validation_by_group/status-overview/14-pcc_status.pkl.gz
+modified: Thu Aug 11 05:03:45 2022
+size: 12.6 MB
+renamed: validation_by_group/status-overview/Pcc14_status-info.pkl.gz
+-----------------------------
+validation_by_group/status-overview/15-pcc_status.pkl.gz
+modified: Thu Aug 11 05:35:11 2022
+size: 12.6 MB
+renamed: validation_by_group/status-overview/Pcc15_status-info.pkl.gz
+-----------------------------
+validation_by_group/status-overview/16-pcc_status.pkl.gz
+modified: Thu Aug 11 05:32:48 2022
+size: 12.6 MB
+renamed: validation_by_group/status-overview/Pcc16_status-info.pkl.gz
+-----------------------------
+validation_by_group/status-overview/17-pcc_status.pkl.gz
+modified: Thu Aug 11 05:38:14 2022
+size: 12.6 MB
+renamed: validation_by_group/status-overview/Pcc17_status-info.pkl.gz
+-----------------------------
+validation_by_group/status-overview/18-pcc_status.pkl.gz
+modified: Thu Aug 11 06:01:31 2022
+size: 12.6 MB
+renamed: validation_by_group/status-overview/Pcc18_status-info.pkl.gz
+-----------------------------
+validation_by_group/status-overview/19-pcc_status.pkl.gz
+modified: Thu Aug 11 05:59:33 2022
+size: 12.6 MB
+renamed: validation_by_group/status-overview/Pcc19_status-info.pkl.gz
+-----------------------------
+validation_by_group/status-overview/20-pcc_status.pkl.gz
+modified: Thu Aug 11 07:04:57 2022
+size: 12.6 MB
+renamed: validation_by_group/status-overview/Pcc20_status-info.pkl.gz
+-----------------------------
+validation_by_group/status-overview/21-pcc_status.pkl.gz
+modified: Thu Aug 11 06:50:56 2022
+size: 12.6 MB
+renamed: validation_by_group/status-overview/Pcc21_status-info.pkl.gz
+-----------------------------
+validation_by_group/status-overview/22-pcc_status.pkl.gz
+modified: Thu Aug 11 07:03:50 2022
+size: 12.6 MB
+renamed: validation_by_group/status-overview/Pcc22_status-info.pkl.gz
+-----------------------------
+validation_by_group/status-overview/23-pcc_status.pkl.gz
+modified: Thu Aug 11 07:21:46 2022
+size: 12.6 MB
+renamed: validation_by_group/status-overview/Pcc23_status-info.pkl.gz
+-----------------------------
+validation_by_group/status-overview/24-pcc_status.pkl.gz
+modified: Thu Aug 11 07:16:06 2022
+size: 12.6 MB
+renamed: validation_by_group/status-overview/Pcc24_status-info.pkl.gz
+-----------------------------
+validation_by_group/status-overview/25-pcc_status.pkl.gz
+modified: Thu Aug 11 07:22:45 2022
+size: 12.6 MB
+renamed: validation_by_group/status-overview/Pcc25_status-info.pkl.gz
+-----------------------------
+validation_by_group/status-overview/26-pcc_status.pkl.gz
+modified: Thu Aug 11 07:13:29 2022
+size: 12.6 MB
+renamed: validation_by_group/status-overview/Pcc26_status-info.pkl.gz
+-----------------------------
+validation_by_group/status-overview/27-pcc_status.pkl.gz
+modified: Thu Aug 11 07:18:36 2022
+size: 12.6 MB
+renamed: validation_by_group/status-overview/Pcc27_status-info.pkl.gz
+-----------------------------
+validation_by_group/status-overview/28-pcc_status.pkl.gz
+modified: Thu Aug 11 07:14:37 2022
+size: 12.6 MB
+renamed: validation_by_group/status-overview/Pcc28_status-info.pkl.gz
+-----------------------------
+validation_by_group/status-overview/29-pcc_status.pkl.gz
+modified: Thu Aug 11 07:22:53 2022
+size: 12.2 MB
+renamed: validation_by_group/status-overview/Pcc29_status-info.pkl.gz
+-----------------------------
+validation_by_group/status-overview/test-pcc_status.pkl.gz
+modified: Thu Aug 11 06:53:48 2022
+size: 0.4 MB
+renamed: validation_by_group/status-overview/PccTe_status-info.pkl.gz
+-----------------------------
+validation_by_group/status-overview/val-pcc_status.pkl.gz
+modified: Thu Aug 11 06:56:55 2022
+size: 0.4 MB
+renamed: validation_by_group/status-overview/PccVa_status-info.pkl.gz
+-----------------------------

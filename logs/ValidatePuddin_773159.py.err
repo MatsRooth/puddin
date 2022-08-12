@@ -1,0 +1,30 @@
+Traceback (most recent call last):
+  File "/share/compling/projects/puddin/script/confirm_doc_ids.py", line 448, in <module>
+    _main()
+  File "/share/compling/projects/puddin/script/confirm_doc_ids.py", line 119, in _main
+    all_groups_list = _assess_files(meta)
+  File "/share/compling/projects/puddin/script/confirm_doc_ids.py", line 335, in _assess_files
+    _save_bad_excl_info(bad_excl_list, excl_dir)
+  File "/share/compling/projects/puddin/script/confirm_doc_ids.py", line 389, in _save_bad_excl_info
+    bad_excl = pd.concat(bad_excl_list)
+  File "/home/arh234/.conda/envs/puddin/lib/python3.8/site-packages/pandas/util/_decorators.py", line 311, in wrapper
+    return func(*args, **kwargs)
+  File "/home/arh234/.conda/envs/puddin/lib/python3.8/site-packages/pandas/core/reshape/concat.py", line 360, in concat
+    return op.get_result()
+  File "/home/arh234/.conda/envs/puddin/lib/python3.8/site-packages/pandas/core/reshape/concat.py", line 595, in get_result
+    new_data = concatenate_managers(
+  File "/home/arh234/.conda/envs/puddin/lib/python3.8/site-packages/pandas/core/internals/concat.py", line 242, in concatenate_managers
+    values = _concatenate_join_units(join_units, concat_axis, copy=copy)
+  File "/home/arh234/.conda/envs/puddin/lib/python3.8/site-packages/pandas/core/internals/concat.py", line 574, in _concatenate_join_units
+    concat_values = concat_compat(to_concat, axis=0, ea_compat_axis=True)
+  File "/home/arh234/.conda/envs/puddin/lib/python3.8/site-packages/pandas/core/dtypes/concat.py", line 117, in concat_compat
+    single_dtype = len({x.dtype for x in to_concat}) == 1
+  File "/home/arh234/.conda/envs/puddin/lib/python3.8/site-packages/pandas/core/dtypes/concat.py", line 117, in <setcomp>
+    single_dtype = len({x.dtype for x in to_concat}) == 1
+  File "/home/arh234/.conda/envs/puddin/lib/python3.8/site-packages/pandas/core/dtypes/dtypes.py", line 399, in __eq__
+    if not left.dtype == right.dtype:
+TypeError: Cannot interpret 'string[python]' as a data type
+
+real	309m54.853s
+user	0m23.953s
+sys	0m15.675s

@@ -1,0 +1,927 @@
+ _______________________
+| INFO: 2022-08-11 02:13AM
+|    /share/compling/projects/puddin/script/validate_data_group.py:assess_data_group:76
+| . . . . . . .
+   VALIDATION LOG: 00
+   PID: 1218763
+ _______________________
+| INFO: 2022-08-11 02:13AM
+|    /share/compling/projects/puddin/script/validate_data_group.py:_prep_raw_dataframe:194
+| . . . . . . .
+   Loading initial/raw dataframe:
+    > /share/compling/data/puddin/pile_tables/raw/pile_00_Pile-CC_df.pkl.gz
+      ...
+ _______________________
+| INFO: 2022-08-11 02:17AM
+|    /share/compling/projects/puddin/script/validate_data_group.py:_check_conll_path:234
+| . . . . . . .
+   directory of conllu files to be searched:
+    > /share/compling/data/puddin/Pcc00.conll
+ _______________________
+| INFO: 2022-08-11 03:41AM
+|    /share/compling/projects/puddin/script/validate_data_group.py:_get_parse_status:269
+| . . . . . . .
+   2022-08-11 -- 02:18AM   pcc_eng_00-001.conllu   total docs: 9999
+   2022-08-11 -- 02:18AM   pcc_eng_00-002.conllu   total docs: 9999
+   2022-08-11 -- 02:19AM   pcc_eng_00-003.conllu   total docs: 9999
+   2022-08-11 -- 02:19AM   pcc_eng_00-004.conllu   total docs: 9999
+   2022-08-11 -- 02:20AM   pcc_eng_00-005.conllu   total docs: 9999
+   2022-08-11 -- 02:20AM   pcc_eng_00-006.conllu   total docs: 9999
+   2022-08-11 -- 02:21AM   pcc_eng_00-007.conllu   total docs: 9999
+   2022-08-11 -- 02:22AM   pcc_eng_00-008.conllu   total docs: 9999
+   2022-08-11 -- 02:22AM   pcc_eng_00-009.conllu   total docs: 9999
+   2022-08-11 -- 02:23AM   pcc_eng_00-010.conllu   total docs: 9998
+   2022-08-11 -- 02:23AM   pcc_eng_00-011.conllu   total docs: 9999
+   2022-08-11 -- 02:24AM   pcc_eng_00-012.conllu   total docs: 9999
+   2022-08-11 -- 02:24AM   pcc_eng_00-013.conllu   total docs: 9999
+   2022-08-11 -- 02:25AM   pcc_eng_00-014.conllu   total docs: 9999
+   2022-08-11 -- 02:26AM   pcc_eng_00-015.conllu   total docs: 9999
+   2022-08-11 -- 02:27AM   pcc_eng_00-016.conllu   total docs: 9998
+   2022-08-11 -- 02:28AM   pcc_eng_00-017.conllu   total docs: 9999
+   2022-08-11 -- 02:28AM   pcc_eng_00-018.conllu   total docs: 9999
+   2022-08-11 -- 02:29AM   pcc_eng_00-019.conllu   total docs: 9999
+   2022-08-11 -- 02:30AM   pcc_eng_00-020.conllu   total docs: 9999
+   2022-08-11 -- 02:31AM   pcc_eng_00-021.conllu   total docs: 9999
+   2022-08-11 -- 02:32AM   pcc_eng_00-022.conllu   total docs: 9999
+   2022-08-11 -- 02:32AM   pcc_eng_00-023.conllu   total docs: 9999
+   2022-08-11 -- 02:33AM   pcc_eng_00-024.conllu   total docs: 9999
+   2022-08-11 -- 02:34AM   pcc_eng_00-025.conllu   total docs: 9999
+   2022-08-11 -- 02:35AM   pcc_eng_00-026.conllu   total docs: 9999
+   2022-08-11 -- 02:36AM   pcc_eng_00-027.conllu   total docs: 9999
+   2022-08-11 -- 02:37AM   pcc_eng_00-028.conllu   total docs: 9999
+   2022-08-11 -- 02:37AM   pcc_eng_00-029.conllu   total docs: 9999
+   2022-08-11 -- 02:38AM   pcc_eng_00-030.conllu   total docs: 9999
+   2022-08-11 -- 02:39AM   pcc_eng_00-031.conllu   total docs: 9999
+   2022-08-11 -- 02:40AM   pcc_eng_00-032.conllu   total docs: 9999
+   2022-08-11 -- 02:43AM   pcc_eng_00-033.conllu   total docs: 9999
+   2022-08-11 -- 02:44AM   pcc_eng_00-034.conllu   total docs: 9999
+   2022-08-11 -- 02:45AM   pcc_eng_00-035.conllu   total docs: 9999
+   2022-08-11 -- 02:46AM   pcc_eng_00-036.conllu   total docs: 9999
+   2022-08-11 -- 02:47AM   pcc_eng_00-037.conllu   total docs: 9999
+   2022-08-11 -- 02:48AM   pcc_eng_00-038.conllu   total docs: 9999
+   2022-08-11 -- 02:49AM   pcc_eng_00-039.conllu   total docs: 9999
+   2022-08-11 -- 02:50AM   pcc_eng_00-040.conllu   total docs: 9999
+   2022-08-11 -- 02:51AM   pcc_eng_00-041.conllu   total docs: 9999
+   2022-08-11 -- 02:52AM   pcc_eng_00-042.conllu   total docs: 9999
+   2022-08-11 -- 02:53AM   pcc_eng_00-043.conllu   total docs: 9999
+   2022-08-11 -- 02:54AM   pcc_eng_00-044.conllu   total docs: 9999
+   2022-08-11 -- 02:54AM   pcc_eng_00-045.conllu   total docs: 9999
+   2022-08-11 -- 02:56AM   pcc_eng_00-046.conllu   total docs: 9999
+   2022-08-11 -- 02:57AM   pcc_eng_00-047.conllu   total docs: 9997
+   2022-08-11 -- 02:58AM   pcc_eng_00-048.conllu   total docs: 9999
+   2022-08-11 -- 02:58AM   pcc_eng_00-049.conllu   total docs: 9999
+   2022-08-11 -- 02:59AM   pcc_eng_00-050.conllu   total docs: 9999
+   2022-08-11 -- 03:00AM   pcc_eng_00-051.conllu   total docs: 9999
+   2022-08-11 -- 03:00AM   pcc_eng_00-052.conllu   total docs: 9999
+   2022-08-11 -- 03:02AM   pcc_eng_00-053.conllu   total docs: 9999
+   2022-08-11 -- 03:03AM   pcc_eng_00-054.conllu   total docs: 9999
+   2022-08-11 -- 03:04AM   pcc_eng_00-055.conllu   total docs: 9998
+   2022-08-11 -- 03:05AM   pcc_eng_00-056.conllu   total docs: 9999
+   2022-08-11 -- 03:06AM   pcc_eng_00-057.conllu   total docs: 9999
+   2022-08-11 -- 03:07AM   pcc_eng_00-058.conllu   total docs: 9999
+   2022-08-11 -- 03:08AM   pcc_eng_00-059.conllu   total docs: 9999
+   2022-08-11 -- 03:09AM   pcc_eng_00-060.conllu   total docs: 9999
+   2022-08-11 -- 03:09AM   pcc_eng_00-061.conllu   total docs: 9999
+   2022-08-11 -- 03:11AM   pcc_eng_00-062.conllu   total docs: 9999
+   2022-08-11 -- 03:12AM   pcc_eng_00-063.conllu   total docs: 9999
+   2022-08-11 -- 03:13AM   pcc_eng_00-064.conllu   total docs: 9999
+   2022-08-11 -- 03:13AM   pcc_eng_00-065.conllu   total docs: 9997
+   2022-08-11 -- 03:15AM   pcc_eng_00-066.conllu   total docs: 9999
+   2022-08-11 -- 03:15AM   pcc_eng_00-067.conllu   total docs: 9998
+   2022-08-11 -- 03:16AM   pcc_eng_00-068.conllu   total docs: 9999
+   2022-08-11 -- 03:17AM   pcc_eng_00-069.conllu   total docs: 9998
+   2022-08-11 -- 03:17AM   pcc_eng_00-070.conllu   total docs: 9998
+   2022-08-11 -- 03:18AM   pcc_eng_00-071.conllu   total docs: 9999
+   2022-08-11 -- 03:20AM   pcc_eng_00-072.conllu   total docs: 9999
+   2022-08-11 -- 03:21AM   pcc_eng_00-073.conllu   total docs: 9998
+   2022-08-11 -- 03:21AM   pcc_eng_00-074.conllu   total docs: 9999
+   2022-08-11 -- 03:22AM   pcc_eng_00-075.conllu   total docs: 9998
+   2022-08-11 -- 03:23AM   pcc_eng_00-076.conllu   total docs: 9999
+   2022-08-11 -- 03:24AM   pcc_eng_00-077.conllu   total docs: 9999
+   2022-08-11 -- 03:24AM   pcc_eng_00-078.conllu   total docs: 9999
+   2022-08-11 -- 03:26AM   pcc_eng_00-079.conllu   total docs: 9999
+   2022-08-11 -- 03:27AM   pcc_eng_00-080.conllu   total docs: 9998
+   2022-08-11 -- 03:27AM   pcc_eng_00-081.conllu   total docs: 9999
+   2022-08-11 -- 03:28AM   pcc_eng_00-082.conllu   total docs: 9999
+   2022-08-11 -- 03:29AM   pcc_eng_00-083.conllu   total docs: 9999
+   2022-08-11 -- 03:30AM   pcc_eng_00-084.conllu   total docs: 9997
+   2022-08-11 -- 03:30AM   pcc_eng_00-085.conllu   total docs: 9999
+   2022-08-11 -- 03:31AM   pcc_eng_00-086.conllu   total docs: 9998
+   2022-08-11 -- 03:32AM   pcc_eng_00-087.conllu   total docs: 9999
+   2022-08-11 -- 03:32AM   pcc_eng_00-088.conllu   total docs: 9999
+   2022-08-11 -- 03:32AM   pcc_eng_00-089.conllu   total docs: 9999
+   2022-08-11 -- 03:33AM   pcc_eng_00-090.conllu   total docs: 9998
+   2022-08-11 -- 03:33AM   pcc_eng_00-091.conllu   total docs: 9999
+   2022-08-11 -- 03:34AM   pcc_eng_00-092.conllu   total docs: 9999
+   2022-08-11 -- 03:35AM   pcc_eng_00-093.conllu   total docs: 9999
+   2022-08-11 -- 03:36AM   pcc_eng_00-094.conllu   total docs: 9998
+   2022-08-11 -- 03:37AM   pcc_eng_00-095.conllu   total docs: 9999
+   2022-08-11 -- 03:37AM   pcc_eng_00-096.conllu   total docs: 9998
+   2022-08-11 -- 03:37AM   pcc_eng_00-097.conllu   total docs: 9999
+   2022-08-11 -- 03:38AM   pcc_eng_00-098.conllu   total docs: 9999
+   2022-08-11 -- 03:38AM   pcc_eng_00-099.conllu   total docs: 9999
+   2022-08-11 -- 03:38AM   pcc_eng_00-100.conllu   total docs: 9998
+   2022-08-11 -- 03:39AM   pcc_eng_00-101.conllu   total docs: 9998
+   2022-08-11 -- 03:39AM   pcc_eng_00-102.conllu   total docs: 9999
+   2022-08-11 -- 03:39AM   pcc_eng_00-103.conllu   total docs: 9999
+   2022-08-11 -- 03:40AM   pcc_eng_00-104.conllu   total docs: 9999
+   2022-08-11 -- 03:40AM   pcc_eng_00-105.conllu   total docs: 9999
+   2022-08-11 -- 03:40AM   pcc_eng_00-106.conllu   total docs: 9999
+   2022-08-11 -- 03:41AM   pcc_eng_00-107.conllu   total docs: 10609
+   2022-08-11 -- 03:41AM   pcc_eng_00-108.conllu   total docs: 10611
+ _______________________
+| INFO: 2022-08-11 03:41AM
+|    /share/compling/projects/puddin/script/validate_data_group.py:_load_exclusions:318
+| . . . . . . .
+   Loading exclusions dataframe:
+    > /share/compling/data/puddin/pile_exclusions/pile_00_Pile-CC_excl.pkl.gz
+ _______________________
+| INFO: 2022-08-11 03:49AM
+|    /share/compling/projects/puddin/script/validate_data_group.py:_load_exclusions:345
+| . . . . . . .
+   Exclusions loaded:
+                                        slice_id excl_type  ...  row_ix slice_code
+   raw_id                                                   ...                   
+   pcc_00_0007900                           <NA>      wiki  ...       0       <NA>
+   pcc_00_0079539                           <NA>      wiki  ...       1       <NA>
+   pcc_00_0102395                           <NA>      wiki  ...       2       <NA>
+   pcc_00_0105326                           <NA>      wiki  ...       3       <NA>
+   pcc_00_0182732                           <NA>      wiki  ...       4       <NA>
+   ...                                       ...       ...  ...     ...        ...
+   pcc_00_1715186  pcc_eng_00_107.00400_x1715186      fail  ...  667627        107
+   pcc_00_0744483   pcc_eng_00_047.0603_x0744483      fail  ...  667628        047
+   pcc_00_0758007   pcc_eng_00_047.8960_x0758007      fail  ...  667629        047
+   pcc_00_1039644   pcc_eng_00_065.3072_x1039644      fail  ...  667630        065
+   pcc_00_1045588   pcc_eng_00_065.6726_x1045588      fail  ...  667631        065
+   
+   [667632 rows x 11 columns]
+ _______________________
+| INFO: 2022-08-11 03:50AM
+|    /share/compling/projects/puddin/script/validate_data_group.py:assess_data_group:132
+| . . . . . . .
+   No original texts missing from 00 output ^_^
+ _______________________
+| INFO: 2022-08-11 03:50AM
+|    /share/compling/projects/puddin/script/validate_data_group.py:_identify_invalid_excl:491
+| . . . . . . .
+   All 00 exclusions in are valid ^_^
+ _______________________
+| INFO: 2022-08-11 03:50AM
+|    /share/compling/projects/puddin/script/validate_data_group.py:_save_validated_excl:498
+| . . . . . . .
+   Saving updated exclusions dataframe to pile_exclusions/validated/pile_00_Pile-CC_excl.pkl.gz
+ _______________________
+| INFO: 2022-08-11 03:50AM
+|    /share/compling/projects/puddin/script/validate_data_group.py:assess_data_group:142
+| . . . . . . .
+   ## `00` data assessment complete
+   2022-08-11 -- 03:50AM
+   status overview:
+   ..................
+   excl_type  known_fail  success
+   a0wrd      False       False      265443
+   punc       False       False      248782
+   code       False       False       97190
+   _wrd       False       False       50584
+   html       False       False        5089
+   wiki       False       False         444
+   json       False       False          74
+   fail       True        False          26
+   ..................
+   slice           known_fail  success
+   pcc_eng_00_108  False       True       10611
+   pcc_eng_00_107  False       True       10609
+   pcc_eng_00_060  False       True        9999
+   pcc_eng_00_074  False       True        9999
+   pcc_eng_00_072  False       True        9999
+   pcc_eng_00_071  False       True        9999
+   pcc_eng_00_068  False       True        9999
+   pcc_eng_00_066  False       True        9999
+   pcc_eng_00_064  False       True        9999
+   pcc_eng_00_063  False       True        9999
+   pcc_eng_00_062  False       True        9999
+   pcc_eng_00_061  False       True        9999
+   pcc_eng_00_059  False       True        9999
+   pcc_eng_00_077  False       True        9999
+   pcc_eng_00_058  False       True        9999
+   pcc_eng_00_057  False       True        9999
+   pcc_eng_00_056  False       True        9999
+   pcc_eng_00_002  False       True        9999
+   pcc_eng_00_054  False       True        9999
+   pcc_eng_00_053  False       True        9999
+   pcc_eng_00_052  False       True        9999
+   pcc_eng_00_051  False       True        9999
+   pcc_eng_00_050  False       True        9999
+   pcc_eng_00_076  False       True        9999
+   pcc_eng_00_078  False       True        9999
+   pcc_eng_00_048  False       True        9999
+   pcc_eng_00_079  False       True        9999
+   pcc_eng_00_106  False       True        9999
+   pcc_eng_00_105  False       True        9999
+   pcc_eng_00_104  False       True        9999
+   pcc_eng_00_103  False       True        9999
+   pcc_eng_00_102  False       True        9999
+   pcc_eng_00_099  False       True        9999
+   pcc_eng_00_098  False       True        9999
+   pcc_eng_00_097  False       True        9999
+   pcc_eng_00_095  False       True        9999
+   pcc_eng_00_093  False       True        9999
+   pcc_eng_00_092  False       True        9999
+   pcc_eng_00_091  False       True        9999
+   pcc_eng_00_089  False       True        9999
+   pcc_eng_00_088  False       True        9999
+   pcc_eng_00_087  False       True        9999
+   pcc_eng_00_085  False       True        9999
+   pcc_eng_00_083  False       True        9999
+   pcc_eng_00_082  False       True        9999
+   pcc_eng_00_081  False       True        9999
+   pcc_eng_00_049  False       True        9999
+   pcc_eng_00_001  False       True        9999
+   pcc_eng_00_023  False       True        9999
+   pcc_eng_00_021  False       True        9999
+   pcc_eng_00_007  False       True        9999
+   pcc_eng_00_027  False       True        9999
+   pcc_eng_00_008  False       True        9999
+   pcc_eng_00_026  False       True        9999
+   pcc_eng_00_025  False       True        9999
+   pcc_eng_00_024  False       True        9999
+   pcc_eng_00_046  False       True        9999
+   pcc_eng_00_022  False       True        9999
+   pcc_eng_00_020  False       True        9999
+   pcc_eng_00_029  False       True        9999
+   pcc_eng_00_019  False       True        9999
+   pcc_eng_00_009  False       True        9999
+   pcc_eng_00_018  False       True        9999
+   pcc_eng_00_017  False       True        9999
+   pcc_eng_00_011  False       True        9999
+   pcc_eng_00_015  False       True        9999
+   pcc_eng_00_014  False       True        9999
+   pcc_eng_00_013  False       True        9999
+   pcc_eng_00_012  False       True        9999
+   pcc_eng_00_028  False       True        9999
+   pcc_eng_00_006  False       True        9999
+   pcc_eng_00_036  False       True        9999
+   pcc_eng_00_045  False       True        9999
+   pcc_eng_00_044  False       True        9999
+   pcc_eng_00_043  False       True        9999
+   pcc_eng_00_042  False       True        9999
+   pcc_eng_00_041  False       True        9999
+   pcc_eng_00_040  False       True        9999
+   pcc_eng_00_039  False       True        9999
+   pcc_eng_00_038  False       True        9999
+   pcc_eng_00_005  False       True        9999
+   pcc_eng_00_037  False       True        9999
+   pcc_eng_00_035  False       True        9999
+   pcc_eng_00_034  False       True        9999
+   pcc_eng_00_033  False       True        9999
+   pcc_eng_00_032  False       True        9999
+   pcc_eng_00_003  False       True        9999
+   pcc_eng_00_031  False       True        9999
+   pcc_eng_00_004  False       True        9999
+   pcc_eng_00_030  False       True        9999
+   pcc_eng_00_100  False       True        9998
+   pcc_eng_00_101  False       True        9998
+   pcc_eng_00_010  False       True        9998
+   pcc_eng_00_096  False       True        9998
+   pcc_eng_00_055  False       True        9998
+   pcc_eng_00_094  False       True        9998
+   pcc_eng_00_090  False       True        9998
+   pcc_eng_00_016  False       True        9998
+   pcc_eng_00_086  False       True        9998
+   pcc_eng_00_080  False       True        9998
+   pcc_eng_00_075  False       True        9998
+   pcc_eng_00_073  False       True        9998
+   pcc_eng_00_070  False       True        9998
+   pcc_eng_00_069  False       True        9998
+   pcc_eng_00_067  False       True        9998
+   pcc_eng_00_084  False       True        9997
+   pcc_eng_00_065  False       True        9997
+   pcc_eng_00_047  False       True        9997
+ _______________________
+| INFO: 2022-08-11 03:50AM
+|    /share/compling/projects/puddin/script/validate_data_group.py:assess_data_group:179
+| . . . . . . .
+   Data group `00` parsing status info and invalid exclusions saved as:
+   - /share/compling/data/puddin/info/validation_by_group/00-pcc_status.pkl.gz
+        last modified: Thu Aug 11 03:50:39 2022
+   - /share/compling/data/puddin/info/validation_by_group/00_invalid-excl.pkl.gz
+        last modified: Thu Aug 11 03:50:39 2022
+ _______________________
+| INFO: 2022-08-11 03:50AM
+|    /share/compling/projects/puddin/script/validate_data_group.py:assess_data_group:76
+| . . . . . . .
+   VALIDATION LOG: 16
+   PID: 1218763
+ _______________________
+| INFO: 2022-08-11 03:50AM
+|    /share/compling/projects/puddin/script/validate_data_group.py:_prep_raw_dataframe:194
+| . . . . . . .
+   Loading initial/raw dataframe:
+    > /share/compling/data/puddin/pile_tables/raw/pile_16_Pile-CC_df.pkl.gz
+      ...
+ _______________________
+| INFO: 2022-08-11 04:10AM
+|    /share/compling/projects/puddin/script/validate_data_group.py:_check_conll_path:234
+| . . . . . . .
+   directory of conllu files to be searched:
+    > /share/compling/data/puddin/Pcc16.conll
+ _______________________
+| INFO: 2022-08-11 05:21AM
+|    /share/compling/projects/puddin/script/validate_data_group.py:_get_parse_status:269
+| . . . . . . .
+   2022-08-11 -- 04:10AM   pcc_eng_16-001.conllu   total docs: 9999
+   2022-08-11 -- 04:11AM   pcc_eng_16-002.conllu   total docs: 9999
+   2022-08-11 -- 04:12AM   pcc_eng_16-003.conllu   total docs: 9999
+   2022-08-11 -- 04:13AM   pcc_eng_16-004.conllu   total docs: 9999
+   2022-08-11 -- 04:14AM   pcc_eng_16-005.conllu   total docs: 9999
+   2022-08-11 -- 04:14AM   pcc_eng_16-006.conllu   total docs: 9999
+   2022-08-11 -- 04:15AM   pcc_eng_16-007.conllu   total docs: 9999
+   2022-08-11 -- 04:16AM   pcc_eng_16-008.conllu   total docs: 9999
+   2022-08-11 -- 04:17AM   pcc_eng_16-009.conllu   total docs: 9999
+   2022-08-11 -- 04:17AM   pcc_eng_16-010.conllu   total docs: 9999
+   2022-08-11 -- 04:18AM   pcc_eng_16-011.conllu   total docs: 9999
+   2022-08-11 -- 04:18AM   pcc_eng_16-012.conllu   total docs: 9999
+   2022-08-11 -- 04:19AM   pcc_eng_16-013.conllu   total docs: 9999
+   2022-08-11 -- 04:20AM   pcc_eng_16-014.conllu   total docs: 9999
+   2022-08-11 -- 04:20AM   pcc_eng_16-015.conllu   total docs: 9999
+   2022-08-11 -- 04:21AM   pcc_eng_16-016.conllu   total docs: 9999
+   2022-08-11 -- 04:21AM   pcc_eng_16-017.conllu   total docs: 9999
+   2022-08-11 -- 04:22AM   pcc_eng_16-018.conllu   total docs: 9999
+   2022-08-11 -- 04:23AM   pcc_eng_16-019.conllu   total docs: 9998
+   2022-08-11 -- 04:23AM   pcc_eng_16-020.conllu   total docs: 9999
+   2022-08-11 -- 04:23AM   pcc_eng_16-021.conllu   total docs: 9999
+   2022-08-11 -- 04:24AM   pcc_eng_16-022.conllu   total docs: 9998
+   2022-08-11 -- 04:25AM   pcc_eng_16-023.conllu   total docs: 9998
+   2022-08-11 -- 04:26AM   pcc_eng_16-024.conllu   total docs: 9998
+   2022-08-11 -- 04:26AM   pcc_eng_16-025.conllu   total docs: 9998
+   2022-08-11 -- 04:27AM   pcc_eng_16-026.conllu   total docs: 9999
+   2022-08-11 -- 04:28AM   pcc_eng_16-027.conllu   total docs: 9999
+   2022-08-11 -- 04:29AM   pcc_eng_16-028.conllu   total docs: 9999
+   2022-08-11 -- 04:29AM   pcc_eng_16-029.conllu   total docs: 9999
+   2022-08-11 -- 04:30AM   pcc_eng_16-030.conllu   total docs: 9999
+   2022-08-11 -- 04:31AM   pcc_eng_16-031.conllu   total docs: 9998
+   2022-08-11 -- 04:31AM   pcc_eng_16-032.conllu   total docs: 9999
+   2022-08-11 -- 04:32AM   pcc_eng_16-033.conllu   total docs: 9999
+   2022-08-11 -- 04:32AM   pcc_eng_16-034.conllu   total docs: 9999
+   2022-08-11 -- 04:33AM   pcc_eng_16-035.conllu   total docs: 9999
+   2022-08-11 -- 04:34AM   pcc_eng_16-036.conllu   total docs: 9999
+   2022-08-11 -- 04:34AM   pcc_eng_16-037.conllu   total docs: 9999
+   2022-08-11 -- 04:35AM   pcc_eng_16-038.conllu   total docs: 9999
+   2022-08-11 -- 04:36AM   pcc_eng_16-039.conllu   total docs: 9999
+   2022-08-11 -- 04:36AM   pcc_eng_16-040.conllu   total docs: 9998
+   2022-08-11 -- 04:37AM   pcc_eng_16-041.conllu   total docs: 9999
+   2022-08-11 -- 04:38AM   pcc_eng_16-042.conllu   total docs: 9999
+   2022-08-11 -- 04:38AM   pcc_eng_16-043.conllu   total docs: 9999
+   2022-08-11 -- 04:39AM   pcc_eng_16-044.conllu   total docs: 9999
+   2022-08-11 -- 04:39AM   pcc_eng_16-045.conllu   total docs: 9999
+   2022-08-11 -- 04:40AM   pcc_eng_16-046.conllu   total docs: 9999
+   2022-08-11 -- 04:41AM   pcc_eng_16-047.conllu   total docs: 9998
+   2022-08-11 -- 04:41AM   pcc_eng_16-048.conllu   total docs: 9999
+   2022-08-11 -- 04:42AM   pcc_eng_16-049.conllu   total docs: 9999
+   2022-08-11 -- 04:43AM   pcc_eng_16-050.conllu   total docs: 9997
+   2022-08-11 -- 04:43AM   pcc_eng_16-051.conllu   total docs: 9999
+   2022-08-11 -- 04:44AM   pcc_eng_16-052.conllu   total docs: 9999
+   2022-08-11 -- 04:44AM   pcc_eng_16-053.conllu   total docs: 9999
+   2022-08-11 -- 04:45AM   pcc_eng_16-054.conllu   total docs: 9999
+   2022-08-11 -- 04:46AM   pcc_eng_16-055.conllu   total docs: 9998
+   2022-08-11 -- 04:46AM   pcc_eng_16-056.conllu   total docs: 9999
+   2022-08-11 -- 04:47AM   pcc_eng_16-057.conllu   total docs: 9998
+   2022-08-11 -- 04:48AM   pcc_eng_16-058.conllu   total docs: 9998
+   2022-08-11 -- 04:48AM   pcc_eng_16-059.conllu   total docs: 9999
+   2022-08-11 -- 04:49AM   pcc_eng_16-060.conllu   total docs: 9999
+   2022-08-11 -- 04:50AM   pcc_eng_16-061.conllu   total docs: 9999
+   2022-08-11 -- 04:50AM   pcc_eng_16-062.conllu   total docs: 9998
+   2022-08-11 -- 04:51AM   pcc_eng_16-063.conllu   total docs: 9999
+   2022-08-11 -- 04:51AM   pcc_eng_16-064.conllu   total docs: 9999
+   2022-08-11 -- 04:52AM   pcc_eng_16-065.conllu   total docs: 9999
+   2022-08-11 -- 04:53AM   pcc_eng_16-066.conllu   total docs: 9998
+   2022-08-11 -- 04:53AM   pcc_eng_16-067.conllu   total docs: 9999
+   2022-08-11 -- 04:54AM   pcc_eng_16-068.conllu   total docs: 9999
+   2022-08-11 -- 04:54AM   pcc_eng_16-069.conllu   total docs: 9999
+   2022-08-11 -- 04:55AM   pcc_eng_16-070.conllu   total docs: 9999
+   2022-08-11 -- 04:56AM   pcc_eng_16-071.conllu   total docs: 9998
+   2022-08-11 -- 04:56AM   pcc_eng_16-072.conllu   total docs: 9999
+   2022-08-11 -- 04:57AM   pcc_eng_16-073.conllu   total docs: 9999
+   2022-08-11 -- 04:58AM   pcc_eng_16-074.conllu   total docs: 9999
+   2022-08-11 -- 04:59AM   pcc_eng_16-075.conllu   total docs: 9998
+   2022-08-11 -- 05:00AM   pcc_eng_16-076.conllu   total docs: 9999
+   2022-08-11 -- 05:00AM   pcc_eng_16-077.conllu   total docs: 9999
+   2022-08-11 -- 05:01AM   pcc_eng_16-078.conllu   total docs: 9999
+   2022-08-11 -- 05:02AM   pcc_eng_16-079.conllu   total docs: 9999
+   2022-08-11 -- 05:02AM   pcc_eng_16-080.conllu   total docs: 9998
+   2022-08-11 -- 05:03AM   pcc_eng_16-081.conllu   total docs: 9999
+   2022-08-11 -- 05:04AM   pcc_eng_16-082.conllu   total docs: 9999
+   2022-08-11 -- 05:04AM   pcc_eng_16-083.conllu   total docs: 9999
+   2022-08-11 -- 05:05AM   pcc_eng_16-084.conllu   total docs: 9999
+   2022-08-11 -- 05:06AM   pcc_eng_16-085.conllu   total docs: 9999
+   2022-08-11 -- 05:06AM   pcc_eng_16-086.conllu   total docs: 9999
+   2022-08-11 -- 05:07AM   pcc_eng_16-087.conllu   total docs: 9999
+   2022-08-11 -- 05:08AM   pcc_eng_16-088.conllu   total docs: 9999
+   2022-08-11 -- 05:08AM   pcc_eng_16-089.conllu   total docs: 9999
+   2022-08-11 -- 05:09AM   pcc_eng_16-090.conllu   total docs: 9999
+   2022-08-11 -- 05:09AM   pcc_eng_16-091.conllu   total docs: 9998
+   2022-08-11 -- 05:10AM   pcc_eng_16-092.conllu   total docs: 9999
+   2022-08-11 -- 05:11AM   pcc_eng_16-093.conllu   total docs: 9999
+   2022-08-11 -- 05:11AM   pcc_eng_16-094.conllu   total docs: 9999
+   2022-08-11 -- 05:12AM   pcc_eng_16-095.conllu   total docs: 9999
+   2022-08-11 -- 05:12AM   pcc_eng_16-096.conllu   total docs: 9998
+   2022-08-11 -- 05:13AM   pcc_eng_16-097.conllu   total docs: 9999
+   2022-08-11 -- 05:14AM   pcc_eng_16-098.conllu   total docs: 9999
+   2022-08-11 -- 05:14AM   pcc_eng_16-099.conllu   total docs: 9999
+   2022-08-11 -- 05:15AM   pcc_eng_16-100.conllu   total docs: 9998
+   2022-08-11 -- 05:16AM   pcc_eng_16-101.conllu   total docs: 9999
+   2022-08-11 -- 05:17AM   pcc_eng_16-102.conllu   total docs: 9999
+   2022-08-11 -- 05:17AM   pcc_eng_16-103.conllu   total docs: 9999
+   2022-08-11 -- 05:18AM   pcc_eng_16-104.conllu   total docs: 9999
+   2022-08-11 -- 05:19AM   pcc_eng_16-105.conllu   total docs: 9999
+   2022-08-11 -- 05:20AM   pcc_eng_16-106.conllu   total docs: 9999
+   2022-08-11 -- 05:20AM   pcc_eng_16-107.conllu   total docs: 9923
+   2022-08-11 -- 05:21AM   pcc_eng_16-108.conllu   total docs: 9924
+ _______________________
+| INFO: 2022-08-11 05:21AM
+|    /share/compling/projects/puddin/script/validate_data_group.py:_load_exclusions:318
+| . . . . . . .
+   Loading exclusions dataframe:
+    > /share/compling/data/puddin/pile_exclusions/pile_16_Pile-CC_excl.pkl.gz
+ _______________________
+| INFO: 2022-08-11 05:32AM
+|    /share/compling/projects/puddin/script/validate_data_group.py:_load_exclusions:345
+| . . . . . . .
+   Exclusions loaded:
+                                       slice_id excl_type  ...  row_ix slice_code
+   raw_id                                                  ...                   
+   pcc_16_0037652                          <NA>      wiki  ...       0       <NA>
+   pcc_16_0095196                          <NA>      wiki  ...       1       <NA>
+   pcc_16_0101365                          <NA>      wiki  ...       2       <NA>
+   pcc_16_0181986                          <NA>      wiki  ...       3       <NA>
+   pcc_16_0186515                          <NA>      wiki  ...       4       <NA>
+   ...                                      ...       ...  ...     ...        ...
+   pcc_16_1202454  pcc_eng_16_075.3039_x1202454      fail  ...  667404        075
+   pcc_16_1280585  pcc_eng_16_080.1258_x1280585      fail  ...  667405        080
+   pcc_16_1470085  pcc_eng_16_091.8119_x1470085      fail  ...  667406        091
+   pcc_16_1550038  pcc_eng_16_096.7535_x1550038      fail  ...  667407        096
+   pcc_16_1611515  pcc_eng_16_100.5648_x1611515      fail  ...  667408        100
+   
+   [667409 rows x 11 columns]
+ _______________________
+| INFO: 2022-08-11 05:32AM
+|    /share/compling/projects/puddin/script/validate_data_group.py:assess_data_group:132
+| . . . . . . .
+   No original texts missing from 16 output ^_^
+ _______________________
+| INFO: 2022-08-11 05:32AM
+|    /share/compling/projects/puddin/script/validate_data_group.py:_identify_invalid_excl:491
+| . . . . . . .
+   All 16 exclusions in are valid ^_^
+ _______________________
+| INFO: 2022-08-11 05:32AM
+|    /share/compling/projects/puddin/script/validate_data_group.py:_save_validated_excl:498
+| . . . . . . .
+   Saving updated exclusions dataframe to pile_exclusions/validated/pile_16_Pile-CC_excl.pkl.gz
+ _______________________
+| INFO: 2022-08-11 05:32AM
+|    /share/compling/projects/puddin/script/validate_data_group.py:assess_data_group:142
+| . . . . . . .
+   ## `16` data assessment complete
+   2022-08-11 -- 05:32AM
+   status overview:
+   ..................
+   excl_type  known_fail  success
+   a0wrd      False       False      264937
+   punc       False       False      248809
+   code       False       False       97178
+   _wrd       False       False       50776
+   html       False       False        5221
+   wiki       False       False         413
+   json       False       False          54
+   fail       True        False          21
+   ..................
+   slice           known_fail  success
+   pcc_eng_16_001  False       True       9999
+   pcc_eng_16_056  False       True       9999
+   pcc_eng_16_065  False       True       9999
+   pcc_eng_16_064  False       True       9999
+   pcc_eng_16_063  False       True       9999
+   pcc_eng_16_095  False       True       9999
+   pcc_eng_16_061  False       True       9999
+   pcc_eng_16_060  False       True       9999
+   pcc_eng_16_059  False       True       9999
+   pcc_eng_16_097  False       True       9999
+   pcc_eng_16_002  False       True       9999
+   pcc_eng_16_067  False       True       9999
+   pcc_eng_16_054  False       True       9999
+   pcc_eng_16_053  False       True       9999
+   pcc_eng_16_052  False       True       9999
+   pcc_eng_16_051  False       True       9999
+   pcc_eng_16_098  False       True       9999
+   pcc_eng_16_049  False       True       9999
+   pcc_eng_16_048  False       True       9999
+   pcc_eng_16_099  False       True       9999
+   pcc_eng_16_094  False       True       9999
+   pcc_eng_16_068  False       True       9999
+   pcc_eng_16_090  False       True       9999
+   pcc_eng_16_079  False       True       9999
+   pcc_eng_16_088  False       True       9999
+   pcc_eng_16_087  False       True       9999
+   pcc_eng_16_086  False       True       9999
+   pcc_eng_16_085  False       True       9999
+   pcc_eng_16_084  False       True       9999
+   pcc_eng_16_083  False       True       9999
+   pcc_eng_16_082  False       True       9999
+   pcc_eng_16_081  False       True       9999
+   pcc_eng_16_078  False       True       9999
+   pcc_eng_16_069  False       True       9999
+   pcc_eng_16_077  False       True       9999
+   pcc_eng_16_076  False       True       9999
+   pcc_eng_16_092  False       True       9999
+   pcc_eng_16_074  False       True       9999
+   pcc_eng_16_073  False       True       9999
+   pcc_eng_16_072  False       True       9999
+   pcc_eng_16_093  False       True       9999
+   pcc_eng_16_070  False       True       9999
+   pcc_eng_16_046  False       True       9999
+   pcc_eng_16_045  False       True       9999
+   pcc_eng_16_044  False       True       9999
+   pcc_eng_16_043  False       True       9999
+   pcc_eng_16_021  False       True       9999
+   pcc_eng_16_020  False       True       9999
+   pcc_eng_16_106  False       True       9999
+   pcc_eng_16_018  False       True       9999
+   pcc_eng_16_017  False       True       9999
+   pcc_eng_16_016  False       True       9999
+   pcc_eng_16_015  False       True       9999
+   pcc_eng_16_014  False       True       9999
+   pcc_eng_16_013  False       True       9999
+   pcc_eng_16_012  False       True       9999
+   pcc_eng_16_011  False       True       9999
+   pcc_eng_16_010  False       True       9999
+   pcc_eng_16_009  False       True       9999
+   pcc_eng_16_008  False       True       9999
+   pcc_eng_16_007  False       True       9999
+   pcc_eng_16_006  False       True       9999
+   pcc_eng_16_005  False       True       9999
+   pcc_eng_16_004  False       True       9999
+   pcc_eng_16_003  False       True       9999
+   pcc_eng_16_105  False       True       9999
+   pcc_eng_16_104  False       True       9999
+   pcc_eng_16_103  False       True       9999
+   pcc_eng_16_033  False       True       9999
+   pcc_eng_16_042  False       True       9999
+   pcc_eng_16_041  False       True       9999
+   pcc_eng_16_039  False       True       9999
+   pcc_eng_16_038  False       True       9999
+   pcc_eng_16_037  False       True       9999
+   pcc_eng_16_036  False       True       9999
+   pcc_eng_16_035  False       True       9999
+   pcc_eng_16_102  False       True       9999
+   pcc_eng_16_034  False       True       9999
+   pcc_eng_16_032  False       True       9999
+   pcc_eng_16_101  False       True       9999
+   pcc_eng_16_030  False       True       9999
+   pcc_eng_16_029  False       True       9999
+   pcc_eng_16_028  False       True       9999
+   pcc_eng_16_027  False       True       9999
+   pcc_eng_16_026  False       True       9999
+   pcc_eng_16_089  False       True       9999
+   pcc_eng_16_091  False       True       9998
+   pcc_eng_16_096  False       True       9998
+   pcc_eng_16_100  False       True       9998
+   pcc_eng_16_055  False       True       9998
+   pcc_eng_16_080  False       True       9998
+   pcc_eng_16_075  False       True       9998
+   pcc_eng_16_019  False       True       9998
+   pcc_eng_16_022  False       True       9998
+   pcc_eng_16_023  False       True       9998
+   pcc_eng_16_024  False       True       9998
+   pcc_eng_16_025  False       True       9998
+   pcc_eng_16_031  False       True       9998
+   pcc_eng_16_040  False       True       9998
+   pcc_eng_16_047  False       True       9998
+   pcc_eng_16_057  False       True       9998
+   pcc_eng_16_058  False       True       9998
+   pcc_eng_16_062  False       True       9998
+   pcc_eng_16_066  False       True       9998
+   pcc_eng_16_071  False       True       9998
+   pcc_eng_16_050  False       True       9997
+   pcc_eng_16_108  False       True       9924
+   pcc_eng_16_107  False       True       9923
+ _______________________
+| INFO: 2022-08-11 05:32AM
+|    /share/compling/projects/puddin/script/validate_data_group.py:assess_data_group:179
+| . . . . . . .
+   Data group `16` parsing status info and invalid exclusions saved as:
+   - /share/compling/data/puddin/info/validation_by_group/16-pcc_status.pkl.gz
+        last modified: Thu Aug 11 05:32:48 2022
+   - /share/compling/data/puddin/info/validation_by_group/16_invalid-excl.pkl.gz
+        last modified: Thu Aug 11 05:32:48 2022
+ _______________________
+| INFO: 2022-08-11 05:32AM
+|    /share/compling/projects/puddin/script/validate_data_group.py:assess_data_group:76
+| . . . . . . .
+   VALIDATION LOG: 23
+   PID: 1218763
+ _______________________
+| INFO: 2022-08-11 05:32AM
+|    /share/compling/projects/puddin/script/validate_data_group.py:_prep_raw_dataframe:194
+| . . . . . . .
+   Loading initial/raw dataframe:
+    > /share/compling/data/puddin/pile_tables/raw/pile_23_Pile-CC_df.pkl.gz
+      ...
+ _______________________
+| INFO: 2022-08-11 05:44AM
+|    /share/compling/projects/puddin/script/validate_data_group.py:_check_conll_path:234
+| . . . . . . .
+   directory of conllu files to be searched:
+    > /share/compling/data/puddin/Pcc23.conll
+ _______________________
+| INFO: 2022-08-11 07:19AM
+|    /share/compling/projects/puddin/script/validate_data_group.py:_get_parse_status:269
+| . . . . . . .
+   2022-08-11 -- 05:44AM   pcc_eng_23-001.conllu   total docs: 9999
+   2022-08-11 -- 05:45AM   pcc_eng_23-002.conllu   total docs: 9999
+   2022-08-11 -- 05:45AM   pcc_eng_23-003.conllu   total docs: 9999
+   2022-08-11 -- 05:45AM   pcc_eng_23-004.conllu   total docs: 9997
+   2022-08-11 -- 05:46AM   pcc_eng_23-005.conllu   total docs: 9999
+   2022-08-11 -- 05:46AM   pcc_eng_23-006.conllu   total docs: 9998
+   2022-08-11 -- 05:47AM   pcc_eng_23-007.conllu   total docs: 9999
+   2022-08-11 -- 05:47AM   pcc_eng_23-008.conllu   total docs: 9998
+   2022-08-11 -- 05:48AM   pcc_eng_23-009.conllu   total docs: 9998
+   2022-08-11 -- 05:49AM   pcc_eng_23-010.conllu   total docs: 9999
+   2022-08-11 -- 05:49AM   pcc_eng_23-011.conllu   total docs: 9999
+   2022-08-11 -- 05:50AM   pcc_eng_23-012.conllu   total docs: 9998
+   2022-08-11 -- 05:50AM   pcc_eng_23-013.conllu   total docs: 9998
+   2022-08-11 -- 05:51AM   pcc_eng_23-014.conllu   total docs: 9998
+   2022-08-11 -- 05:51AM   pcc_eng_23-015.conllu   total docs: 9999
+   2022-08-11 -- 05:52AM   pcc_eng_23-016.conllu   total docs: 9999
+   2022-08-11 -- 05:52AM   pcc_eng_23-017.conllu   total docs: 9999
+   2022-08-11 -- 05:53AM   pcc_eng_23-018.conllu   total docs: 9999
+   2022-08-11 -- 05:53AM   pcc_eng_23-019.conllu   total docs: 9999
+   2022-08-11 -- 05:54AM   pcc_eng_23-020.conllu   total docs: 9999
+   2022-08-11 -- 05:55AM   pcc_eng_23-021.conllu   total docs: 9999
+   2022-08-11 -- 05:55AM   pcc_eng_23-022.conllu   total docs: 9998
+   2022-08-11 -- 05:56AM   pcc_eng_23-023.conllu   total docs: 9998
+   2022-08-11 -- 05:56AM   pcc_eng_23-024.conllu   total docs: 9999
+   2022-08-11 -- 05:57AM   pcc_eng_23-025.conllu   total docs: 9999
+   2022-08-11 -- 05:58AM   pcc_eng_23-026.conllu   total docs: 9999
+   2022-08-11 -- 05:59AM   pcc_eng_23-027.conllu   total docs: 9998
+   2022-08-11 -- 06:00AM   pcc_eng_23-028.conllu   total docs: 9998
+   2022-08-11 -- 06:00AM   pcc_eng_23-029.conllu   total docs: 9998
+   2022-08-11 -- 06:01AM   pcc_eng_23-030.conllu   total docs: 9999
+   2022-08-11 -- 06:02AM   pcc_eng_23-031.conllu   total docs: 9999
+   2022-08-11 -- 06:03AM   pcc_eng_23-032.conllu   total docs: 9999
+   2022-08-11 -- 06:03AM   pcc_eng_23-033.conllu   total docs: 9998
+   2022-08-11 -- 06:04AM   pcc_eng_23-034.conllu   total docs: 9999
+   2022-08-11 -- 06:04AM   pcc_eng_23-035.conllu   total docs: 9999
+   2022-08-11 -- 06:05AM   pcc_eng_23-036.conllu   total docs: 9999
+   2022-08-11 -- 06:06AM   pcc_eng_23-037.conllu   total docs: 9998
+   2022-08-11 -- 06:07AM   pcc_eng_23-038.conllu   total docs: 9998
+   2022-08-11 -- 06:08AM   pcc_eng_23-039.conllu   total docs: 9999
+   2022-08-11 -- 06:08AM   pcc_eng_23-040.conllu   total docs: 9999
+   2022-08-11 -- 06:09AM   pcc_eng_23-041.conllu   total docs: 9999
+   2022-08-11 -- 06:10AM   pcc_eng_23-042.conllu   total docs: 9998
+   2022-08-11 -- 06:11AM   pcc_eng_23-043.conllu   total docs: 9999
+   2022-08-11 -- 06:11AM   pcc_eng_23-044.conllu   total docs: 9999
+   2022-08-11 -- 06:12AM   pcc_eng_23-045.conllu   total docs: 9999
+   2022-08-11 -- 06:12AM   pcc_eng_23-046.conllu   total docs: 9999
+   2022-08-11 -- 06:13AM   pcc_eng_23-047.conllu   total docs: 9999
+   2022-08-11 -- 06:14AM   pcc_eng_23-048.conllu   total docs: 9999
+   2022-08-11 -- 06:15AM   pcc_eng_23-049.conllu   total docs: 9997
+   2022-08-11 -- 06:15AM   pcc_eng_23-050.conllu   total docs: 9999
+   2022-08-11 -- 06:16AM   pcc_eng_23-051.conllu   total docs: 9999
+   2022-08-11 -- 06:17AM   pcc_eng_23-052.conllu   total docs: 9999
+   2022-08-11 -- 06:17AM   pcc_eng_23-053.conllu   total docs: 9998
+   2022-08-11 -- 06:19AM   pcc_eng_23-054.conllu   total docs: 9999
+   2022-08-11 -- 06:19AM   pcc_eng_23-055.conllu   total docs: 9998
+   2022-08-11 -- 06:20AM   pcc_eng_23-056.conllu   total docs: 9999
+   2022-08-11 -- 06:21AM   pcc_eng_23-057.conllu   total docs: 9999
+   2022-08-11 -- 06:22AM   pcc_eng_23-058.conllu   total docs: 9999
+   2022-08-11 -- 06:23AM   pcc_eng_23-059.conllu   total docs: 9999
+   2022-08-11 -- 06:25AM   pcc_eng_23-060.conllu   total docs: 9999
+   2022-08-11 -- 06:26AM   pcc_eng_23-061.conllu   total docs: 9999
+   2022-08-11 -- 06:27AM   pcc_eng_23-062.conllu   total docs: 9999
+   2022-08-11 -- 06:28AM   pcc_eng_23-063.conllu   total docs: 9999
+   2022-08-11 -- 06:30AM   pcc_eng_23-064.conllu   total docs: 9997
+   2022-08-11 -- 06:31AM   pcc_eng_23-065.conllu   total docs: 9999
+   2022-08-11 -- 06:32AM   pcc_eng_23-066.conllu   total docs: 9999
+   2022-08-11 -- 06:33AM   pcc_eng_23-067.conllu   total docs: 9999
+   2022-08-11 -- 06:35AM   pcc_eng_23-068.conllu   total docs: 9999
+   2022-08-11 -- 06:36AM   pcc_eng_23-069.conllu   total docs: 9999
+   2022-08-11 -- 06:37AM   pcc_eng_23-070.conllu   total docs: 9999
+   2022-08-11 -- 06:38AM   pcc_eng_23-071.conllu   total docs: 9999
+   2022-08-11 -- 06:41AM   pcc_eng_23-072.conllu   total docs: 9999
+   2022-08-11 -- 06:44AM   pcc_eng_23-073.conllu   total docs: 9999
+   2022-08-11 -- 06:46AM   pcc_eng_23-074.conllu   total docs: 9999
+   2022-08-11 -- 06:49AM   pcc_eng_23-075.conllu   total docs: 9998
+   2022-08-11 -- 06:54AM   pcc_eng_23-076.conllu   total docs: 9999
+   2022-08-11 -- 06:58AM   pcc_eng_23-077.conllu   total docs: 9999
+   2022-08-11 -- 07:02AM   pcc_eng_23-078.conllu   total docs: 9998
+   2022-08-11 -- 07:04AM   pcc_eng_23-079.conllu   total docs: 9999
+   2022-08-11 -- 07:06AM   pcc_eng_23-080.conllu   total docs: 9999
+   2022-08-11 -- 07:08AM   pcc_eng_23-081.conllu   total docs: 9999
+   2022-08-11 -- 07:09AM   pcc_eng_23-082.conllu   total docs: 9999
+   2022-08-11 -- 07:10AM   pcc_eng_23-083.conllu   total docs: 9998
+   2022-08-11 -- 07:11AM   pcc_eng_23-084.conllu   total docs: 9999
+   2022-08-11 -- 07:11AM   pcc_eng_23-085.conllu   total docs: 9998
+   2022-08-11 -- 07:11AM   pcc_eng_23-086.conllu   total docs: 9999
+   2022-08-11 -- 07:13AM   pcc_eng_23-087.conllu   total docs: 9999
+   2022-08-11 -- 07:13AM   pcc_eng_23-088.conllu   total docs: 9997
+   2022-08-11 -- 07:14AM   pcc_eng_23-089.conllu   total docs: 9997
+   2022-08-11 -- 07:14AM   pcc_eng_23-090.conllu   total docs: 9999
+   2022-08-11 -- 07:15AM   pcc_eng_23-091.conllu   total docs: 9999
+   2022-08-11 -- 07:15AM   pcc_eng_23-092.conllu   total docs: 9999
+   2022-08-11 -- 07:15AM   pcc_eng_23-093.conllu   total docs: 9999
+   2022-08-11 -- 07:16AM   pcc_eng_23-094.conllu   total docs: 9999
+   2022-08-11 -- 07:16AM   pcc_eng_23-095.conllu   total docs: 9999
+   2022-08-11 -- 07:16AM   pcc_eng_23-096.conllu   total docs: 9999
+   2022-08-11 -- 07:17AM   pcc_eng_23-097.conllu   total docs: 9999
+   2022-08-11 -- 07:17AM   pcc_eng_23-098.conllu   total docs: 9999
+   2022-08-11 -- 07:17AM   pcc_eng_23-099.conllu   total docs: 9999
+   2022-08-11 -- 07:18AM   pcc_eng_23-100.conllu   total docs: 9999
+   2022-08-11 -- 07:18AM   pcc_eng_23-101.conllu   total docs: 9999
+   2022-08-11 -- 07:18AM   pcc_eng_23-102.conllu   total docs: 9998
+   2022-08-11 -- 07:18AM   pcc_eng_23-103.conllu   total docs: 9999
+   2022-08-11 -- 07:18AM   pcc_eng_23-104.conllu   total docs: 9999
+   2022-08-11 -- 07:19AM   pcc_eng_23-105.conllu   total docs: 9999
+   2022-08-11 -- 07:19AM   pcc_eng_23-106.conllu   total docs: 9998
+   2022-08-11 -- 07:19AM   pcc_eng_23-108.conllu   total docs: 9904
+   2022-08-11 -- 07:19AM   pcc_eng_23-107.conllu   total docs: 9902
+ _______________________
+| INFO: 2022-08-11 07:19AM
+|    /share/compling/projects/puddin/script/validate_data_group.py:_load_exclusions:318
+| . . . . . . .
+   Loading exclusions dataframe:
+    > /share/compling/data/puddin/pile_exclusions/pile_23_Pile-CC_excl.pkl.gz
+ _______________________
+| INFO: 2022-08-11 07:20AM
+|    /share/compling/projects/puddin/script/validate_data_group.py:_load_exclusions:345
+| . . . . . . .
+   Exclusions loaded:
+                                       slice_id excl_type  ...  row_ix slice_code
+   raw_id                                                  ...                   
+   pcc_23_0012579                          <NA>      wiki  ...       0       <NA>
+   pcc_23_0090594                          <NA>      wiki  ...       1       <NA>
+   pcc_23_0093226                          <NA>      wiki  ...       2       <NA>
+   pcc_23_0148854                          <NA>      wiki  ...       3       <NA>
+   pcc_23_0159540                          <NA>      wiki  ...       4       <NA>
+   ...                                      ...       ...  ...     ...        ...
+   pcc_23_1417405  pcc_eng_23_088.7069_x1417405      fail  ...  665911        088
+   pcc_23_1430908  pcc_eng_23_089.5383_x1430908      fail  ...  665912        089
+   pcc_23_1431800  pcc_eng_23_089.5915_x1431800      fail  ...  665913        089
+   pcc_23_1718005  pcc_eng_23_107.2667_x1718005      fail  ...  665914        107
+   pcc_23_1728040  pcc_eng_23_107.8858_x1728040      fail  ...  665915        107
+   
+   [665916 rows x 11 columns]
+ _______________________
+| INFO: 2022-08-11 07:21AM
+|    /share/compling/projects/puddin/script/validate_data_group.py:assess_data_group:132
+| . . . . . . .
+   No original texts missing from 23 output ^_^
+ _______________________
+| INFO: 2022-08-11 07:21AM
+|    /share/compling/projects/puddin/script/validate_data_group.py:_identify_invalid_excl:483
+| . . . . . . .
+   Erroneously marked 23 exclusions:
+   ['pcc_23_1729385']
+ _______________________
+| INFO: 2022-08-11 07:21AM
+|    /share/compling/projects/puddin/script/validate_data_group.py:_save_validated_excl:498
+| . . . . . . .
+   Saving updated exclusions dataframe to pile_exclusions/validated/pile_23_Pile-CC_excl.pkl.gz
+ _______________________
+| INFO: 2022-08-11 07:21AM
+|    /share/compling/projects/puddin/script/validate_data_group.py:assess_data_group:142
+| . . . . . . .
+   ## `23` data assessment complete
+   2022-08-11 -- 07:21AM
+   status overview:
+   ..................
+   excl_type  known_fail  success
+   a0wrd      False       False      264699
+   punc       False       False      248963
+   code       False       False       96308
+   _wrd       False       False       50274
+   html       False       False        5134
+   wiki       False       False         446
+   json       False       False          50
+   fail       True        False          41
+                          True            1
+   ..................
+   slice           known_fail  success
+   pcc_eng_23_001  False       True       9999
+   pcc_eng_23_041  False       True       9999
+   pcc_eng_23_060  False       True       9999
+   pcc_eng_23_059  False       True       9999
+   pcc_eng_23_058  False       True       9999
+   pcc_eng_23_057  False       True       9999
+   pcc_eng_23_056  False       True       9999
+   pcc_eng_23_002  False       True       9999
+   pcc_eng_23_054  False       True       9999
+   pcc_eng_23_087  False       True       9999
+   pcc_eng_23_052  False       True       9999
+   pcc_eng_23_051  False       True       9999
+   pcc_eng_23_050  False       True       9999
+   pcc_eng_23_090  False       True       9999
+   pcc_eng_23_048  False       True       9999
+   pcc_eng_23_047  False       True       9999
+   pcc_eng_23_046  False       True       9999
+   pcc_eng_23_045  False       True       9999
+   pcc_eng_23_044  False       True       9999
+   pcc_eng_23_061  False       True       9999
+   pcc_eng_23_062  False       True       9999
+   pcc_eng_23_063  False       True       9999
+   pcc_eng_23_073  False       True       9999
+   pcc_eng_23_081  False       True       9999
+   pcc_eng_23_080  False       True       9999
+   pcc_eng_23_079  False       True       9999
+   pcc_eng_23_084  False       True       9999
+   pcc_eng_23_077  False       True       9999
+   pcc_eng_23_076  False       True       9999
+   pcc_eng_23_074  False       True       9999
+   pcc_eng_23_072  False       True       9999
+   pcc_eng_23_086  False       True       9999
+   pcc_eng_23_071  False       True       9999
+   pcc_eng_23_070  False       True       9999
+   pcc_eng_23_069  False       True       9999
+   pcc_eng_23_068  False       True       9999
+   pcc_eng_23_067  False       True       9999
+   pcc_eng_23_066  False       True       9999
+   pcc_eng_23_065  False       True       9999
+   pcc_eng_23_043  False       True       9999
+   pcc_eng_23_091  False       True       9999
+   pcc_eng_23_021  False       True       9999
+   pcc_eng_23_101  False       True       9999
+   pcc_eng_23_020  False       True       9999
+   pcc_eng_23_019  False       True       9999
+   pcc_eng_23_018  False       True       9999
+   pcc_eng_23_017  False       True       9999
+   pcc_eng_23_016  False       True       9999
+   pcc_eng_23_015  False       True       9999
+   pcc_eng_23_100  False       True       9999
+   pcc_eng_23_011  False       True       9999
+   pcc_eng_23_099  False       True       9999
+   pcc_eng_23_010  False       True       9999
+   pcc_eng_23_103  False       True       9999
+   pcc_eng_23_104  False       True       9999
+   pcc_eng_23_007  False       True       9999
+   pcc_eng_23_105  False       True       9999
+   pcc_eng_23_005  False       True       9999
+   pcc_eng_23_003  False       True       9999
+   pcc_eng_23_040  False       True       9999
+   pcc_eng_23_082  False       True       9999
+   pcc_eng_23_098  False       True       9999
+   pcc_eng_23_024  False       True       9999
+   pcc_eng_23_039  False       True       9999
+   pcc_eng_23_092  False       True       9999
+   pcc_eng_23_093  False       True       9999
+   pcc_eng_23_036  False       True       9999
+   pcc_eng_23_035  False       True       9999
+   pcc_eng_23_034  False       True       9999
+   pcc_eng_23_094  False       True       9999
+   pcc_eng_23_032  False       True       9999
+   pcc_eng_23_031  False       True       9999
+   pcc_eng_23_030  False       True       9999
+   pcc_eng_23_095  False       True       9999
+   pcc_eng_23_096  False       True       9999
+   pcc_eng_23_097  False       True       9999
+   pcc_eng_23_026  False       True       9999
+   pcc_eng_23_025  False       True       9999
+   pcc_eng_23_102  False       True       9998
+   pcc_eng_23_085  False       True       9998
+   pcc_eng_23_106  False       True       9998
+   pcc_eng_23_083  False       True       9998
+   pcc_eng_23_055  False       True       9998
+   pcc_eng_23_078  False       True       9998
+   pcc_eng_23_028  False       True       9998
+   pcc_eng_23_006  False       True       9998
+   pcc_eng_23_008  False       True       9998
+   pcc_eng_23_009  False       True       9998
+   pcc_eng_23_012  False       True       9998
+   pcc_eng_23_013  False       True       9998
+   pcc_eng_23_014  False       True       9998
+   pcc_eng_23_022  False       True       9998
+   pcc_eng_23_023  False       True       9998
+   pcc_eng_23_075  False       True       9998
+   pcc_eng_23_027  False       True       9998
+   pcc_eng_23_029  False       True       9998
+   pcc_eng_23_033  False       True       9998
+   pcc_eng_23_037  False       True       9998
+   pcc_eng_23_038  False       True       9998
+   pcc_eng_23_042  False       True       9998
+   pcc_eng_23_053  False       True       9998
+   pcc_eng_23_049  False       True       9997
+   pcc_eng_23_089  False       True       9997
+   pcc_eng_23_088  False       True       9997
+   pcc_eng_23_064  False       True       9997
+   pcc_eng_23_004  False       True       9997
+   pcc_eng_23_108  False       True       9904
+   pcc_eng_23_107  False       True       9901
+                   True        True          1
+ _______________________
+| INFO: 2022-08-11 07:21AM
+|    /share/compling/projects/puddin/script/validate_data_group.py:assess_data_group:179
+| . . . . . . .
+   Data group `23` parsing status info and invalid exclusions saved as:
+   - /share/compling/data/puddin/info/validation_by_group/23-pcc_status.pkl.gz
+        last modified: Thu Aug 11 07:21:46 2022
+   - /share/compling/data/puddin/info/validation_by_group/23_invalid-excl.pkl.gz
+        last modified: Thu Aug 11 07:21:46 2022
