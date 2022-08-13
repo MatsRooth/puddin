@@ -27,20 +27,20 @@ eval "$(conda shell.bash hook)"
 conda activate puddin
 echo "$(conda env list)"
 echo ""
-DATA_DIR=/share/compling/data
-PILE_DIR=${DATA_DIR}/pile
+DATA_DIR="/share/compling/data"
+PILE_DIR="${DATA_DIR}/pile"
 echo "data dir: ${DATA_DIR}"
-PUD_DIR=${DATA_DIR}/puddin
+PUD_DIR="${DATA_DIR}/puddin"
 if [ ! -d $PUD_DIR ]; then
     mkdir $PUD_DIR
 fi
 
-LOGS_DIR=${PUD_DIR}/logs
+LOGS_DIR="${PUD_DIR}/logs"
 if [ ! -d $LOGS_DIR ]; then
     mkdir $LOGS_DIR
 fi
 DATE="$(date -I)"
-TODAY_LOGS_DIR=${LOGS_DIR}/${DATE}
+TODAY_LOGS_DIR="${LOGS_DIR}/${DATE}"
 if [ ! -d $TODAY_LOGS_DIR ]; then
     mkdir $TODAY_LOGS_DIR
 fi
@@ -52,28 +52,28 @@ echo "   - $SLURM_ARRAY_TASK_COUNT total jobs in array"
 echo ""
 SEED=$((SLURM_ARRAY_TASK_ID))
 # set input file generated from seed (from array)
-SEEDIX=$SEED
-if (( $SEED > 29 )); then
+SEEDIX=${SEED}
+if (($SEED > 29)); then
 
-    if (( $SEED == 30 )); then
+    if (($SEED == 30)); then
         SEED="Test"
-    elif (( $SEED == 31 )); then
+    elif (($SEED == 31)); then
         SEED="Val"
     fi
 
-    IN_FILE=${PILE_DIR}/${SEED,,}.jsonl
+    IN_FILE="${PILE_DIR}/${SEED,,}.jsonl"
 
-else 
+else
     PRE0="0${SEED}"
-    SEED=${PRE0:(-2)}
-    IN_FILE=${PILE_DIR}/train/${SEED}.jsonl
+    SEED="${PRE0:(-2)}"
+    IN_FILE="${PILE_DIR}/train/${SEED}.jsonl"
 
 fi
 
 echo "Seed ${SEEDIX} -> $(ls -Qhs ${IN_FILE})"
 echo ""
 # run script and send both stdout and stderr to log file
-LOG_FILE=${TODAY_LOGS_DIR}/${SLURM_JOB_NAME}${SEED::2}_${SLURM_ARRAY_JOB_ID:(-4)}.log
+LOG_FILE="${TODAY_LOGS_DIR}/${SLURM_JOB_NAME}${SEED::2}_${SLURM_ARRAY_JOB_ID:(-4)}.log"
 echo "Combined python log will be written to ${LOG_FILE}"
 
 echo "***********************************************"

@@ -26,7 +26,7 @@ echo "  - ${SLURM_NTASKS} cores"
 echo "  - ${SLURM_MEM_PER_CPU} mem/cpu"
 echo "* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *"
 
-DATA_DIR=/share/compling/data/puddin
+DATA_DIR="/share/compling/data/puddin"
 (time python /share/compling/projects/puddin/script/confirm_doc_ids.py -d ${DATA_DIR} ) 2>${SLURM_JOB_NAME}_${SLURM_JOB_ID}.py.err
 
 echo -e "\nJob Closed\n$(date)"
