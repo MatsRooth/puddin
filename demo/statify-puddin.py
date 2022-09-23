@@ -117,7 +117,8 @@ def describe_puddin(data_target: str = ''):
 
         grp_by_conllu_df = downcast_df(pd.DataFrame(conllu_dicts))
         grp_by_conllu_df = grp_by_conllu_df.set_index('slice_name')
-        write_df(grp_by_conllu_df, group_stats_dir.joinpath(f'{data_grp}_conllus.pkl.bz2'))
+        write_df(grp_by_conllu_df, group_stats_dir.joinpath(
+            f'{data_grp}_conllus.pkl.bz2'))
         # # drop doc level stats for the data group level
         # g_convert = (grp_by_conllu_df.copy()
         #              .loc[:, ~grp_by_conllu_df.columns.str.startswith('C_D')])
@@ -128,11 +129,23 @@ def describe_puddin(data_target: str = ''):
         # ## TODO: need to add in the "list object" column processing as well
         # grp_stats_dict = {f'G_{k}': v for k, v in grp_stats_dict.items()}
         grp_dict = get_upper_level_stats(grp_by_conllu_df, 'group')
-        grp_dict['G_id'] = data_grp
+        grp_dict.update({'G_id': data_grp,
+                         'G_cnl_count': len(grp_by_conllu_df)})
         # TODO : come back to this... not sure this is right.
         grp_dicts.append(grp_dict)
-        
-    puddin_by_grp_df = downcast_df(pd.DataFrame(grp_dicts))
+
+    puddin_by_grp_df = downcast_df(pd.DataFrame(grp_dicts)).set_index('G_id')
+
+    write_df(puddin_by_grp_df, STATS_DIR.joinpath('puddin_groups.pkl.bz2'))
+
+    puddin_top_dict = get_upper_level_stats(puddin_by_grp_df, 'top')
+    puddin_top_dict['P_grp_count'] = len(puddin_by_grp_df)
+
+    puddin_top_df = pd.DataFrame(columns=puddin_top_dict.keys(),
+                                 data=[puddin_top_dict.values()],
+                                 index=['puddin']).transpose()
+    write_df(downcast_df(puddin_top_df),
+             STATS_DIR.joinpath('puddin_totals.pkl.bz2'))
     end = time.perf_counter()
     # ^ At this point there is:
     #   1. a list of dataframes:
@@ -211,7 +224,8 @@ def describe_conllu(conllu_path, group_stats_dir):
     # //         print(stats.transpose().dtypes)
 
     c_dict = get_upper_level_stats(conllu_by_doc, 'conllu')
-    c_dict.update({'conllu_path': conllu_path,
+    c_dict.update({'C_doc_count': len(conllu_by_doc),
+                   'conllu_path': conllu_path,
                    'slice_name': conllu_path.stem.rsplit('_', 1)[1]})
 
     # TODO: append conllu_dict to iter of all conllus initialized before the for-loop
@@ -383,10 +397,8 @@ def get_stats_by_doc(sdf: pd.DataFrame):
 
 
 def downcast_df(df):
-    # print('^^ Original Info ^^')
-    df = df.convert_dtypes().infer_objects()
 
-    # df.info(memory_usage=True)
+    df = df.convert_dtypes().infer_objects().round(3)
     df.columns = df.columns.str.replace(
         '50%', 'median').str.replace('freq', 'topfreq')
 
@@ -400,46 +412,51 @@ def downcast_df(df):
     df.loc[:, is_int] = df.loc[:, is_int].apply(
         lambda c: pd.to_numeric(c, downcast='integer'))
 
-    # print('-- Downcast Info --')
-    # df.info(memory_usage=True)
     return df
 
 
-def get_upper_level_stats(lower_df:pd.DataFrame, level:str):
+def get_upper_level_stats(lower_df: pd.DataFrame, level: str):
     # drop sent level values for conllu calculations
     if level == 'conllu':
         col_key = 'D_S'
         lower_pref = 'D'
         upper_pref = 'C'
-    
+
     elif level == 'group':
         col_key = 'C_D'
         lower_pref = 'C'
         upper_pref = 'G'
-        
+
     elif level in ('puddin', 'top'):
         col_key = 'G_C'
         lower_pref = 'G'
         upper_pref = 'P'
-        
-    convert_up = lower_df.copy().loc[:, ~lower_df.columns.str.startswith(col_key)]
+
+    convert_up = (lower_df.copy()
+                  .loc[:, ~lower_df.columns.str.startswith(col_key)])
     convert_up.columns = convert_up.columns.str.replace(f'{lower_pref}_', '')
 
     upper_dict = describe_counts(convert_up, lower_pref)
     upper_dict = {f'{upper_pref}_{k}': v for k, v in upper_dict.items()}
-    upper_dict[f'{upper_pref}_doc_count'] = len(lower_df)
 
     # > process iter object columns
     objects_df = lower_df.loc[:, lower_df.dtypes == 'object']
     for obj_col_name in objects_df.columns:
-        conllu_col_name = obj_col_name.replace(lower_pref, upper_pref)
-        conllu_Series = pd.Series(generate_flat_iter(
-            objects_df.loc[:, obj_col_name]))
-        upper_dict[conllu_col_name] = conllu_Series
-        desc_dict = describe_word_level_series(
-            conllu_Series,
-            conllu_col_name.strip('s').replace('lemma', 'lmm'))
-        upper_dict.update(desc_dict)
+        obj_col = objects_df.loc[:, obj_col_name]
+        if isinstance(obj_col[0], Path):
+            upper_dict[f'{level}_path'] = obj_col[0].parent
+            continue
+        upper_Series = pd.Series(generate_flat_iter(
+            obj_col))
+        if len(upper_Series) != upper_dict[f'{upper_pref}_wrd_count']:
+            print(
+                f'WARNING! word level {obj_col_name} Series length differs from indicated word count')
+        upper_col_name = obj_col_name.replace(lower_pref, upper_pref)
+        upper_dict[upper_col_name] = upper_Series
+        obj_desc_dict = describe_word_level_series(
+            upper_Series,
+            upper_col_name.strip('s').replace('lemma', 'lmm'))
+        upper_dict.update(obj_desc_dict)
 
     # TODO: see if there are any other values worth keeping from doc level stats (e.g. most freq lemma per doc?, median max sent length per doc? 🤔🤷‍♀️)
     return upper_dict
