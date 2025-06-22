@@ -19,7 +19,12 @@ from pile_regex_imports import (bracket_url, code_regex, defwiki,
                                 mixed_letter_digit_regex, punc_only,
                                 solonew_or_dupwhite, underscore_regex, wikipat)
 
-_DOC2CONLL_TEXT = stanza.utils.conll.CoNLL.doc2conll_text
+# mr249
+# This no longer works with this method name. 
+# _DOC2CONLL_TEXT = stanza.utils.conll.CoNLL.doc2conll_text
+# Below in place of _DOC2CONLL_TEXT(doc) use
+#  "{:C}".format(doc)
+# See https://stanfordnlp.github.io/stanza/data_conversion.html#document-to-conll
 
 _SCRIPT_START_TIME = datetime.now()
 print(f'started: {_SCRIPT_START_TIME.ctime()}')
@@ -153,7 +158,9 @@ def _main():
             slices_metadf_search = slice_path.parent.rglob(
                 get_metadf_fname(slice_path.stem
                                  .split('_')[1]  # get second _ delimited chunk
-                                 .rsplit('-', 1)[0])  # pop off the slice number
+                                 .rsplit('-', n=1)[0])  # pop off the slice number
+                                 # Above mr249 edit for Pandas >= 1.5
+                                 # see https://stackoverflow.com/questions/76812405/typeerror-stringmethods-rsplit-takes-from-1-to-2-positional-arguments-but-3-w
             )
             try:
                 slice_info_path = most_recent(slices_metadf_search)
@@ -461,7 +468,7 @@ def get_metadf_fname(data_group):
 def confirm_conllu(final_slice: Path):
     pile_set_name = final_slice.stem.split('_')[2]
     data_group = final_slice.stem.split('_')[1]
-    data_group, slice_num = data_group.rsplit('-', 1)
+    data_group, slice_num = data_group.rsplit('-', n=1) #mr249
     path_mod_time = final_slice.stat().st_mtime
     has_conllu = False
     conllu_path = get_conllu_outpath(data_group, slice_num,
@@ -693,7 +700,7 @@ def get_dfpkl_outpath(stem: str,
         # data_type not inherited from stem in this case because
         #   exclusions input stem might include df if stem Path attribute
         # ['pile_00', 'Pile-CC']
-        stem, subcorpus_label = stem.rsplit('_', 2)[:2]
+        stem, subcorpus_label = stem.rsplit('_', 2)[:2] #mr249 dont change it here
         source = stem.split('_')[1]
 
     # if not bare and not full, use `stem` and `subcorpus_label` as is;
@@ -769,7 +776,7 @@ def create_ids(df: pd.DataFrame, data_source_label: str = None, zfilled_slice_nu
         df = df.assign(
             # e.g. pcc_eng_00_01.0001_x000003 (indices may not match)
             text_id=(df.id_stem + '_x'
-                     + df.text_id.str.rsplit('_', 1).str.get(1)))
+                     + df.text_id.str.rsplit('_', n=1).str.get(1))) #mr249
     else:
         # e.g. pcc_val_00001
         df = df.assign(text_id=df.id_stem)
@@ -1443,7 +1450,9 @@ def stanza_parse(df: pd.DataFrame,
                 doc = process_sentences(text_id, doc)
 
                 # write conll formatted string of doc to output file
-                conllout.write(_DOC2CONLL_TEXT(doc))
+                # mr249 edit
+                # conllout.write(_DOC2CONLL_TEXT(doc))
+                conllout.write("{:C}".format(doc))                
 
             parse_t1 = datetime.now()
             print('       time:', get_elapsed_time(parse_t0, parse_t1))
